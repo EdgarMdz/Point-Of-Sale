@@ -153,7 +153,7 @@ namespace POS
           int customerID,
           double Total,
           double Payment,
-          Tuple<string, double, double, double>[] ListofProducts,
+          Tuple<string, double, double, double,int>[] ListofProducts,
           double cash)
         {
             this._ID = this.negocio.Sale_newSale(EmployeeID, customerID, Total, Payment, ListofProducts, cash);
@@ -222,6 +222,16 @@ namespace POS
         {
             this.negocio.Sale_ReturnPackage(this.ID, barcode, (Decimal)amount, employeeID);
             this.initialize();
+        }
+
+        public void RefoundProductsToCustomer(DataTable barcodesToBeRefounded)
+        {
+            negocio.Sale_RefoundProductsToCustomer(ID, barcodesToBeRefounded);
+        }
+
+        public DataSet getNextSaleID()
+        {
+            return negocio.getNextSaleID(ID);
         }
     }
 }

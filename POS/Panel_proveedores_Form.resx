@@ -1034,6 +1034,14 @@
         AAAASUVORK5CYII=
 </value>
   </data>
+  <data name="bunifuGradientPanel3.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABrSURBVChTfcu3EcAgDABA7b8nOWeo5JNqQ/HlwxgDyZyT
+        rbXY3pudcxi01rD3zl4JSilYa2WUbhFyzkgovBLEGJGklNgtgvceQwjslcA5h4TCK4ExBom1lt0iKKVQ
+        a81eCYQQKKVklP6jxQ/9tXwpr2PY0wAAAABJRU5ErkJggg==
+</value>
+  </data>
   <data name="SaveBtn.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAQkAAAApCAYAAAAms9zmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -1048,14 +1056,6 @@
         dnzEOBKRjYp2rh2weBKITBZyYnYzEYnITCKhaCflAosh+w+ZQewNRByIRGTpkbsdKUp2OJ2iDfMpS4q2
         /5CNymkn1E2NRJOi5BbIsUtPhg9VGIYxVyNHV7bv+52lGwkAkQC6RALoEgmgSySAjlL+A4LfBvuFkvsU
         AAAAAElFTkSuQmCC
-</value>
-  </data>
-  <data name="bunifuGradientPanel3.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABrSURBVChTfcu3EcAgDABA7b8nOWeo5JNqQ/HlwxgDyZyT
-        rbXY3pudcxi01rD3zl4JSilYa2WUbhFyzkgovBLEGJGklNgtgvceQwjslcA5h4TCK4ExBom1lt0iKKVQ
-        a81eCYQQKKVklP6jxQ/9tXwpr2PY0wAAAABJRU5ErkJggg==
 </value>
   </data>
   <data name="VisitingDaysPanel.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -1089,10 +1089,11 @@
   <data name="bunifuGradientPanel6.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC4SURBVChTbc8vC8JAHMbxXzMabbPZtC3atBlt2ow2bQqC
-        MhAHg4kgCIIgCIIw8KXs/r2dR27Hdneb/cPD96HJVWB645jfORYPjuWTY/Vi2LwZDh+GU5bj/M1B44uA
-        wcLDawfHGQMNU4FRhTlmFWbeMoWJhMbussU2gwaxRJiIGnabWZFBvaNEv8Bm+X8GBwWRgsZmWWPpYJtB
-        nb1CEMkabmZQe6egcbex7B+k1lahxOWyaTYHTYbADzA0Dr/h4SayAAAAAElFTkSuQmCC
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADUSURBVChTddA7D8FgFMbx87EsFksXC0MNOrBYLBaLxcLA
+        YjG5q/v98lWEiAgRIY24RISISB5vW9pXxP7LP8855Ksq8Nc3CDTWCDZXCLWXCHfmiHRniPWnSAzGSA5H
+        IG9lBw3XtiZumTiu4QlIKu9h4K/yQsPRno5JlE9wM+wxMFfmZpCjeIYoH+EuceXab5ns+Qt0fIL0D7PN
+        JORusBd07FJx+cBtNmeQLXuHkLtCLTs/mC+/DyRr+gEdszI3Q91sHMheR5bUE9bMB7Pye4Z2oPE6BS+t
+        2ybemtShwAAAAABJRU5ErkJggg==
 </value>
   </data>
   <data name="RemindersPanel.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -1210,12 +1211,6 @@
   </metadata>
   <metadata name="SelectAllBtnElipse.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 56</value>
-  </metadata>
-  <metadata name="AutoGenerateButtonElipse.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>164, 56</value>
-  </metadata>
-  <metadata name="timer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>359, 56</value>
   </metadata>
   <data name="minimizeBtn.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -2163,4 +2158,10 @@
         uflOjcC1F1HzHgVUV0Xmd3ie/w8xumuqeiZNIQAAAABJRU5ErkJggg==
 </value>
   </data>
+  <metadata name="AutoGenerateButtonElipse.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>164, 56</value>
+  </metadata>
+  <metadata name="timer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>359, 56</value>
+  </metadata>
 </root>

@@ -451,6 +451,7 @@ namespace POS
             this.Name = "Panel_Inicio";
             this.ShowInTaskbar = false;
             this.Text = "Inicio | Point of Sale";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Panel_Inicio_FormClosing);
             this.Load += new System.EventHandler(this.Panel_Inicio_Load);
             this.SizeChanged += new System.EventHandler(this.Panel_Inicio_SizeChanged);
             this.WindowSizeControlPanel.ResumeLayout(false);

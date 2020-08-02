@@ -32,8 +32,8 @@ namespace POS
                 if (formLogin.ShowDialog() == DialogResult.OK)
                 {
                     this.Hide();
-                    if (secondStartingWindow.ShowDialog() != DialogResult.OK)
-                        return;
+                    //if (secondStartingWindow.ShowDialog() != DialogResult.OK)
+                      //  return;
                     new Form1(formLogin.ID).Show();
                 }
                 else

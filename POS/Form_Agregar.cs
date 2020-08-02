@@ -34,6 +34,7 @@ namespace POS
             this.stockTxt.Enabled = false;
             this.barcodeTxt.Enabled = false;
             this.ShowInTaskbar = false;
+            wholesaleCostsBtn.Show();
         }
 
         private void getDepots()
@@ -654,9 +655,24 @@ namespace POS
                 LinkProductCheckBox.Checked = false;
         }
 
-        private void sellMixedBtn_Click(object sender, EventArgs e)
+        private void Form_Agregar_Paint(object sender, PaintEventArgs e)
         {
-            
+            Pen p = new Pen(Brushes.Black, 3);
+
+            e.Graphics.DrawRectangle(p, this.ClientRectangle);
+            p.Dispose();
+        }
+
+        private void wholesaleCostsBtn_Click(object sender, EventArgs e)
+        {
+            form_ProductWholeSaleCosts wholeSaleCosts = new form_ProductWholeSaleCosts(barcode);
+
+            this.Hide();
+
+            wholeSaleCosts.ShowDialog();
+            this.Show();
+
+
         }
     }
 }

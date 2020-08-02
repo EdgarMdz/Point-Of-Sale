@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace POS
 {
-    class Empleado
+    public class Empleado
     {
         private Capa_de_Negocio negocio = new Capa_de_Negocio();
         private bool _isAdmin;

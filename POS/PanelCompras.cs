@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.PointOfService;
 
 namespace POS
 {
@@ -25,6 +26,7 @@ namespace POS
         private Empleado currentEmployee;
         private Queue<bool> request;
         private CurrencyManager cm;
+        CashDrawer m_Drawer;
 
         public PanelCompras(int employeeid, FormWindowState windowState = FormWindowState.Normal)
         {
@@ -66,6 +68,36 @@ namespace POS
         private void PanelCompras_Load(object sender, EventArgs e)
         {
             this.loadPurchases();
+            //<<<step1>>>--Start
+            //Use a Logical Device Name which has been set on the SetupPOS.
+            string strLogicalName = "CashDrawer";
+
+            try
+            {
+                //Create PosExplorer
+                PosExplorer posExplorer = new PosExplorer();
+
+                DeviceInfo deviceInfo = null;
+
+                try
+                {
+                    deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, strLogicalName);
+                    m_Drawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
+                }
+                catch (Exception)
+                {
+                    //Nothing can be used.
+                    return;
+                }
+          
+
+            }
+            catch (PosControlException)
+            {
+                //Nothing can be used.
+                //Nothing can be used.
+            }
+            //<<<step1>>>--End
         }
 
         private void loadPurchases()
@@ -265,6 +297,7 @@ namespace POS
             this.POsContainerPanel.Visible = false;
             this.PODescriptionPanel.Visible = true;
             this.PODescriptionPanel.Dock = DockStyle.Fill;
+            dataGridView1.Focus();
         }
 
         private void updateValues()
@@ -421,6 +454,17 @@ namespace POS
                 }
                 this.cm.ResumeBinding();
             }
+
+            if(keyData ==(Keys.Alt | Keys.Left) && PODescriptionPanel.Visible)
+            {
+                goBack();
+            }
+
+            if(keyData==(Keys.Alt|Keys.C) && PODescriptionPanel.Visible && ConfirmBtn.Enabled)
+            {
+                ConfirmBtn_Click(this, null);
+            }
+
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
@@ -475,7 +519,7 @@ namespace POS
                 {
                     this.PO.MakePayment(Convert.ToDouble(formPagar.Pay), this.CurrentEmployeeID);
                     this.updateValues();
-                    try
+                    /*try
                     {
                         PrintDialog printDialog = new PrintDialog();
                         PrintDocument printDocument = new PrintDocument();
@@ -487,8 +531,39 @@ namespace POS
                     catch (InvalidPrinterException)
                     {
                         int num = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
+                    }*/
+                  
+                    
+                    //<<<step1>>>--Start
+                    //When outputting to a printer,a mouse cursor becomes like a hourglass.
+                    try
+                    {
+
+                        //Open the device
+                        //Use a Logical Device Name which has been set on the SetupPOS.
+                        m_Drawer.Open();
+
+                        //Get the exclusive control right for the opened device.
+                        //Then the device is disable from other application.
+                        m_Drawer.Claim(1000);
+
+                        //Enable the device.
+                        m_Drawer.DeviceEnabled = true;
+                        
+                        //Open the drawer by using the "OpenDrawer" method.
+                        m_Drawer.OpenDrawer();
+
+
+                        m_Drawer.DeviceEnabled = false;
+                        m_Drawer.Release();
+
+                        m_Drawer.Close();
                     }
-                    int num1 = (int)MessageBox.Show("Se realizó abono con exito");
+                    catch (PosControlException)
+                    {
+                    }
+                    //<<<step1>>>--End
+                    MessageBox.Show("Se realizó abono con exito");
                     if (this.PO.paid)
                         this.loadPurchases();
                 }
@@ -652,6 +727,28 @@ namespace POS
                     return;
                 this.TotalLbl.Text = this.PO.total.ToString("n2");
             }
+        }
+
+        private void PanelCompras_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            flowLayoutPanel1.Dispose();//<<<step1>>>--Start
+            if (m_Drawer != null)
+            {
+                try
+                {
+                    //Cancel the device
+                    m_Drawer.DeviceEnabled = false;
+
+                    //Release the device exclusive control right.
+                    m_Drawer.Release();
+                    //Finish using the device.
+                    m_Drawer.Close();
+                }
+                catch (PosControlException)
+                {
+                }
+            }
+            //<<<step1>>>--End
         }
     }
 }

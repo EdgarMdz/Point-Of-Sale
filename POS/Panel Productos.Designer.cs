@@ -48,14 +48,14 @@ namespace POS
             this.mixedCaseBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.TransferStockBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.EditProduct = new Bunifu.Framework.UI.BunifuImageButton();
-            this.DeleteButton = new Bunifu.Framework.UI.BunifuImageButton();
-            this.AddBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.bunifuGradientPanel4 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.SearchTxt = new System.Windows.Forms.TextBox();
             this.bunifuGradientPanel5 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.scrapBtn = new System.Windows.Forms.Button();
             this.NewDepotBtn = new Bunifu.Framework.UI.BunifuThinButton2();
+            this.AddBtn = new Bunifu.Framework.UI.BunifuImageButton();
+            this.DeleteButton = new Bunifu.Framework.UI.BunifuImageButton();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).BeginInit();
             this.bunifuGradientPanel3.SuspendLayout();
@@ -68,10 +68,10 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.mixedCaseBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TransferStockBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EditProduct)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.DeleteButton)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AddBtn)).BeginInit();
             this.bunifuGradientPanel4.SuspendLayout();
             this.bunifuGradientPanel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AddBtn)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DeleteButton)).BeginInit();
             this.SuspendLayout();
             // 
             // closeBtn
@@ -280,34 +280,6 @@ namespace POS
             this.EditProduct.Zoom = 10;
             this.EditProduct.Click += new System.EventHandler(this.EditProduct_Click);
             // 
-            // DeleteButton
-            // 
-            this.DeleteButton.BackColor = System.Drawing.Color.Transparent;
-            this.DeleteButton.Image = global::POS.Properties.Resources.delete;
-            this.DeleteButton.ImageActive = null;
-            this.DeleteButton.Location = new System.Drawing.Point(13, 316);
-            this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(50, 50);
-            this.DeleteButton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.DeleteButton.TabIndex = 1;
-            this.DeleteButton.TabStop = false;
-            this.DeleteButton.Zoom = 10;
-            this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
-            // 
-            // AddBtn
-            // 
-            this.AddBtn.BackColor = System.Drawing.Color.Transparent;
-            this.AddBtn.Image = global::POS.Properties.Resources.plus;
-            this.AddBtn.ImageActive = null;
-            this.AddBtn.Location = new System.Drawing.Point(13, 19);
-            this.AddBtn.Name = "AddBtn";
-            this.AddBtn.Size = new System.Drawing.Size(50, 50);
-            this.AddBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.AddBtn.TabIndex = 0;
-            this.AddBtn.TabStop = false;
-            this.AddBtn.Zoom = 10;
-            this.AddBtn.Click += new System.EventHandler(this.AddButton_Click);
-            // 
             // bunifuGradientPanel4
             // 
             this.bunifuGradientPanel4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel4.BackgroundImage")));
@@ -347,8 +319,9 @@ namespace POS
             this.SearchTxt.Margin = new System.Windows.Forms.Padding(2);
             this.SearchTxt.Name = "SearchTxt";
             this.SearchTxt.Size = new System.Drawing.Size(417, 40);
-            this.SearchTxt.TabIndex = 4;
+            this.SearchTxt.TabIndex = 1;
             this.SearchTxt.TextChanged += new System.EventHandler(this.SearchTxt_TextChanged);
+            this.SearchTxt.Enter += new System.EventHandler(this.SearchTxt_Enter);
             this.SearchTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTxt_KeyDown);
             // 
             // bunifuGradientPanel5
@@ -406,9 +379,37 @@ namespace POS
             this.NewDepotBtn.Margin = new System.Windows.Forms.Padding(5);
             this.NewDepotBtn.Name = "NewDepotBtn";
             this.NewDepotBtn.Size = new System.Drawing.Size(181, 41);
-            this.NewDepotBtn.TabIndex = 0;
+            this.NewDepotBtn.TabIndex = 110;
             this.NewDepotBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.NewDepotBtn.Click += new System.EventHandler(this.NewDepotBtn_Click);
+            // 
+            // AddBtn
+            // 
+            this.AddBtn.BackColor = System.Drawing.Color.Transparent;
+            this.AddBtn.Image = global::POS.Properties.Resources.plus;
+            this.AddBtn.ImageActive = null;
+            this.AddBtn.Location = new System.Drawing.Point(13, 19);
+            this.AddBtn.Name = "AddBtn";
+            this.AddBtn.Size = new System.Drawing.Size(50, 50);
+            this.AddBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.AddBtn.TabIndex = 100;
+            this.AddBtn.TabStop = false;
+            this.AddBtn.Zoom = 10;
+            this.AddBtn.Click += new System.EventHandler(this.AddButton_Click);
+            // 
+            // DeleteButton
+            // 
+            this.DeleteButton.BackColor = System.Drawing.Color.Transparent;
+            this.DeleteButton.Image = global::POS.Properties.Resources.delete;
+            this.DeleteButton.ImageActive = null;
+            this.DeleteButton.Location = new System.Drawing.Point(13, 316);
+            this.DeleteButton.Name = "DeleteButton";
+            this.DeleteButton.Size = new System.Drawing.Size(50, 50);
+            this.DeleteButton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.DeleteButton.TabIndex = 11;
+            this.DeleteButton.TabStop = false;
+            this.DeleteButton.Zoom = 10;
+            this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
             // 
             // Panel_Productos
             // 
@@ -439,11 +440,11 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.mixedCaseBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TransferStockBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.EditProduct)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.DeleteButton)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AddBtn)).EndInit();
             this.bunifuGradientPanel4.ResumeLayout(false);
             this.bunifuGradientPanel4.PerformLayout();
             this.bunifuGradientPanel5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.AddBtn)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DeleteButton)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -461,13 +462,13 @@ namespace POS
         private Bunifu.Framework.UI.BunifuImageButton mixedCaseBtn;
         private Bunifu.Framework.UI.BunifuImageButton TransferStockBtn;
         private Bunifu.Framework.UI.BunifuImageButton EditProduct;
-        private Bunifu.Framework.UI.BunifuImageButton DeleteButton;
-        private Bunifu.Framework.UI.BunifuImageButton AddBtn;
         private Bunifu.Framework.UI.BunifuGradientPanel bunifuGradientPanel4;
         private Label label1;
         private TextBox SearchTxt;
         private Bunifu.Framework.UI.BunifuGradientPanel bunifuGradientPanel5;
         private Button scrapBtn;
         private Bunifu.Framework.UI.BunifuThinButton2 NewDepotBtn;
+        private Bunifu.Framework.UI.BunifuImageButton DeleteButton;
+        private Bunifu.Framework.UI.BunifuImageButton AddBtn;
     }
 }

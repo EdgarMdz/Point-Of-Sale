@@ -319,5 +319,13 @@ namespace POS
         private void DonatingDepotCard_Paint(object sender, PaintEventArgs e)
         {
         }
+
+        private void Panel_productos_Transferir_Inventario_entre_bodegas_Paint(object sender, PaintEventArgs e)
+        {
+            Pen p = new Pen(Brushes.Black, 3);
+
+            e.Graphics.DrawRectangle(p, this.ClientRectangle);
+            p.Dispose();
+        }
     }
 }

@@ -40,14 +40,11 @@ namespace POS
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             this.AddSupplierToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.grandTotalLbl = new System.Windows.Forms.Label();
             this.ProductTableBtn = new System.Windows.Forms.Button();
             this.AlarmsBtn = new System.Windows.Forms.Button();
             this.RecomendValueBtn = new System.Windows.Forms.Button();
-            this.SelectAllBtn = new System.Windows.Forms.Button();
             this.AddNewCustomerBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.NextMonthButton = new Bunifu.Framework.UI.BunifuImageButton();
             this.PreviousMonthButton = new Bunifu.Framework.UI.BunifuImageButton();
@@ -62,7 +59,6 @@ namespace POS
             this.TodayBtn = new System.Windows.Forms.Button();
             this.PreviousDayButton = new Bunifu.Framework.UI.BunifuImageButton();
             this.AddNewReminderBtn = new System.Windows.Forms.Button();
-            this.FilterNextPurchaseTxt = new System.Windows.Forms.TextBox();
             this.companyAddressTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
             this.companyNameTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
             this.phoneNumberTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
@@ -144,11 +140,16 @@ namespace POS
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.NextPurchaseCard = new Bunifu.Framework.UI.BunifuCards();
             this.bunifuGradientPanel4 = new Bunifu.Framework.UI.BunifuGradientPanel();
-            this.NextPurchaseGridView = new Bunifu.Framework.UI.BunifuCustomDataGrid();
+            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.barcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.description = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.brand = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bunifuGradientPanel5 = new Bunifu.Framework.UI.BunifuGradientPanel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.SaveBtn = new Bunifu.Framework.UI.BunifuThinButton2();
+            this.ProductTxt = new System.Windows.Forms.RichTextBox();
             this.bunifuGradientPanel3 = new Bunifu.Framework.UI.BunifuGradientPanel();
+            this.SaveBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.BasicInformationCard = new Bunifu.Framework.UI.BunifuCards();
             this.VisitingDaysPanel = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.DebtPannel = new Bunifu.Framework.UI.BunifuGradientPanel();
@@ -206,7 +207,7 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.NextPurchaseCard.SuspendLayout();
             this.bunifuGradientPanel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NextPurchaseGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.bunifuGradientPanel5.SuspendLayout();
             this.bunifuGradientPanel3.SuspendLayout();
             this.BasicInformationCard.SuspendLayout();
@@ -239,10 +240,11 @@ namespace POS
             // grandTotalLbl
             // 
             this.grandTotalLbl.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.grandTotalLbl.AutoEllipsis = true;
             this.grandTotalLbl.BackColor = System.Drawing.Color.Transparent;
             this.grandTotalLbl.Font = new System.Drawing.Font("Century Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.grandTotalLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.grandTotalLbl.Location = new System.Drawing.Point(-122, 10);
+            this.grandTotalLbl.Location = new System.Drawing.Point(231, 10);
             this.grandTotalLbl.Name = "grandTotalLbl";
             this.grandTotalLbl.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.grandTotalLbl.Size = new System.Drawing.Size(756, 39);
@@ -272,7 +274,7 @@ namespace POS
             this.AlarmsBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(171)))));
             this.AlarmsBtn.FlatAppearance.BorderSize = 0;
             this.AlarmsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.AlarmsBtn.Font = new System.Drawing.Font("Century Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AlarmsBtn.Font = new System.Drawing.Font("Century Gothic", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AlarmsBtn.ForeColor = System.Drawing.Color.White;
             this.AlarmsBtn.Location = new System.Drawing.Point(401, 3);
             this.AlarmsBtn.Name = "AlarmsBtn";
@@ -289,29 +291,15 @@ namespace POS
             this.RecomendValueBtn.FlatAppearance.BorderSize = 0;
             this.RecomendValueBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.RecomendValueBtn.ForeColor = System.Drawing.Color.White;
-            this.RecomendValueBtn.Location = new System.Drawing.Point(16, 9);
+            this.RecomendValueBtn.Location = new System.Drawing.Point(286, 9);
             this.RecomendValueBtn.Name = "RecomendValueBtn";
             this.RecomendValueBtn.Size = new System.Drawing.Size(292, 45);
             this.RecomendValueBtn.TabIndex = 1;
             this.RecomendValueBtn.Text = "Recomendar Valor";
             this.AddSupplierToolTip.SetToolTip(this.RecomendValueBtn, "Recomendar valor para la siguiente compra del producto seleccionado en la tabla");
             this.RecomendValueBtn.UseVisualStyleBackColor = false;
+            this.RecomendValueBtn.Visible = false;
             this.RecomendValueBtn.Click += new System.EventHandler(this.AutoGenerateListBtn_Click);
-            // 
-            // SelectAllBtn
-            // 
-            this.SelectAllBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.SelectAllBtn.FlatAppearance.BorderSize = 0;
-            this.SelectAllBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.SelectAllBtn.ForeColor = System.Drawing.Color.White;
-            this.SelectAllBtn.Location = new System.Drawing.Point(342, 9);
-            this.SelectAllBtn.Name = "SelectAllBtn";
-            this.SelectAllBtn.Size = new System.Drawing.Size(282, 45);
-            this.SelectAllBtn.TabIndex = 2;
-            this.SelectAllBtn.Text = "Seleccionar Todo";
-            this.AddSupplierToolTip.SetToolTip(this.SelectAllBtn, "Seleccionar todos los productos");
-            this.SelectAllBtn.UseVisualStyleBackColor = false;
-            this.SelectAllBtn.Click += new System.EventHandler(this.SelectAllBtn_Click);
             // 
             // AddNewCustomerBtn
             // 
@@ -380,7 +368,8 @@ namespace POS
             this.FilteringTextbox.Size = new System.Drawing.Size(667, 41);
             this.FilteringTextbox.TabIndex = 0;
             this.AddSupplierToolTip.SetToolTip(this.FilteringTextbox, "Buscar un producto");
-            this.FilteringTextbox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.FilteringTextbox.TextChanged += new System.EventHandler(this.FilteringTextbox_TextChanged);
+            this.FilteringTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FilteringTextbox_KeyDown);
             // 
             // PromoBtn
             // 
@@ -506,7 +495,7 @@ namespace POS
             this.TodayBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.TodayBtn.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TodayBtn.ForeColor = System.Drawing.Color.White;
-            this.TodayBtn.Location = new System.Drawing.Point(620, 15);
+            this.TodayBtn.Location = new System.Drawing.Point(638, 15);
             this.TodayBtn.Name = "TodayBtn";
             this.TodayBtn.Size = new System.Drawing.Size(75, 37);
             this.TodayBtn.TabIndex = 8;
@@ -538,7 +527,7 @@ namespace POS
             this.AddNewReminderBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.AddNewReminderBtn.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AddNewReminderBtn.ForeColor = System.Drawing.Color.White;
-            this.AddNewReminderBtn.Location = new System.Drawing.Point(261, 16);
+            this.AddNewReminderBtn.Location = new System.Drawing.Point(270, 16);
             this.AddNewReminderBtn.Name = "AddNewReminderBtn";
             this.AddNewReminderBtn.Size = new System.Drawing.Size(255, 37);
             this.AddNewReminderBtn.TabIndex = 9;
@@ -546,15 +535,6 @@ namespace POS
             this.AddSupplierToolTip.SetToolTip(this.AddNewReminderBtn, "Agregar Nuevo Recordatorio");
             this.AddNewReminderBtn.UseVisualStyleBackColor = false;
             this.AddNewReminderBtn.Click += new System.EventHandler(this.AddNewReminderBtn_Click);
-            // 
-            // FilterNextPurchaseTxt
-            // 
-            this.FilterNextPurchaseTxt.Location = new System.Drawing.Point(464, 6);
-            this.FilterNextPurchaseTxt.Name = "FilterNextPurchaseTxt";
-            this.FilterNextPurchaseTxt.Size = new System.Drawing.Size(667, 41);
-            this.FilterNextPurchaseTxt.TabIndex = 0;
-            this.AddSupplierToolTip.SetToolTip(this.FilterNextPurchaseTxt, "Buscar un producto");
-            this.FilterNextPurchaseTxt.TextChanged += new System.EventHandler(this.textBox1_TextChanged_1);
             // 
             // companyAddressTxt
             // 
@@ -760,7 +740,6 @@ namespace POS
             // 
             // AdeudoLbl
             // 
-            this.AdeudoLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.AdeudoLbl.Font = new System.Drawing.Font("Century Gothic", 72F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AdeudoLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
             this.AdeudoLbl.Location = new System.Drawing.Point(14, 53);
@@ -989,6 +968,7 @@ namespace POS
             this.Btn56.TabIndex = 133;
             this.Btn56.Text = "0";
             this.Btn56.UseVisualStyleBackColor = false;
+            this.Btn56.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn54
             // 
@@ -1004,6 +984,7 @@ namespace POS
             this.Btn54.TabIndex = 141;
             this.Btn54.Text = "8";
             this.Btn54.UseVisualStyleBackColor = false;
+            this.Btn54.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn44
             // 
@@ -1019,6 +1000,7 @@ namespace POS
             this.Btn44.TabIndex = 146;
             this.Btn44.Text = "1";
             this.Btn44.UseVisualStyleBackColor = false;
+            this.Btn44.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn55
             // 
@@ -1034,6 +1016,7 @@ namespace POS
             this.Btn55.TabIndex = 134;
             this.Btn55.Text = "9";
             this.Btn55.UseVisualStyleBackColor = false;
+            this.Btn55.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn53
             // 
@@ -1049,6 +1032,7 @@ namespace POS
             this.Btn53.TabIndex = 140;
             this.Btn53.Text = "7";
             this.Btn53.UseVisualStyleBackColor = false;
+            this.Btn53.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Lbl6
             // 
@@ -1077,6 +1061,7 @@ namespace POS
             this.Btn52.TabIndex = 139;
             this.Btn52.Text = "6";
             this.Btn52.UseVisualStyleBackColor = false;
+            this.Btn52.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn43
             // 
@@ -1092,6 +1077,7 @@ namespace POS
             this.Btn43.TabIndex = 145;
             this.Btn43.Text = "31";
             this.Btn43.UseVisualStyleBackColor = false;
+            this.Btn43.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn51
             // 
@@ -1107,6 +1093,7 @@ namespace POS
             this.Btn51.TabIndex = 138;
             this.Btn51.Text = "5";
             this.Btn51.UseVisualStyleBackColor = false;
+            this.Btn51.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Lbl4
             // 
@@ -1135,6 +1122,7 @@ namespace POS
             this.Btn50.TabIndex = 137;
             this.Btn50.Text = "4";
             this.Btn50.UseVisualStyleBackColor = false;
+            this.Btn50.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn42
             // 
@@ -1150,6 +1138,7 @@ namespace POS
             this.Btn42.TabIndex = 144;
             this.Btn42.Text = "30";
             this.Btn42.UseVisualStyleBackColor = false;
+            this.Btn42.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn46
             // 
@@ -1165,6 +1154,7 @@ namespace POS
             this.Btn46.TabIndex = 136;
             this.Btn46.Text = "3";
             this.Btn46.UseVisualStyleBackColor = false;
+            this.Btn46.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn45
             // 
@@ -1180,6 +1170,7 @@ namespace POS
             this.Btn45.TabIndex = 135;
             this.Btn45.Text = "2";
             this.Btn45.UseVisualStyleBackColor = false;
+            this.Btn45.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn41
             // 
@@ -1195,6 +1186,7 @@ namespace POS
             this.Btn41.TabIndex = 143;
             this.Btn41.Text = "29";
             this.Btn41.UseVisualStyleBackColor = false;
+            this.Btn41.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Lbl3
             // 
@@ -1223,6 +1215,7 @@ namespace POS
             this.Btn40.TabIndex = 142;
             this.Btn40.Text = "28";
             this.Btn40.UseVisualStyleBackColor = false;
+            this.Btn40.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Lbl2
             // 
@@ -1248,7 +1241,7 @@ namespace POS
             this.Lbl0.Size = new System.Drawing.Size(35, 41);
             this.Lbl0.TabIndex = 75;
             this.Lbl0.Text = "do";
-            this.Lbl0.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.Lbl0.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Lbl1
             // 
@@ -1277,6 +1270,7 @@ namespace POS
             this.Btn00.TabIndex = 100;
             this.Btn00.Text = "1";
             this.Btn00.UseVisualStyleBackColor = false;
+            this.Btn00.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn16
             // 
@@ -1292,6 +1286,7 @@ namespace POS
             this.Btn16.TabIndex = 113;
             this.Btn16.Text = "13";
             this.Btn16.UseVisualStyleBackColor = false;
+            this.Btn16.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn36
             // 
@@ -1307,6 +1302,7 @@ namespace POS
             this.Btn36.TabIndex = 28;
             this.Btn36.Text = "27";
             this.Btn36.UseVisualStyleBackColor = false;
+            this.Btn36.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn35
             // 
@@ -1322,6 +1318,7 @@ namespace POS
             this.Btn35.TabIndex = 126;
             this.Btn35.Text = "26";
             this.Btn35.UseVisualStyleBackColor = false;
+            this.Btn35.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn01
             // 
@@ -1337,6 +1334,7 @@ namespace POS
             this.Btn01.TabIndex = 101;
             this.Btn01.Text = "1";
             this.Btn01.UseVisualStyleBackColor = false;
+            this.Btn01.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn34
             // 
@@ -1352,6 +1350,7 @@ namespace POS
             this.Btn34.TabIndex = 125;
             this.Btn34.Text = "25";
             this.Btn34.UseVisualStyleBackColor = false;
+            this.Btn34.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn15
             // 
@@ -1367,6 +1366,7 @@ namespace POS
             this.Btn15.TabIndex = 112;
             this.Btn15.Text = "12";
             this.Btn15.UseVisualStyleBackColor = false;
+            this.Btn15.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn33
             // 
@@ -1382,6 +1382,7 @@ namespace POS
             this.Btn33.TabIndex = 124;
             this.Btn33.Text = "24";
             this.Btn33.UseVisualStyleBackColor = false;
+            this.Btn33.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn02
             // 
@@ -1397,6 +1398,7 @@ namespace POS
             this.Btn02.TabIndex = 102;
             this.Btn02.Text = "2";
             this.Btn02.UseVisualStyleBackColor = false;
+            this.Btn02.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn32
             // 
@@ -1412,6 +1414,7 @@ namespace POS
             this.Btn32.TabIndex = 123;
             this.Btn32.Text = "23";
             this.Btn32.UseVisualStyleBackColor = false;
+            this.Btn32.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn14
             // 
@@ -1427,6 +1430,7 @@ namespace POS
             this.Btn14.TabIndex = 111;
             this.Btn14.Text = "11";
             this.Btn14.UseVisualStyleBackColor = false;
+            this.Btn14.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn03
             // 
@@ -1442,6 +1446,7 @@ namespace POS
             this.Btn03.TabIndex = 103;
             this.Btn03.Text = "3";
             this.Btn03.UseVisualStyleBackColor = false;
+            this.Btn03.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn30
             // 
@@ -1457,6 +1462,7 @@ namespace POS
             this.Btn30.TabIndex = 121;
             this.Btn30.Text = "21";
             this.Btn30.UseVisualStyleBackColor = false;
+            this.Btn30.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn13
             // 
@@ -1472,6 +1478,7 @@ namespace POS
             this.Btn13.TabIndex = 110;
             this.Btn13.Text = "10";
             this.Btn13.UseVisualStyleBackColor = false;
+            this.Btn13.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn26
             // 
@@ -1487,6 +1494,7 @@ namespace POS
             this.Btn26.TabIndex = 120;
             this.Btn26.Text = "20";
             this.Btn26.UseVisualStyleBackColor = false;
+            this.Btn26.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn04
             // 
@@ -1502,6 +1510,7 @@ namespace POS
             this.Btn04.TabIndex = 104;
             this.Btn04.Text = "4";
             this.Btn04.UseVisualStyleBackColor = false;
+            this.Btn04.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn25
             // 
@@ -1517,6 +1526,7 @@ namespace POS
             this.Btn25.TabIndex = 119;
             this.Btn25.Text = "19";
             this.Btn25.UseVisualStyleBackColor = false;
+            this.Btn25.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn12
             // 
@@ -1532,6 +1542,7 @@ namespace POS
             this.Btn12.TabIndex = 109;
             this.Btn12.Text = "9";
             this.Btn12.UseVisualStyleBackColor = false;
+            this.Btn12.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn24
             // 
@@ -1547,6 +1558,7 @@ namespace POS
             this.Btn24.TabIndex = 118;
             this.Btn24.Text = "18";
             this.Btn24.UseVisualStyleBackColor = false;
+            this.Btn24.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn06
             // 
@@ -1562,6 +1574,7 @@ namespace POS
             this.Btn06.TabIndex = 106;
             this.Btn06.Text = "6";
             this.Btn06.UseVisualStyleBackColor = false;
+            this.Btn06.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn23
             // 
@@ -1577,6 +1590,7 @@ namespace POS
             this.Btn23.TabIndex = 117;
             this.Btn23.Text = "17";
             this.Btn23.UseVisualStyleBackColor = false;
+            this.Btn23.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn11
             // 
@@ -1592,6 +1606,7 @@ namespace POS
             this.Btn11.TabIndex = 108;
             this.Btn11.Text = "8";
             this.Btn11.UseVisualStyleBackColor = false;
+            this.Btn11.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn22
             // 
@@ -1607,6 +1622,7 @@ namespace POS
             this.Btn22.TabIndex = 116;
             this.Btn22.Text = "16";
             this.Btn22.UseVisualStyleBackColor = false;
+            this.Btn22.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn05
             // 
@@ -1622,6 +1638,7 @@ namespace POS
             this.Btn05.TabIndex = 105;
             this.Btn05.Text = "5";
             this.Btn05.UseVisualStyleBackColor = false;
+            this.Btn05.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn21
             // 
@@ -1637,6 +1654,7 @@ namespace POS
             this.Btn21.TabIndex = 115;
             this.Btn21.Text = "15";
             this.Btn21.UseVisualStyleBackColor = false;
+            this.Btn21.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn10
             // 
@@ -1652,6 +1670,7 @@ namespace POS
             this.Btn10.TabIndex = 107;
             this.Btn10.Text = "7";
             this.Btn10.UseVisualStyleBackColor = false;
+            this.Btn10.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn20
             // 
@@ -1667,6 +1686,7 @@ namespace POS
             this.Btn20.TabIndex = 114;
             this.Btn20.Text = "14";
             this.Btn20.UseVisualStyleBackColor = false;
+            this.Btn20.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // Btn31
             // 
@@ -1682,6 +1702,7 @@ namespace POS
             this.Btn31.TabIndex = 133;
             this.Btn31.Text = "22";
             this.Btn31.UseVisualStyleBackColor = false;
+            this.Btn31.Click += new System.EventHandler(this.DayButtons_Click);
             // 
             // ProggressActiveSeparator
             // 
@@ -1736,6 +1757,7 @@ namespace POS
             this.POBtn.TabIndex = 19;
             this.POBtn.Text = "Ordenes de Compra";
             this.POBtn.UseVisualStyleBackColor = false;
+            this.POBtn.Visible = false;
             this.POBtn.Click += new System.EventHandler(this.POBtn_Click);
             // 
             // dataGridView1
@@ -1786,15 +1808,21 @@ namespace POS
             this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(445, 398);
+            this.dataGridView1.Size = new System.Drawing.Size(553, 398);
             this.dataGridView1.TabIndex = 1;
+            this.dataGridView1.DataSourceChanged += new System.EventHandler(this.dataGridView1_DataSourceChanged);
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             this.dataGridView1.ColumnDisplayIndexChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.dataGridView1_ColumnDisplayIndexChanged);
+            this.dataGridView1.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_RowEnter);
+            this.dataGridView1.RowLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_RowLeave);
             this.dataGridView1.SizeChanged += new System.EventHandler(this.dataGridView1_SizeChanged);
+            this.dataGridView1.Leave += new System.EventHandler(this.dataGridView1_Leave);
             // 
             // NextPurchaseCard
             // 
@@ -1806,91 +1834,120 @@ namespace POS
             this.NextPurchaseCard.Controls.Add(this.bunifuGradientPanel5);
             this.NextPurchaseCard.Controls.Add(this.bunifuGradientPanel3);
             this.NextPurchaseCard.LeftSahddow = false;
-            this.NextPurchaseCard.Location = new System.Drawing.Point(0, 215);
+            this.NextPurchaseCard.Location = new System.Drawing.Point(0, 254);
             this.NextPurchaseCard.Name = "NextPurchaseCard";
             this.NextPurchaseCard.RightSahddow = true;
             this.NextPurchaseCard.ShadowDepth = 20;
-            this.NextPurchaseCard.Size = new System.Drawing.Size(665, 420);
+            this.NextPurchaseCard.Size = new System.Drawing.Size(1018, 379);
             this.NextPurchaseCard.TabIndex = 48;
             // 
             // bunifuGradientPanel4
             // 
             this.bunifuGradientPanel4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel4.BackgroundImage")));
             this.bunifuGradientPanel4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.bunifuGradientPanel4.Controls.Add(this.NextPurchaseGridView);
+            this.bunifuGradientPanel4.Controls.Add(this.dataGridView2);
             this.bunifuGradientPanel4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.bunifuGradientPanel4.GradientBottomLeft = System.Drawing.Color.White;
             this.bunifuGradientPanel4.GradientBottomRight = System.Drawing.Color.White;
             this.bunifuGradientPanel4.GradientTopLeft = System.Drawing.Color.White;
             this.bunifuGradientPanel4.GradientTopRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel4.Location = new System.Drawing.Point(0, -160);
+            this.bunifuGradientPanel4.Location = new System.Drawing.Point(0, -201);
             this.bunifuGradientPanel4.Name = "bunifuGradientPanel4";
             this.bunifuGradientPanel4.Quality = 10;
-            this.bunifuGradientPanel4.Size = new System.Drawing.Size(665, 517);
+            this.bunifuGradientPanel4.Size = new System.Drawing.Size(1018, 517);
             this.bunifuGradientPanel4.TabIndex = 3;
             // 
-            // NextPurchaseGridView
+            // dataGridView2
             // 
-            this.NextPurchaseGridView.AllowUserToAddRows = false;
-            this.NextPurchaseGridView.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.NextPurchaseGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
-            this.NextPurchaseGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.NextPurchaseGridView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.NextPurchaseGridView.BackgroundColor = System.Drawing.Color.White;
-            this.NextPurchaseGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.NextPurchaseGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.dataGridView2.AllowUserToAddRows = false;
+            this.dataGridView2.AllowUserToDeleteRows = false;
+            this.dataGridView2.AllowUserToResizeColumns = false;
+            this.dataGridView2.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+            this.dataGridView2.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridView2.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView2.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.barcode,
+            this.description,
+            this.brand,
+            this.amount,
+            this.Total});
             dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle6.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(171)))));
             dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.NextPurchaseGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
-            this.NextPurchaseGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(171)))));
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.NextPurchaseGridView.DefaultCellStyle = dataGridViewCellStyle7;
-            this.NextPurchaseGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.NextPurchaseGridView.DoubleBuffered = true;
-            this.NextPurchaseGridView.EnableHeadersVisualStyles = false;
-            this.NextPurchaseGridView.GridColor = System.Drawing.Color.White;
-            this.NextPurchaseGridView.HeaderBgColor = System.Drawing.Color.WhiteSmoke;
-            this.NextPurchaseGridView.HeaderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.NextPurchaseGridView.Location = new System.Drawing.Point(0, 0);
-            this.NextPurchaseGridView.Name = "NextPurchaseGridView";
-            this.NextPurchaseGridView.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.NextPurchaseGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
-            this.NextPurchaseGridView.RowHeadersVisible = false;
-            this.NextPurchaseGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.NextPurchaseGridView.Size = new System.Drawing.Size(665, 517);
-            this.NextPurchaseGridView.TabIndex = 16;
-            this.NextPurchaseGridView.DataSourceChanged += new System.EventHandler(this.NextPurchaseGridView_DataSourceChanged);
-            this.NextPurchaseGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.NextPurchaseGridView_CellDoubleClick);
-            this.NextPurchaseGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.NextPurchaseGridView_CellEndEdit);
-            this.NextPurchaseGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.NextPurchaseGridView_CellValueChanged);
-            this.NextPurchaseGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.NextPurchaseGridView_EditingControlShowing);
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView2.DefaultCellStyle = dataGridViewCellStyle6;
+            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView2.EnableHeadersVisualStyles = false;
+            this.dataGridView2.Location = new System.Drawing.Point(0, 0);
+            this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
+            this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.RowHeadersVisible = false;
+            this.dataGridView2.RowTemplate.Height = 35;
+            this.dataGridView2.RowTemplate.ReadOnly = true;
+            this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView2.Size = new System.Drawing.Size(1018, 517);
+            this.dataGridView2.TabIndex = 3;
+            this.dataGridView2.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellEndEdit);
+            this.dataGridView2.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellValueChanged);
+            this.dataGridView2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView2_KeyDown);
+            // 
+            // barcode
+            // 
+            this.barcode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.barcode.HeaderText = "Código de Barras";
+            this.barcode.Name = "barcode";
+            this.barcode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.barcode.Visible = false;
+            // 
+            // description
+            // 
+            this.description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.description.HeaderText = "Descripción";
+            this.description.Name = "description";
+            this.description.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // brand
+            // 
+            this.brand.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.brand.HeaderText = "Marca";
+            this.brand.Name = "brand";
+            this.brand.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.brand.Width = 107;
+            // 
+            // amount
+            // 
+            this.amount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.amount.HeaderText = "Cantidad";
+            this.amount.Name = "amount";
+            this.amount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.amount.Width = 144;
+            // 
+            // Total
+            // 
+            this.Total.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Total.HeaderText = "Total";
+            this.Total.Name = "Total";
+            this.Total.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Total.Width = 81;
             // 
             // bunifuGradientPanel5
             // 
             this.bunifuGradientPanel5.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel5.BackgroundImage")));
             this.bunifuGradientPanel5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.bunifuGradientPanel5.Controls.Add(this.FilterNextPurchaseTxt);
-            this.bunifuGradientPanel5.Controls.Add(this.label4);
-            this.bunifuGradientPanel5.Controls.Add(this.SaveBtn);
+            this.bunifuGradientPanel5.Controls.Add(this.ProductTxt);
             this.bunifuGradientPanel5.Dock = System.Windows.Forms.DockStyle.Top;
             this.bunifuGradientPanel5.GradientBottomLeft = System.Drawing.Color.WhiteSmoke;
             this.bunifuGradientPanel5.GradientBottomRight = System.Drawing.Color.WhiteSmoke;
@@ -1899,18 +1956,44 @@ namespace POS
             this.bunifuGradientPanel5.Location = new System.Drawing.Point(0, 0);
             this.bunifuGradientPanel5.Name = "bunifuGradientPanel5";
             this.bunifuGradientPanel5.Quality = 10;
-            this.bunifuGradientPanel5.Size = new System.Drawing.Size(665, 53);
+            this.bunifuGradientPanel5.Size = new System.Drawing.Size(1018, 53);
             this.bunifuGradientPanel5.TabIndex = 50;
             // 
-            // label4
+            // ProductTxt
             // 
-            this.label4.AutoSize = true;
-            this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Location = new System.Drawing.Point(336, 9);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(119, 32);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "Buscar: ";
+            this.ProductTxt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ProductTxt.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProductTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.ProductTxt.Location = new System.Drawing.Point(4, 8);
+            this.ProductTxt.Multiline = false;
+            this.ProductTxt.Name = "ProductTxt";
+            this.ProductTxt.Size = new System.Drawing.Size(1010, 37);
+            this.ProductTxt.TabIndex = 2;
+            this.ProductTxt.Text = "";
+            this.ProductTxt.TextChanged += new System.EventHandler(this.ProductTxt_TextChanged);
+            this.ProductTxt.Enter += new System.EventHandler(this.ProductTxt_Enter);
+            this.ProductTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ProductTxt_KeyDown);
+            this.ProductTxt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ProductTxt_KeyPress);
+            this.ProductTxt.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ProductTxt_KeyUp);
+            // 
+            // bunifuGradientPanel3
+            // 
+            this.bunifuGradientPanel3.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel3.BackgroundImage")));
+            this.bunifuGradientPanel3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.bunifuGradientPanel3.Controls.Add(this.grandTotalLbl);
+            this.bunifuGradientPanel3.Controls.Add(this.SaveBtn);
+            this.bunifuGradientPanel3.Controls.Add(this.RecomendValueBtn);
+            this.bunifuGradientPanel3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.bunifuGradientPanel3.GradientBottomLeft = System.Drawing.Color.WhiteSmoke;
+            this.bunifuGradientPanel3.GradientBottomRight = System.Drawing.Color.LightGray;
+            this.bunifuGradientPanel3.GradientTopLeft = System.Drawing.Color.WhiteSmoke;
+            this.bunifuGradientPanel3.GradientTopRight = System.Drawing.Color.White;
+            this.bunifuGradientPanel3.Location = new System.Drawing.Point(0, 316);
+            this.bunifuGradientPanel3.Name = "bunifuGradientPanel3";
+            this.bunifuGradientPanel3.Quality = 10;
+            this.bunifuGradientPanel3.Size = new System.Drawing.Size(1018, 63);
+            this.bunifuGradientPanel3.TabIndex = 2;
             // 
             // SaveBtn
             // 
@@ -1931,31 +2014,13 @@ namespace POS
             this.SaveBtn.IdleFillColor = System.Drawing.Color.White;
             this.SaveBtn.IdleForecolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
             this.SaveBtn.IdleLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.SaveBtn.Location = new System.Drawing.Point(342, 6);
+            this.SaveBtn.Location = new System.Drawing.Point(-541, 11);
             this.SaveBtn.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.SaveBtn.Name = "SaveBtn";
             this.SaveBtn.Size = new System.Drawing.Size(265, 41);
             this.SaveBtn.TabIndex = 2;
             this.SaveBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.SaveBtn.Click += new System.EventHandler(this.SaveBtn_Click);
-            // 
-            // bunifuGradientPanel3
-            // 
-            this.bunifuGradientPanel3.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel3.BackgroundImage")));
-            this.bunifuGradientPanel3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.bunifuGradientPanel3.Controls.Add(this.grandTotalLbl);
-            this.bunifuGradientPanel3.Controls.Add(this.SelectAllBtn);
-            this.bunifuGradientPanel3.Controls.Add(this.RecomendValueBtn);
-            this.bunifuGradientPanel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bunifuGradientPanel3.GradientBottomLeft = System.Drawing.Color.WhiteSmoke;
-            this.bunifuGradientPanel3.GradientBottomRight = System.Drawing.Color.LightGray;
-            this.bunifuGradientPanel3.GradientTopLeft = System.Drawing.Color.WhiteSmoke;
-            this.bunifuGradientPanel3.GradientTopRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel3.Location = new System.Drawing.Point(0, 357);
-            this.bunifuGradientPanel3.Name = "bunifuGradientPanel3";
-            this.bunifuGradientPanel3.Quality = 10;
-            this.bunifuGradientPanel3.Size = new System.Drawing.Size(665, 63);
-            this.bunifuGradientPanel3.TabIndex = 2;
             // 
             // BasicInformationCard
             // 
@@ -2175,7 +2240,7 @@ namespace POS
             this.bunifuSeparator1.Location = new System.Drawing.Point(0, 63);
             this.bunifuSeparator1.Margin = new System.Windows.Forms.Padding(8);
             this.bunifuSeparator1.Name = "bunifuSeparator1";
-            this.bunifuSeparator1.Size = new System.Drawing.Size(1224, 5);
+            this.bunifuSeparator1.Size = new System.Drawing.Size(1242, 5);
             this.bunifuSeparator1.TabIndex = 7;
             this.bunifuSeparator1.Transparency = 255;
             this.bunifuSeparator1.Vertical = false;
@@ -2243,7 +2308,7 @@ namespace POS
             this.bunifuGradientPanel2.Location = new System.Drawing.Point(103, 53);
             this.bunifuGradientPanel2.Name = "bunifuGradientPanel2";
             this.bunifuGradientPanel2.Quality = 10;
-            this.bunifuGradientPanel2.Size = new System.Drawing.Size(445, 398);
+            this.bunifuGradientPanel2.Size = new System.Drawing.Size(553, 398);
             this.bunifuGradientPanel2.TabIndex = 50;
             // 
             // DataGridCardControlPanel
@@ -2264,7 +2329,6 @@ namespace POS
             this.DataGridCardControlPanel.Quality = 10;
             this.DataGridCardControlPanel.Size = new System.Drawing.Size(103, 451);
             this.DataGridCardControlPanel.TabIndex = 48;
-            this.DataGridCardControlPanel.Visible = false;
             // 
             // bunifuGradientPanel1
             // 
@@ -2280,7 +2344,7 @@ namespace POS
             this.bunifuGradientPanel1.Location = new System.Drawing.Point(103, 0);
             this.bunifuGradientPanel1.Name = "bunifuGradientPanel1";
             this.bunifuGradientPanel1.Quality = 10;
-            this.bunifuGradientPanel1.Size = new System.Drawing.Size(445, 53);
+            this.bunifuGradientPanel1.Size = new System.Drawing.Size(553, 53);
             this.bunifuGradientPanel1.TabIndex = 49;
             // 
             // ProductListPanel
@@ -2297,7 +2361,7 @@ namespace POS
             this.ProductListPanel.Location = new System.Drawing.Point(0, 184);
             this.ProductListPanel.Name = "ProductListPanel";
             this.ProductListPanel.Quality = 10;
-            this.ProductListPanel.Size = new System.Drawing.Size(548, 451);
+            this.ProductListPanel.Size = new System.Drawing.Size(656, 451);
             this.ProductListPanel.TabIndex = 49;
             this.ProductListPanel.Visible = false;
             // 
@@ -2308,8 +2372,8 @@ namespace POS
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel.BackgroundImage")));
             this.panel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel.Controls.Add(this.NextPurchaseCard);
             this.panel.Controls.Add(this.ProductListPanel);
+            this.panel.Controls.Add(this.NextPurchaseCard);
             this.panel.Controls.Add(this.RemindersPanel);
             this.panel.GradientBottomLeft = System.Drawing.Color.White;
             this.panel.GradientBottomRight = System.Drawing.Color.White;
@@ -2351,7 +2415,6 @@ namespace POS
             this.SupplierInfromationPanel.Controls.Add(this.bunifuImageButton1);
             this.SupplierInfromationPanel.Controls.Add(this.panel);
             this.SupplierInfromationPanel.Controls.Add(this.ControlsContainerPanel);
-            this.SupplierInfromationPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SupplierInfromationPanel.GradientBottomLeft = System.Drawing.Color.White;
             this.SupplierInfromationPanel.GradientBottomRight = System.Drawing.Color.White;
             this.SupplierInfromationPanel.GradientTopLeft = System.Drawing.Color.White;
@@ -2443,7 +2506,7 @@ namespace POS
             // SelectAllBtnElipse
             // 
             this.SelectAllBtnElipse.ElipseRadius = 35;
-            this.SelectAllBtnElipse.TargetControl = this.SelectAllBtn;
+            this.SelectAllBtnElipse.TargetControl = this;
             // 
             // AutoGenerateButtonElipse
             // 
@@ -2508,6 +2571,7 @@ namespace POS
             this.Name = "Panel_proveedores_Form";
             this.ShowInTaskbar = false;
             this.Text = "Proveedores | Point of Sale";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Panel_proveedores_Form_FormClosing);
             this.Load += new System.EventHandler(this.Panel_proveedores_Form_Load);
             ((System.ComponentModel.ISupportInitialize)(this.AddNewCustomerBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NextMonthButton)).EndInit();
@@ -2529,9 +2593,8 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.NextPurchaseCard.ResumeLayout(false);
             this.bunifuGradientPanel4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.NextPurchaseGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.bunifuGradientPanel5.ResumeLayout(false);
-            this.bunifuGradientPanel5.PerformLayout();
             this.bunifuGradientPanel3.ResumeLayout(false);
             this.BasicInformationCard.ResumeLayout(false);
             this.VisitingDaysPanel.ResumeLayout(false);
@@ -2609,7 +2672,6 @@ namespace POS
         private System.Windows.Forms.Button AlarmsBtn;
         private System.Windows.Forms.Button RecomendValueBtn;
         private System.Windows.Forms.Button POBtn;
-        private System.Windows.Forms.Button SelectAllBtn;
         private System.Windows.Forms.DataGridView dataGridView1;
         private Bunifu.Framework.UI.BunifuCards NextPurchaseCard;
         private Bunifu.Framework.UI.BunifuCards BasicInformationCard;
@@ -2641,9 +2703,6 @@ namespace POS
         private Bunifu.Framework.UI.BunifuImageButton EditRowBtn;
         private Bunifu.Framework.UI.BunifuImageButton DeleteRowBtn;
         private System.Windows.Forms.TextBox FilteringTextbox;
-        private Bunifu.Framework.UI.BunifuCustomDataGrid NextPurchaseGridView;
-        private System.Windows.Forms.TextBox FilterNextPurchaseTxt;
-        private System.Windows.Forms.Label label4;
         private Bunifu.Framework.UI.BunifuThinButton2 SaveBtn;
         private Bunifu.Framework.UI.BunifuGradientPanel VisitingDaysPanel;
         private Bunifu.Framework.UI.BunifuGradientPanel DebtPannel;
@@ -2715,5 +2774,12 @@ namespace POS
         private Panel WindowSizeControlPanel;
         private Bunifu.Framework.UI.BunifuImageButton minimizeBtn;
         private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton2;
+        private DataGridView dataGridView2;
+        private DataGridViewTextBoxColumn barcode;
+        private DataGridViewTextBoxColumn description;
+        private DataGridViewTextBoxColumn brand;
+        private DataGridViewTextBoxColumn amount;
+        private DataGridViewTextBoxColumn Total;
+        private RichTextBox ProductTxt;
     }
 }

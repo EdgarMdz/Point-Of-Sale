@@ -45,6 +45,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>z29 %281%29.ico</ApplicationIcon>
@@ -122,6 +123,12 @@
       <DependentUpon>Display_Reminder.cs</DependentUpon>
     </Compile>
     <Compile Include="Empleado.cs" />
+    <Compile Include="Form new wholesale cost.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form new wholesale cost.Designer.cs">
+      <DependentUpon>Form new wholesale cost.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -205,6 +212,12 @@
     </Compile>
     <Compile Include="Form_Login.designer.cs">
       <DependentUpon>Form_Login.cs</DependentUpon>
+    </Compile>
+    <Compile Include="form_ProductWholeSaleCosts.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="form_ProductWholeSaleCosts.Designer.cs">
+      <DependentUpon>form_ProductWholeSaleCosts.cs</DependentUpon>
     </Compile>
     <Compile Include="LoadingScreen.cs">
       <SubType>Form</SubType>
@@ -420,6 +433,9 @@
     <EmbeddedResource Include="Display_Reminder.resx">
       <DependentUpon>Display_Reminder.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form new wholesale cost.resx">
+      <DependentUpon>Form new wholesale cost.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -461,6 +477,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Login.resx">
       <DependentUpon>Form_Login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="form_ProductWholeSaleCosts.resx">
+      <DependentUpon>form_ProductWholeSaleCosts.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoadingScreen.resx">
       <DependentUpon>LoadingScreen.cs</DependentUpon>
@@ -699,13 +718,10 @@
     <Content Include="Animations\gif1.gif" />
     <Content Include="Animations\gif2.gif" />
     <Content Include="Animations\gif3.gif" />
-    <Content Include="Data\dataBase.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\dataBase_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>dataBase.mdf</DependentUpon>
-    </Content>
+    <None Include="Resources\checkmark.png" />
+    <None Include="Resources\checkmark green.bmp" />
+    <None Include="Resources\checkmark green.png" />
+    <None Include="Resources\Windows Battery Low.wav" />
     <Content Include="Data\FinalDB.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -713,9 +729,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>FinalDB.mdf</DependentUpon>
     </Content>
-    <None Include="Resources\checkmark.png" />
-    <None Include="Resources\checkmark green.bmp" />
-    <None Include="Resources\checkmark green.png" />
+    <None Include="Resources\forth.png" />
+    <None Include="Resources\close Red.png" />
+    <None Include="Resources\edit green.png" />
     <Content Include="z29 %281%29.ico" />
     <None Include="Resources\new Window.png" />
     <None Include="Resources\Lock White.png" />

@@ -605,7 +605,7 @@ namespace POS
             this.deleteBtn.BackColor = System.Drawing.Color.Transparent;
             this.deleteBtn.Image = global::POS.Properties.Resources.delete;
             this.deleteBtn.ImageActive = null;
-            this.deleteBtn.Location = new System.Drawing.Point(12, 462);
+            this.deleteBtn.Location = new System.Drawing.Point(12, 258);
             this.deleteBtn.Name = "deleteBtn";
             this.deleteBtn.Size = new System.Drawing.Size(71, 71);
             this.deleteBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -635,13 +635,14 @@ namespace POS
             this.pdfFileBtn.BackColor = System.Drawing.Color.Transparent;
             this.pdfFileBtn.Image = global::POS.Properties.Resources.pdf_file;
             this.pdfFileBtn.ImageActive = null;
-            this.pdfFileBtn.Location = new System.Drawing.Point(12, 305);
+            this.pdfFileBtn.Location = new System.Drawing.Point(12, 360);
             this.pdfFileBtn.Name = "pdfFileBtn";
             this.pdfFileBtn.Size = new System.Drawing.Size(71, 71);
             this.pdfFileBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pdfFileBtn.TabIndex = 25;
             this.pdfFileBtn.TabStop = false;
             this.toolTip1.SetToolTip(this.pdfFileBtn, "Abrir Archivo Orden de Compra");
+            this.pdfFileBtn.Visible = false;
             this.pdfFileBtn.Zoom = 10;
             this.pdfFileBtn.Click += new System.EventHandler(this.pdfFileBtn_Click);
             // 
@@ -776,6 +777,7 @@ namespace POS
             this.Name = "PanelCompras";
             this.ShowInTaskbar = false;
             this.Text = "Compras | Point of Sale";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PanelCompras_FormClosing);
             this.Load += new System.EventHandler(this.PanelCompras_Load);
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).EndInit();

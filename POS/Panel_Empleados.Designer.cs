@@ -748,6 +748,8 @@ namespace POS
             this.Name = "Panel_Empleados";
             this.ShowInTaskbar = false;
             this.Text = "Empleados | Point of Sale";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Panel_Empleados_FormClosing);
+            this.Load += new System.EventHandler(this.Panel_Empleados_Load);
             this.bunifuGradientPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).EndInit();

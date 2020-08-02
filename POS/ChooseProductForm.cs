@@ -8,36 +8,59 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace POS
 {
     public partial class ChooseProductForm : Form
     {
         public string[] selectedItem = new string[5];
+        CustomTooltip tip;
 
         public DataTable products { set; get; }
 
+        Empleado emp;
         public ChooseProductForm()
         {
             this.InitializeComponent();
+            tip = new CustomTooltip();
+        }
+
+        public ChooseProductForm(DataTable products, Empleado empleado)
+        {
+            this.InitializeComponent();
+            tip = new CustomTooltip();
+            this.products = products;
+            emp = empleado;
         }
 
         public ChooseProductForm(DataTable products)
         {
             this.InitializeComponent();
             this.products = products;
+            tip = new CustomTooltip();
         }
 
         private void ChooseProductForm_Load(object sender, EventArgs e)
         {
-            this.dataGridView1.DataSource = (object)this.products;
+            this.dataGridView1.DataSource = products.Rows.Count < 60 ? products : products.Rows.Cast<DataRow>().Take(60).CopyToDataTable();
+
+
             this.dataGridView1.Columns["Stock"].Visible = false;
             this.dataGridView1.Columns["Stock Mínimo"].Visible = false;
-            this.dataGridView1.Columns["Código de Barras"].Visible = false;
+            this.dataGridView1.Columns["Código de Barras"].Visible = true;
+
+            if (dataGridView1.RowCount > 0)
+            {
+                dataGridView1.CurrentCell = dataGridView1[1, 0];
+                tip.GetToolTip(this);
+                tip.Show(dataGridView1.Rows[0].Cells["Código de Barras"].Value.ToString(), this, new Point(this.Width, -tip.Height / 2));
+            }
             this.resizeGridView();
         }
 
-      
+
         private void button1_Click(object sender, EventArgs e)
         {
             this.openProduct();
@@ -80,7 +103,14 @@ namespace POS
         {
             this.dataGridView1.Columns["Precio Menudeo"].HeaderText = "Precio";
             this.dataGridView1.Columns["Código de Barras"].DisplayIndex = 0;
+            this.dataGridView1.Columns["Precio de Compra por Pieza"].Visible = emp != null && emp.isAdmin;
+
             this.resizeGridView();
+
+            if (dataGridView1.RowCount > 0)
+            {
+                dataGridView1.Select();
+            }
         }
 
         private void resizeGridView()
@@ -132,9 +162,70 @@ namespace POS
 
         private void dataGridView1_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            string barcode= dataGridView1.Rows[e.RowIndex].Cells["Código de Barras"].Value.ToString();
-            Producto p = new Producto(barcode);
-            pictureBox1.Image = p.image;
+            tip.GetToolTip(this);
+            tip.Show(dataGridView1.Rows[e.RowIndex].Cells["Código de Barras"].Value.ToString(), this, new Point(this.Width, -tip.Height / 2));
+
+        }
+
+
+        private void dataGridView1_RowLeave(object sender, DataGridViewCellEventArgs e)
+        {
+            if (tip != null)
+                tip.Hide(this);
+        }
+
+        private void ChooseProductForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            tip.Dispose();
+            dataGridView1.Dispose();
+        }
+    }
+
+    class CustomTooltip : ToolTip
+    {
+        const int side = 200;
+        public int Height { get { return side; } }
+        public int Width { get { return side; } }
+
+        public CustomTooltip()
+        {
+            OwnerDraw = true;
+
+            this.Popup += new PopupEventHandler(onPupup);
+            this.Draw += new DrawToolTipEventHandler(onDraw);
+        }
+
+        private void onDraw(object sender, DrawToolTipEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            Image image = new Producto(e.ToolTipText).image;
+
+            SolidBrush brush = new SolidBrush(Color.FromArgb(0, 0, 0, 0));
+
+            //g.FillRectangle(brush, e.Bounds);
+            if (image != null)
+            {
+                if (image.Height > image.Width)
+                {
+                    int imHeight = side;
+                    int imWidth = image.Width * side / image.Height;
+
+                    g.DrawImage(image, new Rectangle(0, 0, imWidth, imHeight));
+                }
+                else
+                {
+                    int imHeight = image.Height * side / image.Width;
+                    int imWidth = side;
+
+                    g.DrawImage(image, new Rectangle(0, (side - imHeight) / 2, imWidth, imHeight));
+                }
+            }
+            brush.Dispose();
+        }
+
+        private void onPupup(object sender, PopupEventArgs e)
+        {
+            e.ToolTipSize = new Size(side, side);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace POS
 {
@@ -11,6 +12,7 @@ namespace POS
         private Capa_de_Negocio negocio = new Capa_de_Negocio();
         private DataTable _promos;
         private DataTable _POList;
+        private DataTable _products;
 
         public int ID { get; set; }
 
@@ -42,6 +44,10 @@ namespace POS
             }
         }
 
+        public DataTable productList
+        {
+            get { return _products; }
+        }
         public Proveedor()
         {
         }
@@ -88,6 +94,7 @@ namespace POS
                 this.Adeudo = !(supplierData.Rows[0][5].ToString() != "") ? 0.0 : Convert.ToDouble(supplierData.Rows[0][5].ToString());
                 this._promos = this.GetSales();
                 this._POList = this.GetPOList();
+                _products = this.negocio.GetSupplierProductList(ID);
             }
             else
             {
@@ -125,7 +132,7 @@ namespace POS
 
         public DataTable GetSupplierProductList()
         {
-            return this.GiveFormatToTable(this.negocio.GetSupplierProductList());
+            return negocio.GetSupplierProductList(ID);
         }
 
         public DataTable SupplierGetQuantitiesAndDates()
@@ -138,7 +145,7 @@ namespace POS
             this.negocio.SupplierUpdateQuantities(this.ID, ProductID, Quantity);
         }
 
-        private DataTable GiveFormatToTable(DataTable table)
+       /* private DataTable GiveFormatToTable(DataTable table)
         {
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("Código de Barras");
@@ -170,7 +177,7 @@ namespace POS
             }
             if (table.Rows.Count == 0)
                 return dataTable;
-            foreach (DataRow row1 in (InternalDataCollectionBase)table.Rows)
+            foreach (DataRow row1 in table.Rows)
             {
                 if (!stringList.Contains(row1["Código de Barras"].ToString()))
                 {
@@ -182,7 +189,7 @@ namespace POS
                     row2["Último Precio de Compra"] = (object)row1["Precio de Compra del Producto"].ToString();
                     foreach (string index in source)
                     {
-                        foreach (DataRow row3 in (InternalDataCollectionBase)table.Rows)
+                        foreach (DataRow row3 in table.Rows)
                         {
                             if (index == row3["Nombre de la Empresa"].ToString() && row1["Código de Barras"].ToString() == row3["Código de Barras"].ToString() && row3.RowState != DataRowState.Modified)
                             {
@@ -236,8 +243,13 @@ namespace POS
                 }
             }
             return dataTable;
-        }
-
+            for (int i = 7; i < table.Columns.Count; i++)
+            {
+                table.Columns[i].ColumnName = new Proveedor(Convert.ToInt32(table.Columns[i].ColumnName)).NombreEmpresa;
+            }
+            return table;
+        }*/
+    
         public List<string> filterSuppliers(string search)
         {
             DataTable dataTable1 = new DataTable();
@@ -251,6 +263,7 @@ namespace POS
         public void AddProduct(string Barcode, double PurchasePrice, double pieces)
         {
             this.negocio.SupplierAddProduct(this.ID, Barcode, PurchasePrice, pieces);
+            _products = GetSupplierProductList();
         }
 
         public void SupplierEditProduct(
@@ -269,7 +282,7 @@ namespace POS
 
         public DataTable SupplierFilterProducts(string search)
         {
-            return this.GiveFormatToTable(this.negocio.SupplierFilterProducts(search));
+            return this.negocio.SupplierFilterProducts(search);
         }
 
         public List<string> SupplierFilterProductsForNextPurchase(string search)
@@ -322,6 +335,18 @@ namespace POS
         public void UpdateDebt()
         {
             this.negocio.SupplierUpdateDebt(this.ID, this.Adeudo);
+        }
+
+        public DataTable SearchValueGetTable(string text)
+        {
+           return new Capa_de_Negocio().Supplier_SearchValueGetTable(text, this.ID);
+        }
+
+        public double getcost(string barcode) => negocio.supplier_getcost(ID, barcode);
+
+        public static DataSet GetProductCostComparison(string barcode)
+        {
+            return new Capa_de_Negocio().GetProductCostComparison( barcode);
         }
     }
 }

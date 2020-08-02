@@ -164,7 +164,7 @@ namespace POS
         {
             if (this.precioTxt.Text == "" || Convert.ToDouble(this.precioTxt.Text) == 0.0)
             {
-                int num1 = (int)MessageBox.Show("El precio debe ser diferente de cero");
+                MessageBox.Show("El precio debe ser diferente de cero");
             }
             else if (!this.editingMode)
             {
@@ -178,6 +178,7 @@ namespace POS
                     try
                     {
                         proveedor.AddProduct(text, this.price, this.piecesPerCase);
+                        barcode = BarCodeTxt.Text;
                         this.DialogResult = DialogResult.OK;
                         this.Close();
                     }
@@ -225,7 +226,8 @@ namespace POS
 
         private void showNextPanel()
         {
-            if (!this.editingMode && (!this.barcodeCollection.Contains(this.BarCodeTxt.Text) || !this.descriptionCollection.Contains(this.DescriptionTxt.Text)) || !this.editingMode && this.barcodeCollection.IndexOf(this.BarCodeTxt.Text) != this.descriptionCollection.IndexOf(this.DescriptionTxt.Text))
+            if (!this.editingMode && (!this.barcodeCollection.Contains(this.BarCodeTxt.Text) || !this.descriptionCollection.Contains(this.DescriptionTxt.Text)))
+                //||                !this.editingMode && this.barcodeCollection.IndexOf(this.BarCodeTxt.Text) != this.descriptionCollection.IndexOf(this.DescriptionTxt.Text))
                 return;
             this.NextButton.Hide();
             this.Height = 566;

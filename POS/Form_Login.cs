@@ -54,7 +54,7 @@ namespace POS
         {
             if (this.userTxt.Text == "" || this.passwordTxt.Text == "")
             {
-                int num = (int)MessageBox.Show("Introduzca el usuario y la contraseña para continuar");
+                MessageBox.Show("Introduzca el usuario y la contraseña para continuar");
             }
             else
             {

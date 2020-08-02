@@ -7,11 +7,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Data;
 
 namespace POS
 {
@@ -105,7 +106,7 @@ namespace POS
                         return;
                     this.editingCell = true;
                     currentValue = this.dataGridView1.CurrentCell.Value.ToString();
-                    this.dataGridView1.CurrentCell.Value = (object)depot.getProductQuantity(this.dataGridView1.Rows[eee.RowIndex].Cells["Código de Barras"].Value.ToString());
+                    this.dataGridView1.CurrentCell.Value = new Bodega(Convert.ToInt32(this.dataGridView1.CurrentCell.OwningColumn.Name)).getProductQuantity(this.dataGridView1.Rows[eee.RowIndex].Cells["Código de Barras"].Value.ToString());
                 });
                 this.dataGridView1.BeginEdit(true);
                 this.dataGridView1.CellEndEdit += (DataGridViewCellEventHandler)((ss, eee) =>
@@ -118,7 +119,7 @@ namespace POS
                         Producto producto1 = new Producto(this.dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells["Código de Barras"].Value.ToString());
                         double newQuantity = Convert.ToDouble(this.dataGridView1.CurrentCell.Value);
                         this.dataGridView1.CurrentCell.Value = (object)string.Format("{0} {1},\n{2} {3}", (object)Math.Truncate(newQuantity / producto1.PiecesPerCase), Math.Truncate(newQuantity / producto1.PiecesPerCase) == 1.0 ? (object)"caja" : (object)"cajas", (object)(newQuantity % producto1.PiecesPerCase), newQuantity % producto1.PiecesPerCase == 1.0 ? (object)"pieza" : (object)"piezas");
-                        depot.UpdateProductQuantity(newQuantity, producto1.Barcode);
+                        new Bodega(Convert.ToInt32(this.dataGridView1.CurrentCell.OwningColumn.Name)).UpdateProductQuantity(newQuantity, producto1.Barcode);
                         this.editingCell = false;
                         Producto producto2 = new Producto(producto1.Barcode);
                         this.dataGridView1.CurrentCell.OwningRow.DefaultCellStyle.ForeColor = producto2.CurrentStock >= producto2.minStock ? Color.Black : Color.Tomato;
@@ -184,18 +185,14 @@ namespace POS
         private void AddButton_Click(object sender, EventArgs e)
         {
             Form_Agregar formAgregar = new Form_Agregar();
-            DarkForm darkForm = new DarkForm();
-            darkForm.Show();
-            if (formAgregar.ShowDialog() == DialogResult.OK)
-            {
-                if (dataGridView1.RowCount > 0)
-                    dataGridView1.DataSource = Bodega.getInventory(SearchTxt.Text);
-            }
-            darkForm.Close();
+            //DarkForm darkForm = new DarkForm();
+            //darkForm.Show();
+            formAgregar.Show();
         }
 
         private void Panel_Productos_Load(object sender, EventArgs e)
         {
+            SearchTxt.Focus();
             this.loadtable();
             if (this.dataGridView1.RowCount <= 0)
                 return;
@@ -212,7 +209,7 @@ namespace POS
              this.dataGridView1.CurrentCell = this.dataGridView1.RowCount > 0 ? this.dataGridView1[0, index] : (DataGridViewCell)null;
              this.SearchTxt.Text += " ";
              this.SearchTxt.Text = this.SearchTxt.Text.Substring(0, this.SearchTxt.Text.Length - 1);*/
-            dataGridView1.DataSource = null;
+            dataGridView1.DataSource = Bodega.getInventory();
         }
 
         private void DeleteButton_Click(object sender, EventArgs e)
@@ -232,19 +229,15 @@ namespace POS
         {
             if (this.dataGridView1.RowCount <= 0)
                 return;
+
             Producto product = new Producto();
             this.selectedrow = this.dataGridView1.SelectedCells[0].RowIndex;
             product.Barcode = this.dataGridView1.Rows[this.selectedrow].Cells["Código de Barras"].Value.ToString();
             if (!product.SearchProduct())
                 return;
             Form_Agregar formAgregar = new Form_Agregar(product);
-            DarkForm darkForm = new DarkForm();
-            darkForm.Show();
-            if (formAgregar.ShowDialog() == DialogResult.OK)
-            {
-                dataGridView1.DataSource = Bodega.getInventory(SearchTxt.Text);
-            }
-            darkForm.Close();
+
+            formAgregar.Show();
         }
 
         private void SearchTxt_TextChanged(object sender, EventArgs e)
@@ -351,30 +344,15 @@ namespace POS
         private void TransferStockBtn_Click(object sender, EventArgs e)
         {
             Producto product = new Producto(this.dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString());
-            DarkForm darkForm = new DarkForm();
-            darkForm.Show();
-            if (new Panel_productos_Transferir_Inventario_entre_bodegas(product).ShowDialog() == DialogResult.OK)
-            {
-                this.dataGridView1.DataSource = (object)Bodega.getInventory();
-                this.FitTableInformation();
-                this.dataGridView1.CurrentCell = this.dataGridView1.Rows[this.selectedrow].Cells[0];
-            }
-            darkForm.Close();
+
+            new Panel_productos_Transferir_Inventario_entre_bodegas(product).Show();          
         }
 
         private void NewDepotBtn_Click(object sender, EventArgs e)
         {
-            DarkForm darkForm = new DarkForm();
             PanelProductos_NuevaBodega productosNuevaBodega = new PanelProductos_NuevaBodega();
-            darkForm.Show();
-            if (productosNuevaBodega.ShowDialog() == DialogResult.OK)
-            {
-                this.dataGridView1.DataSource = (object)Bodega.getInventory();
-                this.FitTableInformation();
-                this.dataGridView1.CurrentCell = this.dataGridView1.RowCount > 0 ? this.dataGridView1.Rows[this.selectedrow].Cells[0] : (DataGridViewCell)null;
-            }
+            productosNuevaBodega.Show();
             this.TransferStockBtn.Enabled = true;
-            darkForm.Close();
         }
 
         private void deleteDepot(int columnIndex)
@@ -400,15 +378,7 @@ namespace POS
         private void scrapBtn_Click(object sender, EventArgs e)
         {
             PanelProducto_Scrap panelProductoScrap = new PanelProducto_Scrap();
-            DarkForm darkForm = new DarkForm();
-            darkForm.Show();
-            if (panelProductoScrap.ShowDialog() == DialogResult.OK)
-            {
-                this.dataGridView1.DataSource = (object)Bodega.getInventory();
-                this.FitTableInformation();
-                this.dataGridView1.CurrentCell = this.dataGridView1.Rows[this.selectedrow].Cells[0];
-            }
-            darkForm.Close();
+            panelProductoScrap.Show();
         }
 
 
@@ -468,11 +438,9 @@ namespace POS
         {
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                DarkForm dk = new DarkForm();
                 form_agregar_venta_surtido SaleAsMixed = new form_agregar_venta_surtido(dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString());
-                dk.Show();
-                SaleAsMixed.ShowDialog();
-                dk.Close();
+                SaleAsMixed.Show();
+                
             }
         }
 
@@ -480,11 +448,8 @@ namespace POS
         {
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                DarkForm dk = new DarkForm();
                 panel_productos_productPromos promo = new panel_productos_productPromos();
-                dk.Show();
-                promo.ShowDialog();
-                dk.Close();
+                promo.Show();
             }
         }
 
@@ -510,5 +475,11 @@ namespace POS
                 CellFormatting();
             }
         }
+
+        private void SearchTxt_Enter(object sender, EventArgs e)
+        {
+            SearchTxt.SelectAll();
+        }
+
     }
 }

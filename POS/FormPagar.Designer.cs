@@ -111,7 +111,7 @@ namespace POS
             this.OKBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
             this.OKBtn.FlatAppearance.BorderSize = 0;
             this.OKBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.OKBtn.Font = new System.Drawing.Font("Century Gothic", 15F);
+            this.OKBtn.Font = new System.Drawing.Font("Century Gothic", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.OKBtn.ForeColor = System.Drawing.Color.White;
             this.OKBtn.Location = new System.Drawing.Point(132, 211);
             this.OKBtn.Margin = new System.Windows.Forms.Padding(2);
@@ -130,7 +130,7 @@ namespace POS
             this.CancelBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
             this.CancelBtn.FlatAppearance.BorderSize = 0;
             this.CancelBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.CancelBtn.Font = new System.Drawing.Font("Century Gothic", 15F);
+            this.CancelBtn.Font = new System.Drawing.Font("Century Gothic", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CancelBtn.ForeColor = System.Drawing.Color.White;
             this.CancelBtn.Location = new System.Drawing.Point(477, 211);
             this.CancelBtn.Margin = new System.Windows.Forms.Padding(2);

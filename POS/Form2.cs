@@ -373,6 +373,7 @@ namespace POS
             dt.Columns.Add("amount");
             dt.Columns.Add("spare1");
             dt.Columns.Add("No.");
+            dt.Columns.Add("DepotID");
 
             for (int i = 0; i < tableLayoutPanel1.RowCount - 1; i++)
             {
@@ -384,6 +385,7 @@ namespace POS
                 row["amount"] = amount.Text;
                 row["spare"] = row["spare1"] = 0;
                 row["No."] = i;
+                row["DepotID"] = 1;
                 dt.Rows.Add(row);
             }
 

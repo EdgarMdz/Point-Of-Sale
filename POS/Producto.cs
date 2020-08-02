@@ -1,6 +1,8 @@
-﻿using System;
+﻿
+using System;
 using System.Data;
 using System.IO;
+
 namespace POS
 {
     public class Producto
@@ -41,11 +43,39 @@ namespace POS
 
         public double minStock { get; set; }
 
+  
         public string Photo { get; set; }
 
         public string Barcode { get; set; }
 
         public string mainProductBarcode { get; set; }
+
+        /// <summary>
+        /// returns true if there is a match for the given amount.
+        /// returns false if there is no match
+        /// 
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public bool checkForWholeSaleExistingAmount(double amount)
+        {
+            DataTable wholeSaleCosts = negocio.Product_getWholeSaleCosts(Barcode);
+
+            foreach (DataRow row in wholeSaleCosts.Rows)
+            {
+                var num = Convert.ToDouble(row["cantidad"]);
+                if (num == amount)
+                    return true;
+                else if (num > amount)
+                    break;
+            }
+            return false;
+        }
+
+        public void deleteWholeSaleCost(int wholeSaleCostId)
+        {
+            negocio.product_deleteWholeSaleCost(wholeSaleCostId, Barcode);
+        }
 
         public byte[] Image { get; set; }
 
@@ -71,6 +101,11 @@ namespace POS
                 this.Barcode = "";
         }
 
+        public void addNewWholeSaleCost(double amount, double discount, bool isPercentage)
+        {
+            negocio.Product_addNewWholeSaleCost(amount, discount, isPercentage, Barcode);
+        }
+
         public static DataTable fillTable()
         {
             return new Capa_de_Negocio().fillTable();
@@ -81,13 +116,18 @@ namespace POS
             this.negocio.AddProduct(this.Brand, this.Description, this.RetailCost, this.CostPerCase, this.PiecesPerCase, this.PurchaseCost, this.CurrentStock, this.minStock, this.Image, this.Barcode, this.defaultDepotID, this.mainProductBarcode, this.isReturnable, this.displayAsKilogram, this.HideInTicket);
         }
 
+        public void UpdateWholeSaleCost(int costID, double discount, bool isByPercentage)
+        {
+            negocio.Product_UpdateWholesaleCost(Barcode, costID, discount, isByPercentage);
+        }
+
         public bool SearchProduct()
         {
             DataTable dataTable1 = new DataTable();
             DataTable dataTable2 = this.negocio.SearchProduct(this.Barcode);
             if (dataTable2.Rows.Count <= 0)
                 return false;
-            foreach (DataRow row in (InternalDataCollectionBase)dataTable2.Rows)
+            foreach (DataRow row in dataTable2.Rows)
             {
                 this.Barcode = row["Código de Barras"].ToString();
                 this.Description = row["Descripción"].ToString();
@@ -97,7 +137,7 @@ namespace POS
                 this.PiecesPerCase = Convert.ToDouble(row["Piezas por Caja"]);
                 this.PurchaseCost = Convert.ToDouble(row["Precio de Compra"]);
                 this.CurrentStock = Convert.ToDouble(row["Stock"]);
-                this.minStock = Convert.ToDouble(row["Stock Mínimo"]);
+                this.minStock = Convert.ToDouble(row["Stock Mínimo"].ToString() == "" ? 0 : row["Stock Mínimo"]);
                 this.mainProductBarcode = row["Código de Barras del Producto Principal"].ToString();
                 this.isReturnable = Convert.ToBoolean(row["Es Retornable?"]);
                 this.displayAsKilogram = Convert.ToBoolean(row["Venta a granel"]);
@@ -315,6 +355,47 @@ namespace POS
         public static bool promoExist(int promoID)
         {
             return new Capa_de_Negocio().product_getPromo(promoID).Rows.Count>0;
+        }
+        public DataTable GetWholesaleCosts()
+        {
+            return negocio.Product_getWholeSaleCosts(Barcode);
+        }
+
+        public double GetWholesaleDiscount(double amount)
+        {
+            DataTable dt = GetWholesaleCosts();
+
+            if (dt.Rows.Count == 0)
+                return 0;
+            else
+            {
+
+                int discountRowIndex = -1;
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    double minAmount = Convert.ToDouble(dt.Rows[i]["cantidad"]);
+
+                    if (amount >= minAmount)
+                        discountRowIndex = i;
+                    else
+                        break;
+                }
+                if (discountRowIndex == -1)
+                    return 0;
+                else
+                {
+                    var discountvalue = dt.Rows[discountRowIndex]["descuento"].ToString();
+
+                    double discount = discountvalue.IndexOf("%") > -1 ? Convert.ToDouble(discountvalue.Substring(0, discountvalue.Length - 1)) :
+                        Convert.ToDouble(discountvalue);
+                    bool isPercentage = discountvalue.IndexOf("%") > -1;
+
+                    if (!isPercentage)
+                        return discount * amount;
+                    else
+                        return (RetailCost / 100 * discount) * amount;
+                }
+            }
         }
     }
 }

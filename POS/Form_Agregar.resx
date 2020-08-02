@@ -117,10 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="bunifuElipse1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
+  <metadata name="PhotoBtnElipse.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>141, 17</value>
+  </metadata>
+  <metadata name="errorProvider1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>275, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="wholesaleCostsBtn.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAALUAAAApCAYAAABz92iRAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIeSURBVHhe7dyvS0NRGIdxo9FoNBqNRqPRaPQvsBg0CFpE
+        LBaDRdAigiCDgQ4UUQRxCCKKuGAYwmAiylDEwRCOfM92Lo5tN857Xp4PXBjzR3p2eHd3zgYcYAxRwxyi
+        hjlEDXOIGuYQNcxJjbre+HF7N89ueqfoJjbO3cjyoRuY3efi6vul9tTg1Nal2y6WXe270aq0U8+oC49V
+        /48UtMI+e3p15fev1k+B/lJ7ajB3V3Ezu9e+TcXdTUfUegXojyY3L1z1o956FsiWtE7botYvjq0d93wF
+        AFmjiWJ8/bRtimiLWuUTNGKjsUTzdpBEreK1lAMxWsjfu9WTkn/so9ZdDg3ezNCIlRrW6Fx6+WxGrZFD
+        owcQM63UWrF91Lr3p1slQMxuKzW/WvuoR1cKftkGYqYRZHDuoBn10Hwu9RMaIBb+E8jwALCAqGEOUcMc
+        ooY5RA1ziBrmEDXMIWqYk0StT2H0aQwQuyRq7dDjqBYsSKLWPmrtpwZipv1L2sfkow5b9oCYhS3UPmqN
+        HiqcuRoxC1uofdSydPTgLyBG4ftpJIlaq7QOL16V31rPAHHQMURNGmH7dBK1aNAO57yAGChoLcY6UR60
+        RS1aqRV2OJkLZJXmZ63Qf4OWjqhFo4juhugVoHeUnDJHVmjECPOz3hh2O7HVNepArwDdIhlezDdvanNx
+        /fOlo4fh+x17SY0aiBFRwxyihjlEDXOIGsY49wsm4Z9CSrIDtAAAAABJRU5ErkJggg==
+</value>
+  </data>
   <data name="bunifuImageButton1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAl
@@ -1055,13 +1073,7 @@
         uflOjcC1F1HzHgVUV0Xmd3ie/w8xumuqeiZNIQAAAABJRU5ErkJggg==
 </value>
   </data>
-  <metadata name="PhotoBtnElipse.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>141, 17</value>
-  </metadata>
-  <metadata name="errorProvider1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>275, 17</value>
-  </metadata>
-  <metadata name="bunifuElipse2.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>405, 17</value>
+  <metadata name="bunifuDragControl1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>529, 17</value>
   </metadata>
 </root>

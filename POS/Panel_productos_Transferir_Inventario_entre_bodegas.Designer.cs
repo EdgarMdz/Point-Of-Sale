@@ -65,6 +65,8 @@ namespace POS
             this.switchDepotsBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.piecesPerCaseTxt = new System.Windows.Forms.TextBox();
             this.bunifuElipse1 = new Bunifu.Framework.UI.BunifuElipse(this.components);
+            this.bunifuDragControl1 = new Bunifu.Framework.UI.BunifuDragControl(this.components);
+            this.bunifuDragControl2 = new Bunifu.Framework.UI.BunifuDragControl(this.components);
             this.DonatingDepotCard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.ReceiverDepotCard.SuspendLayout();
@@ -472,6 +474,20 @@ namespace POS
             this.bunifuElipse1.ElipseRadius = 35;
             this.bunifuElipse1.TargetControl = this;
             // 
+            // bunifuDragControl1
+            // 
+            this.bunifuDragControl1.Fixed = true;
+            this.bunifuDragControl1.Horizontal = true;
+            this.bunifuDragControl1.TargetControl = this;
+            this.bunifuDragControl1.Vertical = true;
+            // 
+            // bunifuDragControl2
+            // 
+            this.bunifuDragControl2.Fixed = true;
+            this.bunifuDragControl2.Horizontal = true;
+            this.bunifuDragControl2.TargetControl = this.panel1;
+            this.bunifuDragControl2.Vertical = true;
+            // 
             // Panel_productos_Transferir_Inventario_entre_bodegas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 28F);
@@ -498,6 +514,7 @@ namespace POS
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Transferir Productos entre Bodegas | Point of Sale";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel_productos_Transferir_Inventario_entre_bodegas_Paint);
             this.DonatingDepotCard.ResumeLayout(false);
             this.DonatingDepotCard.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
@@ -547,5 +564,7 @@ namespace POS
         private Bunifu.Framework.UI.BunifuImageButton closeBtn;
         private System.Windows.Forms.TextBox piecesPerCaseTxt;
         private Bunifu.Framework.UI.BunifuElipse bunifuElipse1;
+        private Bunifu.Framework.UI.BunifuDragControl bunifuDragControl1;
+        private Bunifu.Framework.UI.BunifuDragControl bunifuDragControl2;
     }
 }

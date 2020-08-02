@@ -25,6 +25,10 @@ namespace POS
 
         private bool sellingMode { get; set; }
 
+        public double rest { get { return _rest; } }
+
+        private double _rest;
+
         public FormPagar(string total, bool sellingMode, double minimumPaymentRequired = 0.0)
         {
             this.InitializeComponent();
@@ -32,7 +36,27 @@ namespace POS
             this.payingPO = false;
             this.minimumPaymentNeeded = minimumPaymentRequired;
             this.sellingMode = sellingMode;
-            this.Total = total;
+            this.Total = "$" + CalculateToal(Convert.ToDouble(total.Substring(1)));
+        }
+
+        private string CalculateToal(double total)
+        {
+            var totalNoDecimals = Math.Ceiling(total) - 1;
+            var TotalRest = total - totalNoDecimals;
+            double res = 0;
+            
+
+            if (TotalRest < 0.4)
+                res = totalNoDecimals;
+            else if (TotalRest >= 0.4 && TotalRest < 0.89)
+                res = (totalNoDecimals + 0.5);
+            else
+                res=(totalNoDecimals + 1);
+
+            this._rest = total - res; 
+
+            return res.ToString("n2");
+
         }
 
         public FormPagar(double total, bool payingPO)
@@ -60,7 +84,7 @@ namespace POS
                 else if (Convert.ToDouble(this.paymentTxt.Text) < this.minimumPaymentNeeded)
                 {
                     this.shake(this.paymentTxt);
-                    int num = (int)MessageBox.Show(string.Format("La cantidad mínima a cobrar son ${0}", (object)this.minimumPaymentNeeded));
+                    MessageBox.Show(string.Format("La cantidad mínima a cobrar son ${0}", (object)this.minimumPaymentNeeded));
                     this.paymentTxt.Text = this.minimumPaymentNeeded.ToString("n2");
                 }
                 else
@@ -192,20 +216,13 @@ namespace POS
 
         private void showNextTextbox()
         {
-            int num = 313;
-            while (this.Height < num)
-            {
-                ++this.Height;
-                this.OKBtn.Location = new Point(this.OKBtn.Location.X, this.OKBtn.Location.Y + 2);
-                this.CancelBtn.Location = new Point(this.CancelBtn.Location.X, this.CancelBtn.Location.Y + 2);
-                if (this.Height >= this.CashLbl.Location.Y + this.CashLbl.Height && !this.payingPO)
-                {
-                    this.CashLbl.Visible = true;
-                    this.CashTxt.Visible = true;
-                }
-                this.Refresh();
-                this.CashTxt.Focus();
-            }
+            this.Size = new Size(811, 322);
+            OKBtn.Location = new Point(132, 265);
+            CancelBtn.Location = new Point(477, 265);
+            CashLbl.Show();
+            CashTxt.Show();
+            Refresh();
+            CashTxt.Focus();
         }
 
         private void textBox2_KeyDown(object sender, KeyEventArgs e)

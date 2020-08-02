@@ -36,13 +36,16 @@ namespace POS
         {
             if (!this.editing)
             {
-                this.dataGridView1.DataSource = (object)Producto.fillTable();
+                this.dataGridView1.DataSource = Producto.fillTable();
             }
             else
             {
-                this.dataGridView1.DataSource = (object)this.depot.ProductTable;
+                this.dataGridView1.DataSource = depot.ProductTable;
                 this.dataGridView1.CurrentCell = this.dataGridView1.RowCount > 0 ? this.dataGridView1.Rows[0].Cells[4] : (DataGridViewCell)null;
             }
+
+            this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
         }
 
         private void DepotTxt_Enter(object sender, EventArgs e)
@@ -102,7 +105,7 @@ namespace POS
                 this.depot.Rename();
             }
             foreach (DataGridViewRow row in this.dataGridView1.Rows)
-                this.depot.UpdateMinStockQuantity(row.Cells["Código de Barras"].Value.ToString(), Convert.ToDouble(row.Cells["minStock"].Value));
+                this.depot.UpdateMinStockQuantity(row.Cells["Código de Barras"].Value.ToString(), Convert.ToDouble(row.Cells["minStock"].Value),Convert.ToDouble(row.Cells["maxStock"].Value));
         }
 
         private void createDepot()
@@ -113,7 +116,7 @@ namespace POS
                 {
                     if (row["Nombre"].ToString().ToLower() == this.DepotTxt.Text.ToLower())
                     {
-                        int num = (int)MessageBox.Show("Ya existe una bodega con este nombre.");
+                        MessageBox.Show("Ya existe una bodega con este nombre.");
                         this.DepotTxt.Text += " Nuevo";
                         this.DepotTxt.Select();
                         return;
@@ -121,7 +124,7 @@ namespace POS
                 }
                 Bodega bodega = new Bodega(Bodega.newDepot(this.DepotTxt.Text));
                 foreach (DataGridViewRow row in this.dataGridView1.Rows)
-                    bodega.UpdateMinStockQuantity(row.Cells["Código de Barras"].Value.ToString(), Convert.ToDouble(row.Cells["minStock"].Value));
+                    bodega.UpdateMinStockQuantity(row.Cells["Código de Barras"].Value.ToString(), Convert.ToDouble(row.Cells["minStock"].Value),Convert.ToDouble(row.Cells["maxStock"].Value));
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
@@ -176,45 +179,55 @@ namespace POS
                     else
                         column.Visible = false;
                 }
+
+                //dataGridView1.Columns["descripción"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 this.dataGridView1.Columns.Add("minStock", "Stock Mínimo");
                 this.dataGridView1.Columns["minStock"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 this.dataGridView1.Columns["minStock"].ReadOnly = false;
                 this.dataGridView1.Columns["minStock"].ValueType = typeof(double);
                 this.dataGridView1.Columns["minStock"].SortMode = DataGridViewColumnSortMode.NotSortable;
-          
                 this.dataGridView1.CurrentCell = this.dataGridView1.RowCount > 0 ? this.dataGridView1.Rows[0].Cells["minStock"] : (DataGridViewCell)null;
-                foreach (DataGridViewRow row in this.dataGridView1.Rows)
-                    row.Cells["minStock"].Value = (object)"0.00";
+
+                this.dataGridView1.Columns.Add("maxStock", "Stock Máximo");
+                this.dataGridView1.Columns["maxStock"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                this.dataGridView1.Columns["maxStock"].ReadOnly = false;
+                this.dataGridView1.Columns["maxStock"].ValueType = typeof(double);
+                this.dataGridView1.Columns["maxStock"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                this.dataGridView1.CurrentCell = this.dataGridView1.RowCount > 0 ? this.dataGridView1.Rows[0].Cells["maxStock"] : (DataGridViewCell)null;
+                // foreach (DataGridViewRow row in this.dataGridView1.Rows)
+                //   row.Cells["minStock"].Value = (object)"0.00";
             }
             else
             {
                 this.dataGridView1.Columns["Cantidad"].Visible = false;
                 this.dataGridView1.Columns["Stock Mínimo"].Name = "minStock";
-                dataGridView1.Columns["Checked"].Visible = false;
-                int num = 0;
-                foreach (DataGridViewColumn column in (BaseCollection)this.dataGridView1.Columns)
+                dataGridView1.Columns["Stock Máximo"].Name = "maxStock";
+              //  dataGridView1.Columns["Checked"].Visible = false;
+                //int num = 0;
+                foreach (DataGridViewColumn column in this.dataGridView1.Columns)
                 {
                     column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                    num += column.Width;
+                  //  num += column.Width;
                 }
-                if (num < this.dataGridView1.Width)
-                    this.dataGridView1.Columns["minStock"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                /*if (num < this.dataGridView1.Width)
+                    this.dataGridView1.Columns["minStock"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;*/
+                    //dataGridView1.Columns["descripción"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
-            this.fitColumns();
+          //  this.fitColumns();
         }
 
         private void dataGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
-            if (e.ColumnIndex != this.dataGridView1.Columns["minStock"].Index)
-                return;
-            int num = (int)MessageBox.Show("Favor de ingresar sólo valores númericos\nPrecione \"Esc\" para cancelar.", "Formato no adecuado");
+            if (e.ColumnIndex == this.dataGridView1.Columns["minStock"].Index || e.ColumnIndex == this.dataGridView1.Columns["maxStock"].Index)
+                MessageBox.Show("Favor de ingresar sólo valores númericos\nPrecione \"Esc\" para cancelar.", "Formato no adecuado");
         }
 
         private void dataGridView1_CellValidated(object sender, DataGridViewCellEventArgs e)
         {
-            if (!this.dataGridView1.Columns.Contains("minStock") || e.ColumnIndex != this.dataGridView1.Columns["minStock"].Index || this.dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && !(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString() == ""))
+            if ((!this.dataGridView1.Columns.Contains("minStock") || !dataGridView1.Columns.Contains("maxStock")) || (e.ColumnIndex < dataGridView1.Columns["minStock"].Index) || this.dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && !(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString() == ""))
+             
                 return;
-            this.dataGridView1[e.ColumnIndex, e.RowIndex].Value = (object)"0.00";
+            this.dataGridView1[e.ColumnIndex, e.RowIndex].Value = "0.00";
         }
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)

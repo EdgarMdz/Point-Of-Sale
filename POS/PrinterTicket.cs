@@ -337,10 +337,10 @@ namespace POS
             return TextRenderer.MeasureText(text, font);
         }
 
-        public static Font getFont(string text, int width, FontStyle style = FontStyle.Bold)
+        public static Font getFont(string text, int width, FontStyle style = FontStyle.Bold, string font= "Times new roman")
         {
             int num1 = 25;
-            Font font1 = new Font("Times new roman", (float)num1, style);
+            Font font1 = new Font(font, (float)num1, style);
             Size stringSize = PrinterTicket.getStringSize(text, font1);
             if (stringSize.Width > width)
             {
@@ -349,9 +349,9 @@ namespace POS
                 for (; stringSize.Width > width; stringSize = PrinterTicket.getStringSize(text, font2))
                 {
                     num2 += 2;
-                    font2 = new Font("Times new roman", (float)(num1 - num2), style);
+                    font2 = new Font(font, (float)(num1 - num2), style);
                 }
-                font1 = new Font("Times new roman", (float)(num1 - num2), style);
+                font1 = new Font(font, (float)(num1 - num2), style);
             }
             else if (stringSize.Width < width)
             {
@@ -360,9 +360,9 @@ namespace POS
                 for (; stringSize.Width < width; stringSize = PrinterTicket.getStringSize(text, font2))
                 {
                     num2 += 2;
-                    font2 = new Font("Times new roman", (float)(num1 + num2), style);
+                    font2 = new Font(font, (float)(num1 + num2), style);
                 }
-                font1 = new Font("Times new roman", (float)(num1 + num2), style);
+                font1 = new Font(font, (float)(num1 + num2), style);
             }
             return font1;
         }

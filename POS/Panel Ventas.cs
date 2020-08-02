@@ -2,14 +2,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Zen.Barcode;
+using Microsoft.PointOfService;
+using System.IO;
+using System.Drawing.Imaging;
+using System.Linq;
 
 namespace POS
 {
@@ -21,7 +25,6 @@ namespace POS
         private Size pictureBoxMaxSize = new Size(388, 359);
         private const int maximumDaysForRefound = 2;
         private const int maximumDaysForRetourningPackages = 7;
-        private bool editingCell;
         private bool isNewSale;
         private int EmployeeID;
         private string defaultTxt;
@@ -31,6 +34,10 @@ namespace POS
         private double generalDiscount;
         private bool isDiscountbyPercentage;
         private bool editingRow;
+        private static int count = 0;
+        CashDrawer cashDrawer = null;
+        PosPrinter printer = null;
+
 
         public bool canClose
         {
@@ -52,42 +59,53 @@ namespace POS
             var barcode = dataGridView2.SelectedRows[0].Cells["barcode"].Value.ToString();
 
             if (barcode != null && barcode.IndexOf("promo(") == -1 && barcode != "")
-                addProductToDataGrid(new Producto(dataGridView2.SelectedRows[0].Cells["barcode"].Value.ToString()), 1.0);
+                addProductToDataGrid(new Producto(dataGridView2.SelectedRows[0].Cells["barcode"].Value.ToString()), 1.0, Convert.ToInt32(dataGridView2.Rows[index].Cells["depot"].Value));
             else
             {
                 selectPromo(index);
-                addPromoToGridView(getPromoIDFromRow(dataGridView2.SelectedRows[0].Index), 1);
+
+                foreach (DataGridViewRow row in dataGridView2.Rows)
+                {
+                    if (index > row.Index)
+                        index = row.Index;
+                }
+
+                addPromoToGridView(getPromoIDFromRow(dataGridView2.Rows[index].Index), 1);
             }
-            dataGridView2.CurrentCell = this.dataGridView2[1, index];
+            dataGridView2.CurrentCell = dataGridView2.Rows[index].Cells["description"];
         }
 
-        private void addProductToDataGrid(Producto p, double quantity)
+        private void addProductToDataGrid(Producto p, double quantity, int depotIndex = 1, int rowIndex = -1)
         {
             //lookin for an item in the datagridview to add the given product to it
-            int rowIndex = -1;
-
-            foreach (DataGridViewRow row in dataGridView2.Rows)
-            {
-                string barcode = row.Cells["barcode"].Value.ToString();
-
-                if (barcode.IndexOf("promo(") == -1 && p.Barcode == barcode)
+            if (autoGrouping.Checked || quantity < 0 && rowIndex < 0)
+                foreach (DataGridViewRow row in dataGridView2.Rows)
                 {
-                    rowIndex = row.Index;
-                    break;
+                    string barcode = row.Cells["barcode"].Value.ToString();
+
+
+                    if (barcode.IndexOf("promo(") == -1 && p.Barcode == barcode && Convert.ToInt32(row.Cells["depot"].Value) == depotIndex)
+                    {
+                        rowIndex = row.Index;
+                        break;
+                    }
                 }
-            }
 
             //if there is not a product like the given one in the table then add a new row
             if (rowIndex == -1)
             {
                 DataGridViewRow dataGridViewRow = new DataGridViewRow();
                 int index = dataGridView2.Rows.Add();
+
+                
+
                 dataGridView2.Rows[index].Cells["barcode"].Value = p.Barcode;
                 dataGridView2.Rows[index].Cells["description"].Value = p.Description;
                 dataGridView2.Rows[index].Cells["brand"].Value = p.Brand;
                 dataGridView2.Rows[index].Cells["amount"].Value = amountFormat(p, quantity);
                 dataGridView2.Rows[index].Cells["UnitCost"].Value = p.RetailCost.ToString("n2");
                 dataGridView2.Rows[index].Cells["Total"].Value = getCost(p, index);
+                dataGridView2.Rows[index].Cells["Depot"].ReadOnly = false;
                 dataGridView2.CurrentCell = dataGridView2.Rows[dataGridView2.RowCount - 1].Cells["description"];
             }
             else //integrates the given product to an existing row
@@ -98,37 +116,67 @@ namespace POS
                 {
                     double cases = Convert.ToDouble(cellValue.Substring(0, cellValue.IndexOf("c")));
                     cellValue = cellValue.Substring(cellValue.IndexOf(",") + 1);
-                    double singlePieces = Convert.ToDouble(cellValue.Substring(0, cellValue.IndexOf(nameof(p))));
+                    double singlePieces = Convert.ToDouble(cellValue.Substring(0, !p.displayAsKilogram ? cellValue.IndexOf(nameof(p)) : cellValue.ToLower().IndexOf("kg")));
                     totalAmountOfPieces = cases * p.PiecesPerCase + singlePieces;
                 }
                 else// cell value has the format "N pieces"
                     totalAmountOfPieces = Convert.ToDouble(cellValue.Substring(0, cellValue.IndexOf(".") + 3));
 
                 dataGridView2.Rows[rowIndex].Cells["amount"].Value = amountFormat(p, totalAmountOfPieces + quantity);
-                dataGridView2.Rows[rowIndex].Cells["Total"].Value = getCost(p,rowIndex);// (quantity * p.RetailCost + Convert.ToDouble(getTotalFromRow(rowIndex).ToString("n2")));
+                dataGridView2.Rows[rowIndex].Cells["Total"].Value = getCost(p, rowIndex);
                 dataGridView2.CurrentCell = dataGridView2.Rows[rowIndex].Cells["description"];
             }
             totalLbl.Text = string.Format("Total   ${0}", GetTotal().ToString("n2"));
-            pictureBox1.Image = p.image;//ShowImage(p.Barcode);
+            pictureBox1.Image = p.image;
+            countProducts();
+
         }
 
-
-
-        private void addPromoToGridView(int id, double quantity)
+        private async void countProducts()
         {
-            //lookin for an item in the datagridview to add the given product to it
-            int rowIndex = -1;
+            int products = await Task.Run(() => getnumber(dataGridView2));
+            AmountProdctsLbl.Text = "Productos: " + products.ToString();
+            AmountProdctsLbl.Visible = products > 0;
+        }
 
-            foreach (DataGridViewRow row in dataGridView2.Rows)
+        private int getnumber(DataGridView dataGridView)
+        {
+            int x = 0;
+            foreach (DataGridViewRow row in dataGridView.Rows)
             {
-                string barcode = row.Cells["barcode"].Value.ToString();
-
-                if (barcode.IndexOf("promo(") > -1 && getPromoIDFromRow(row.Index) == id)
+                var barcode = row.Cells["barcode"].Value.ToString();
+                if (barcode.IndexOf("promo(") > -1)
+                    continue;
+                else
                 {
-                    rowIndex = row.Index;
-                    break;
+                    Producto p = new Producto(barcode);
+                    if (p.displayAsKilogram)
+                        x++;
+                    else
+                    {
+                        x += dataGridView2.RowCount > 0 ? (int)getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), p) :
+                        0;
+                    }
                 }
             }
+            return x;
+        }
+
+        private void addPromoToGridView(int id, double quantity, int rowIndex = -1)
+        {
+            //lookin for an item in the datagridview to add the given product to it
+
+            if (autoGrouping.Checked)
+                foreach (DataGridViewRow row in dataGridView2.Rows)
+                {
+                    string barcode = row.Cells["barcode"].Value.ToString();
+
+                    if (barcode.IndexOf("promo(") > -1 && getPromoIDFromRow(row.Index) == id)
+                    {
+                        rowIndex = row.Index;
+                        break;
+                    }
+                }
 
             //if there is not a product like the given one in the table then add a new row
             if (rowIndex == -1)
@@ -143,10 +191,11 @@ namespace POS
                 dataGridView2.Rows[index].Cells["description"].Value = "Promoción";
                 dataGridView2.Rows[index].Cells["brand"].Value = "";
                 dataGridView2.Rows[index].Cells["amount"].Value = quantity.ToString("n2");
-                dataGridView2.Rows[index].Cells["UnitCost"].Value = (unitCost+discount).ToString("n2");
-                dataGridView2.Rows[index].Cells["Total"].Value = string.Format("{0}\r\n-{1}", 
+                dataGridView2.Rows[index].Cells["UnitCost"].Value = (unitCost + discount).ToString("n2");
+                dataGridView2.Rows[index].Cells["Total"].Value = string.Format("{0}\r\n-{1}",
                     ((unitCost + discount) * quantity).ToString("n2"), (discount * quantity).ToString("n2"));
                 dataGridView2.CurrentCell = dataGridView2.Rows[dataGridView2.RowCount - 1].Cells["description"];
+                dataGridView2.Rows[index].Cells["Depot"] = new DataGridViewTextBoxCell();
 
                 addPromoChildsToGridView(promoDetails.Tables[1]);
             }
@@ -158,18 +207,19 @@ namespace POS
                 double discount = Convert.ToDouble(promoDetails.Tables[0].Rows[0]["discount"]);
 
                 double amount = Convert.ToDouble(dataGridView2.Rows[rowIndex].Cells["amount"].Value);
-                
+
                 dataGridView2.Rows[rowIndex].Cells["amount"].Value = (amount + quantity).ToString("n2");
 
 
                 double total = (unitCost + discount) * (quantity + amount);
-                discount= discount * (quantity + amount);//promo discount
-                dataGridView2.Rows[rowIndex].Cells["Total"].Value= string.Format("{0}\r\n-{1}",
+                discount = discount * (quantity + amount);//promo discount
+                dataGridView2.Rows[rowIndex].Cells["Total"].Value = string.Format("{0}\r\n-{1}",
                     (total).ToString("n2"), (discount).ToString("n2"));
             }
 
             ProductTxt.Text = "";
-            totalLbl.Text= string.Format("Total   ${0}", GetTotal().ToString("n2")); 
+            totalLbl.Text = string.Format("Total   ${0}", GetTotal().ToString("n2"));
+            countProducts();
         }
 
         private void addPromoChildsToGridView(DataTable PromoChilds)
@@ -183,7 +233,7 @@ namespace POS
                 dataGridView2.Rows[childIndex].Cells["barcode"].Value = "";
                 dataGridView2.Rows[childIndex].Cells["description"].Value = "\t" + p.Description;
                 dataGridView2.Rows[childIndex].Cells["brand"].Value = p.Brand;
-                dataGridView2.Rows[childIndex].Cells["amount"].Value = childAmount == 1 ? "1.00 piezas" : 
+                dataGridView2.Rows[childIndex].Cells["amount"].Value = childAmount == 1 ? "1.00 piezas" :
                     childAmount.ToString("n2") + " piezas";
                 dataGridView2.Rows[childIndex].Cells["UnitCost"].Value = p.RetailCost.ToString("n2");
                 dataGridView2.Rows[childIndex].Cells["Total"].Value = (p.RetailCost * childAmount).ToString("n2");
@@ -191,10 +241,12 @@ namespace POS
 
                 dataGridView2.Rows[childIndex].DefaultCellStyle.Font = new Font("century gothic", 15);
                 dataGridView2.Rows[childIndex].DefaultCellStyle.ForeColor = Color.Black;
+                dataGridView2.Rows[childIndex].Cells["Depot"].Value = 1;
+                dataGridView2.Rows[childIndex].Cells["Depot"].ReadOnly = false;
             }
         }
 
-        private  int getPromoIDFromRow(int rowindex)
+        private int getPromoIDFromRow(int rowindex)
         {
             string str = dataGridView2.Rows[rowindex].Cells["barcode"].Value.ToString().Trim().ToLower();
 
@@ -203,16 +255,18 @@ namespace POS
                 int beginIndex = str.IndexOf("promo(") + 6;
                 int strLength = str.IndexOf(")") - beginIndex;
 
-               return Convert.ToInt32(str.Substring(beginIndex, strLength));
+                return Convert.ToInt32(str.Substring(beginIndex, strLength));
             }
 
             return -1;
         }
+
+
         private void addDiscountToRow(int rowIndex, double discount)
         {
             Producto p = new Producto(dataGridView2.Rows[rowIndex].Cells["barcode"].Value.ToString());
             double amount = getAmountOfSinglePieces(dataGridView2.Rows[rowIndex].Cells["amount"].Value.ToString(), p);
-            
+
 
 
             Tuple<int, double> tuple = getCasesAndSingleProducts(p, amount);
@@ -243,8 +297,21 @@ namespace POS
                 caseDiscount = caseDiscount < 0 ? 0 : caseDiscount;
             }
 
+            double totalDiscount = customerDiscount > caseDiscount ? customerDiscount : caseDiscount;
 
-            double totalDiscount = customerDiscount + caseDiscount + genDiscount;
+            totalDiscount = totalDiscount > genDiscount ? totalDiscount : generalDiscount;
+
+
+            if (caseDiscount > 0)
+                totalDiscount = caseDiscount;
+            else
+            {
+                if (customerDiscount > generalDiscount)
+                    totalDiscount = customerDiscount;
+                else
+                    totalDiscount = generalDiscount;
+            }
+
 
             double newDisc = validateDiscount(discount + totalDiscount, p, amount);
             ///if there still a discount then show it in the table as the format -> "$100.00 \n -$15.00"
@@ -265,21 +332,21 @@ namespace POS
 
             double amount = getAmountOfSinglePieces(dataGridView2.Rows[rowIndex].Cells["amount"].Value.ToString(), product);
             Tuple<int, double> tuple = getCasesAndSingleProducts(product, amount);
-            
+
             int cases = tuple.Item1;
             double singlePieces = tuple.Item2;
 
             double cost = product.CostPerCase * cases + product.RetailCost * singlePieces;
 
             //getting general discount
-            double genDiscount;  
+            double genDiscount;
 
             double customerCost = customer.getCost(product.Barcode, amount);
 
             genDiscount = (cost) / 100 * generalDiscount;
 
             //getting discount for customer
-            double customerDiscount = (product.RetailCost - customerCost) *amount;
+            double customerDiscount = (product.RetailCost - customerCost) * amount;
             if (customerDiscount < 0)
                 customerDiscount = 0;
 
@@ -292,6 +359,9 @@ namespace POS
                 caseDiscount = caseDiscount < 0 ? 0 : caseDiscount;
             }
 
+            //Wholesale Discount
+            double wholesaleDiscount = product.GetWholesaleDiscount(amount);
+
 
             //getting discount for mixed case
             double mixedCaseDiscount = 0;
@@ -301,23 +371,46 @@ namespace POS
                 mixedCaseDiscount = getDiscountForMixedCase(rowIndex, product);
             }
 
-            double totalDiscount = customerDiscount + caseDiscount + mixedCaseDiscount + genDiscount;
+            double totalDiscount;// = customerDiscount + caseDiscount + mixedCaseDiscount + genDiscount;
 
-            //validating that if appling totaldiscount we still have a revenue
-            totalDiscount = validateDiscount(totalDiscount, product,amount);
+            if(wholesaleDiscount>0)
+            {
+                totalDiscount = mixedCaseDiscount > 0 ? mixedCaseDiscount : wholesaleDiscount;
+                (dataGridView2.Rows[rowIndex].Cells["WholesaleDiscountApplied"] as DataGridViewCheckBoxCell).Value = true;
+            }
+            else
+            {
+                if (caseDiscount > 0)
+                    totalDiscount = caseDiscount;
+
+                else
+                {
+                    if (customerDiscount > 0)
+                        totalDiscount = customerDiscount;
+                    else
+                        totalDiscount = genDiscount;
+                }
+
+                totalDiscount += mixedCaseDiscount;
+                (dataGridView2.Rows[rowIndex].Cells["WholesaleDiscountApplied"] as DataGridViewCheckBoxCell).Value = false;
+            }
+
+
+            totalDiscount = validateDiscount(totalDiscount, product, amount);
 
             ///if there still a discount then show it in the table as the format -> "$100.00 \n -$15.00"
             ///otherwise show just the total
             if (totalDiscount > 0.0)
             {
                 string newLine = Environment.NewLine;
-                result = string.Format("{0}{1}-{2}", (product.RetailCost*amount).ToString("n2"), newLine, totalDiscount.ToString("n2"));
+                result = string.Format("{0}{1}-{2}", (product.RetailCost * amount).ToString("n2"), newLine, totalDiscount.ToString("n2"));
             }
             else
                 result = (product.RetailCost * amount).ToString("n2");
 
             return result;
         }
+
 
         private double validateDiscount(double discount, Producto product, double amount)
         {
@@ -331,30 +424,54 @@ namespace POS
         double getDiscountForMixedCase(int rowIndex, Producto product)
         {
             //list to store values
-            //Dictionary<barcode,tuple<rowindex,amount,acumulated amount>
+            //Dictionary<barcode,tuple<rowindex,amount,accumulated amount>
             Dictionary<string, Tuple<int, double, double>> values = new Dictionary<string, Tuple<int, double, double>>();
 
             double discount = 0;
             double countOfPieces = 0;
+            double countOfTotalPices = 0;
 
-
+            //sweep the listed products to find mixed cases coincidences
             for (int i = 0; i < dataGridView2.RowCount; i++)
             {
-                var row = i != rowIndex ? dataGridView2.Rows[i] : dataGridView2.Rows[rowIndex];
+                var row = /*i != rowIndex ? */dataGridView2.Rows[i]/* : dataGridView2.Rows[rowIndex]*/;
                 Producto p = i != rowIndex ? new Producto(row.Cells["barcode"].Value.ToString()) :
                      product;
 
+                //if the current product has the same mixed case groud id then add it to the dictionary
                 if (product.mixedCaseGroup == p.mixedCaseGroup)
                 {
+                    countOfTotalPices += getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), p);
                     double singlePieces = getCasesAndSingleProducts(p,
-                        getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), p)).Item2;
+                      countOfTotalPices).Item2;//amount of single pieces
 
                     countOfPieces += singlePieces;
                     values.Add(p.Barcode, new Tuple<int, double, double>(i, singlePieces, countOfPieces));
+
+                }
+            }
+            var wholedisc = product.GetWholesaleDiscount(countOfTotalPices) / countOfTotalPices;
+
+            if (wholedisc > 0)
+            {
+                discount = wholedisc *
+                    getAmountOfSinglePieces(dataGridView2.Rows[values[product.Barcode].Item1].Cells["amount"].Value.ToString(), product);
+
+
+                values.Remove(product.Barcode);
+
+                foreach (KeyValuePair<string, Tuple<int, double, double>> item in values)
+                {
+                    var p = new Producto(item.Key);
+                    addDiscountToRow(item.Value.Item1, wholedisc * 
+                        getAmountOfSinglePieces(dataGridView2.Rows[values[p.Barcode].Item1].Cells["amount"].Value.ToString(), p));
+                    (dataGridView2.Rows[item.Value.Item1].Cells["WholesaleDiscountApplied"] as DataGridViewCheckBoxCell).Value = true;
                 }
             }
 
-            if (countOfPieces / product.PiecesPerCase >= 1)
+
+            //Enters in this seccion when there are products that, when groupped altogether, conform at least one case
+            else if (countOfPieces / product.PiecesPerCase >= 1 && !Convert.ToBoolean(dataGridView2.Rows[rowIndex].Cells["WholesaleDiscountApplied"].Value))
             {
                 int cases = getCasesAndSingleProducts(product, countOfPieces).Item1;
 
@@ -376,8 +493,8 @@ namespace POS
                     Producto p = new Producto(item.Key);
 
                     piecesWithDiscount = Math.Truncate(item.Value.Item3 / product.PiecesPerCase) < cases ?
-                   item.Value.Item2 :
-                   item.Value.Item2 - item.Value.Item3 % product.PiecesPerCase;
+                    item.Value.Item2 :
+                    item.Value.Item2 - item.Value.Item3 % product.PiecesPerCase;
 
                     double disc = p.RetailCost * piecesWithDiscount -
                      piecesWithDiscount * p.CostPerCase / p.PiecesPerCase;
@@ -385,11 +502,10 @@ namespace POS
                     addDiscountToRow(item.Value.Item1, disc);
                 }
             }
-
             else
             {
                 values.Remove(product.Barcode);
-                
+
                 foreach (KeyValuePair<string, Tuple<int, double, double>> item in values)
                 {
                     Producto p = new Producto(item.Key);
@@ -399,7 +515,7 @@ namespace POS
             return discount;
         }
 
-        private Tuple<int,double> getCasesAndSingleProducts(Producto   producto, double amount)
+        private Tuple<int, double> getCasesAndSingleProducts(Producto producto, double amount)
         {
             int cases = producto.PiecesPerCase > 1.0 ? (int)Math.Truncate(amount / producto.PiecesPerCase) : 0;
             double singlePieces = producto.PiecesPerCase > 1.0 ? amount % producto.PiecesPerCase : amount;
@@ -458,39 +574,109 @@ namespace POS
         {
             if (this.sale != null && this.sale.Date > DateTime.Now.AddDays(-2.0))
             {
-                if (MessageBox.Show("¿Desea cancelar la venta?\n\nEn caso de haber adeudo en envases, una vez cancelada no se podrán retornar más envases.", "", MessageBoxButtons.YesNo) != DialogResult.Yes)
-                    return;
-                try
+                DialogResult userSelection = new DialogResult();
+                bool cancelWholeSale = false;
+               
+                if (checkForRefoundProducts())
+                    userSelection = MessageBox.Show("¿Desea realizar la devolución de los productos seleccionados?", 
+                        "Devolver Productos Seleccionados", MessageBoxButtons.YesNo);
+
+
+                if (userSelection != DialogResult.Yes)
                 {
-                    saleCancelledDocument.PrintController = new StandardPrintController();
-                    this.saleCancelledDocument.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
-                    this.printDialog1.Document = this.saleCancelledDocument;
-                    this.saleCancelledDocument.Print();
+
+                    if (MessageBox.Show("¿Desea cancelar la venta?\n\nEn caso de haber adeudo en envases, " +
+                       "una vez cancelada no se podrán retornar más envases.", "", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                        return;
+
+                    else
+                        cancelWholeSale = true;
                 }
-                catch (InvalidPrinterException)
+                openCashDrawer();
+
+                double MoneyToBeRefounded = 0;
+
+                if (cancelWholeSale)
                 {
-                    int num = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
+                    sale.Cancel(EmployeeID);      
+                    foreach (DataGridViewRow row in dataGridView2.Rows)
+                    {
+                        var refound = row.Cells["refound"];
+                        if (!refound.ReadOnly)
+                            MoneyToBeRefounded += getTotalFromRow(row.Index);
+                    }
                 }
-                this.sale.Cancel(this.EmployeeID);
-                Decimal num1 = new Decimal(0);
-                foreach (DataRow row in (InternalDataCollectionBase)this.sale.getSoldProducts.Rows)
+
+                else
                 {
-                    string barcode = row["id_producto"].ToString();
-                    num1 += (Decimal)this.sale.getAmountOfPackagesReturned(barcode) * this.sale.getSingleCost(barcode);
+                    DataTable barcodesToBeRefounded = getRefoundedProduct();
+                    sale.RefoundProductsToCustomer(barcodesToBeRefounded);
+
+
+                    int totalOfRefoundedProducts = 0;
+                    foreach (DataGridViewRow row in dataGridView2.Rows)
+                    {
+                        var refound = row.Cells["refound"];
+                        if (!refound.ReadOnly && Convert.ToBoolean(refound.Value))
+                            MoneyToBeRefounded += getTotalFromRow(row.Index);
+
+
+                        if (Convert.ToBoolean(refound.Value))
+                            totalOfRefoundedProducts++;
+                    }
+
+                    if (totalOfRefoundedProducts == sale.getSoldProducts.Rows.Count)
+                        sale.Cancel(EmployeeID);
+
                 }
-                FormCambio formCambio = new FormCambio((double)(this.sale.Payment - num1));
+
+                setSale(sale.ID);
+                FormCambio formCambio = new FormCambio(/*(double)(sale.Payment - num1)*/MoneyToBeRefounded);
                 DarkForm darkForm = new DarkForm();
                 darkForm.Show();
-                int num2 = (int)formCambio.ShowDialog();
+                formCambio.ShowDialog();
                 darkForm.Close();
-                this.CanceledLbl.Show();
+               /* this.CanceledLbl.Show();
                 this.CancelSaleBtn.Enabled = false;
-                this.CanceledLbl.Show();
+                this.CanceledLbl.Show();*/
             }
             else
             {
-                int num3 = (int)MessageBox.Show(string.Format("La compra excede el lapso permitido de {0} días para realizar la devolución.\n\nFecha de la venta: {1} de {2} del {3}", (object)2, (object)this.sale.Date.Day, (object)new CultureInfo("es-MX").DateTimeFormat.GetMonthName(this.sale.Date.Month), (object)this.sale.Date.Year), "No se puede cancelar");
+                MessageBox.Show(string.Format("La compra excede el lapso permitido de {0} días para realizar la devolución.\n\nFecha de la venta: {1} de {2} del {3}", (object)2, (object)this.sale.Date.Day, (object)new CultureInfo("es-MX").DateTimeFormat.GetMonthName(this.sale.Date.Month), (object)this.sale.Date.Year), "No se puede cancelar");
             }
+        }
+
+        private DataTable getRefoundedProduct()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("barcode");
+
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                var refound = row.Cells["refound"];
+                DataRow dataRow = dt.NewRow();
+
+                if (!refound.ReadOnly && Convert.ToBoolean(refound.Value))
+                {
+                    dataRow["barcode"] = row.Cells["barcode"].Value.ToString();
+                    dt.Rows.Add(dataRow);
+                    dt.AcceptChanges();
+                }
+
+            }
+
+            return dt;
+        }
+
+        private bool checkForRefoundProducts()
+        {
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                if (!row.Cells["refound"].ReadOnly && Convert.ToBoolean(row.Cells["refound"].Value))
+                    return true;
+            }
+
+            return false;
         }
 
         private void centerCustomerDebtLabels()
@@ -562,30 +748,58 @@ namespace POS
             this.cancelationDateLbl.Hide();
             this.label8.Hide();
             this.EmployeeCanceldSaleLbl.Hide();
-            this.paymentLbl.Hide();
+            this.AmountProdctsLbl.Hide();
             this.pictureBox1.BringToFront();
             this.pictureBox1.Image = (Image)null;
             this.ReturnPackagesBtn.Hide();
+            pictureBox1.Show();
+            this.printTicketBtn.Hide();
             this.LastSaleBtn.Show();
             this.generalDiscount = 0.0;
             this.isDiscountbyPercentage = false;
             ProductTxt.Text = "";// "Producto * Cantidad";
             ProductTxt.Focus();
+            AmountProdctsLbl.Visible = false;
+            dataGridView2.Columns["refound"].Visible = false;
+            dataGridView2.Columns["depot"].Visible = true;
+            previousTicketBtn.Hide();
+            nextTicketBtn.Hide();
+        }
+
+        private int getDepotIDFromRow(int rowindex)
+        {
+            try
+            {
+                var column = dataGridView2.Columns["depot"] as DataGridViewComboBoxColumn;
+                foreach (DataRow row in (column.DataSource as DataTable).Rows)
+                {
+                    if (row["Nombre"].ToString() == dataGridView2.Rows[rowindex].Cells["depot"].EditedFormattedValue.ToString())
+                        return Convert.ToInt32(row["ID_Bodega"]);
+                }
+            }
+            catch (FormatException) { }
+
+            return -1;
         }
 
         private void CobrarBtn_Click(object sender, EventArgs e)
         {
             if (this.dataGridView2.Rows.Count <= 0 || !this.isNewSale)
                 return;
+
             double Total = Convert.ToDouble(this.totalLbl.Text.Substring(this.totalLbl.Text.IndexOf("$") + 1));
             DarkForm darkForm = new DarkForm();
             FormPagar formPagar = new FormPagar("$" + Total.ToString("n2"), !this.customer.hasCredit, this.getCostOfReturnablePackages());
             darkForm.Show();
+            
+
             if (formPagar.ShowDialog() == DialogResult.OK)
             {
                 Venta venta = new Venta();
                 double Payment = Convert.ToDouble(formPagar.Pay);
-                List<Tuple<string, double, double, double>> list = new List<Tuple<string, double, double, double>>();
+                List<Tuple<string, double, double, double, int>> list = new List<Tuple<string, double, double, double, int>>();
+                string printingString="";
+                double discount = 0;
 
                 foreach (DataGridViewRow row in dataGridView2.Rows)
                 {
@@ -596,11 +810,17 @@ namespace POS
                         Producto product = new Producto(barcode);
                         double amountOfSinglePieces = this.getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), product);
                         double discountFromRow = this.getDiscountFromRow(row.Index);
-                        list.Add(new Tuple<string, double, double, double>
-                            (product.Barcode,product.RetailCost, amountOfSinglePieces, discountFromRow));
-                        
+                        list.Add(new Tuple<string, double, double, double, int>
+                            (product.Barcode, product.RetailCost, amountOfSinglePieces, discountFromRow, getDepotIDFromRow(row.Index)));
+                        if (!product.HideInTicket)
+                            if (product.Brand.Trim() != "")
+                                printingString += "\u001b|N" + string.Format("{0}, {1}", product.Description, product.Brand) + "\n";
+                            else
+                                printingString += "\u001b|N" + string.Format("{0}", product.Description) + "\n";
+                        else
+                            printingString += "\u001b|N" + string.Format("Productos Varios").Trim(',') + "\n";
                     }
-                    else if(barcode.IndexOf("promo(") > -1)
+                    else if (barcode.IndexOf("promo(") > -1)
                     {
                         DataSet dataSet = Producto.getPromo(getPromoIDFromRow(row.Index));
 
@@ -610,45 +830,375 @@ namespace POS
                             promoDiscount / Convert.ToDouble(dataSet.Tables[0].Rows[0]["totalAmountOfProducts"]);
                         int child = 1;
 
+                        string description = "Promoción: ";
+
                         foreach (DataRow promoChild in dataSet.Tables[1].Rows)
                         {
                             string childBarcode = promoChild["id_producto"].ToString();
                             double childAmount = Convert.ToDouble(promoChild["amount"]);
-                            double childCost = Convert.ToDouble(dataGridView2.Rows[row.Index+child].Cells["UnitCost"].Value);
-                            child++;
+                            double childCost = Convert.ToDouble(dataGridView2.Rows[row.Index + child].Cells["UnitCost"].Value);
 
-                            list.Add(new Tuple<string, double, double, double>
-                                (childBarcode, childCost, childAmount * amount, discountForeachProduct * childAmount * amount));
-                            
+
+                            list.Add(new Tuple<string, double, double, double, int>
+                                (childBarcode, childCost, childAmount * amount, discountForeachProduct * childAmount * amount, getDepotIDFromRow(row.Index + child)));
+
+                            description += Convert.ToDouble(promoChild["amount"]).ToString() + " " + promoChild["producto"].ToString().
+                                      Substring(0, promoChild["producto"].ToString().LastIndexOf(",")) + ", ";
+                            child++;
                         }
+
+                        printingString += "\u001b|N" + description.Substring(0, description.Length - 2) + "\n";
                     }
+                    else
+                        continue;
+                    
+                    printingString += "\u001b|N" + row.Cells["amount"].Value.ToString();
+                    printingString += "\u001b|cA" + "$" + row.Cells["UnitCost"].Value;
+                    printingString += "\u001b|rA" + "$" + getTotalFromRowWithoutDiscount(row.Index).ToString("n2") + "\n";
+
+
+                    var productDiscount = getDiscountFromRow(row.Index);
+
+                    if (productDiscount > 0)
+                    {
+                        printingString += "\u001b|rA" + "Descuento: -$" + getDiscountFromRow(row.Index).ToString("n2") + "\n";
+                        printingString += "\u001b|rA" + "Costo Final: $" + getTotalFromRow(row.Index).ToString("n2") + "\u001b|N\n";
+                    }
+                    discount += productDiscount;
                 }
-                venta.newSale(this.EmployeeID, this.customer.ID, Total, Payment, list.ToArray(), Convert.ToDouble(formPagar.Cash));
+
                 FormCambio formCambio = new FormCambio(Convert.ToDouble(formPagar.Cash) - Convert.ToDouble(formPagar.Pay));
                 formCambio.Show();
+
+                var saleID = venta.newSale(this.EmployeeID, this.customer.ID, Total, Payment + formPagar.rest, list.ToArray(), Convert.ToDouble(formPagar.Cash));
+
                 if (this.checkBox1.Checked)
                 {
-                    try
-                    {
-                        this.printDocument1.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
-                        this.printDialog1.Document = this.printDocument1;
-                        this.printDocument1.Print();
-                    }
-                    catch (InvalidPrinterException)
-                    {
-                        MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-                    }
-                    this.printDocument1 = new PrintDocument();
-                    printDocument1.PrintController = new StandardPrintController();
-                    this.printDocument1.PrintPage += new PrintPageEventHandler(this.printDocument1_PrintPage);
+                    openCashDrawer();
+                    printTicket(saleID, printingString, discount);
                 }
+                else
+                {
+                    openCashDrawer();
+                }
+                
                 this.ClearSale();
                 formCambio.Focus();
+                darkForm.Close();
             }
-            darkForm.Close();
-            if (this.Parent != null)
-                return;
-            this.Close();
+            else
+            {
+                darkForm.Close();
+            }
+
+        }
+
+        private void printTicket(int saleID,string products, double discount)
+        {
+            Venta lastSale = new Venta(saleID);
+            try
+            {
+                if (printer != null)
+                {
+                    //string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
+                    //printer.Open();
+                    printer.Claim(1000);
+                    printer.DeviceEnabled = true;
+                    printer.RecLetterQuality = true;
+
+
+                    string text = "";
+                    if (ticket.logoDisplay)
+                        text += "\u001b|1B";//printing logo
+
+                    if (ticket.headderDisplay)
+                        text += "\u001b|cA" + "\u001b| 3C" + "\u001b|bC" + ticket.header + "\n";
+
+                    if (ticket.addressDisplay)
+                        text += "\u001b|cA" + "\u001b|1C" + ticket.address + "\n";
+
+                    if (ticket.phoneDisplay)
+                        text += "\u001b|cA" + "\u001b|1C" + ticket.phone + "\n";
+
+                    string divisionLine = "_".PadLeft(printer.RecLineChars - 2, '_');
+
+                    text += "\u001b|cA" + divisionLine + "\n";
+
+                    text += "\u001b|cA" + "\u001b|4C" + "Detalle de Venta" + "\u001b|1C\n";
+
+                    text += "\u001b|N" + "\nFolio:" + saleID.ToString("X") + "\n";
+
+                    if (lastSale.CustomerID != 0)
+                        text += "Cliente: " + new Cliente(lastSale.CustomerID).Name + "\n";
+
+                    text += "Fecha: " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + "\n";
+
+                    text += "\u001b|cA" + divisionLine + "\n";
+                    text += "\u001b|N" + "Cantidad";
+                    text += "\u001b|cA" + "Precio";
+                    text += "\u001b|rA" + "Importe";
+                    text += "\u001b|cA" + divisionLine + "\n" + "\u001b|N";
+
+
+                    text += products;
+
+                    text += "\u001b|cA" + divisionLine + "\n";
+                    text += "\u001b|rA" + "Total: $" + lastSale.Total.ToString("n2") + "\n";
+
+                    if (!lastSale.isPaid)
+                        text += "\u001b|rA" + "Usted pagó: $" + lastSale.Payment.ToString("n2") + "\n";
+
+                    text += "\u001b|rA" + "Efectivo: $" + lastSale.Cash.ToString("n2") + "\n";
+                    text += "\u001b|rA" + "Cambio: $" + (lastSale.Cash - lastSale.Total).ToString("n2") + "\n";
+
+                    if (discount > 0)
+                        text += "\u001b|rA" + "Usted Ahorró: " + discount.ToString("n2") + "\n";
+
+                    text += "\n";
+
+                    if (ticket.footerDisplay)
+                        text += "\u001b|cA" + "\u001b|bC" + ticket.footer + "\n";
+
+                    printer.PrintNormal(PrinterStation.Receipt, text);
+
+                    //<<<step4>>>--Start
+                    if (printer.CapRecBarCode == true)
+                    {
+                        //Barcode printing
+                        printer.PrintBarCode(PrinterStation.Receipt, lastSale.ID.ToString("X8"),
+                            BarCodeSymbology.Code128, 80,
+                            printer.RecLineWidth, PosPrinter.PrinterBarCodeCenter,
+                            BarCodeTextPosition.None);
+                    }
+
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
+
+                    printer.DeviceEnabled = false;
+                    printer.Release();
+                    //printer.Close();
+                }
+            }
+
+            catch (PosException e)
+            {
+                MessageBox.Show(e.Message);
+                if (printer.State != ControlState.Closed)
+                {
+                    printer.Release();
+                    // printer.Close();
+                }
+            }
+        }
+
+        private void printTicket(int saleID)
+        {
+            Venta lastSale = new Venta(saleID);
+            try
+            {
+                string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
+                //printer.Open();
+                printer.Claim(1000);
+                printer.DeviceEnabled = true;
+                printer.RecLetterQuality = true;
+
+                if (printer.CapRecBitmap)
+                {
+
+                    for (int iRetryCount = 0; iRetryCount < 5; iRetryCount++)
+                    {
+                        try
+                        {
+                            //Register a bitmap
+                            printer.SetBitmap(1, PrinterStation.Receipt,
+                                logopath, printer.RecLineWidth * ticket.logoHeight / 114,
+                                PosPrinter.PrinterBitmapCenter);
+                            break;
+                        }
+                        catch (PosControlException pce)
+                        {
+                            if (pce.ErrorCode == ErrorCode.Failure && pce.ErrorCodeExtended == 0 && pce.Message == "It is not initialized.")
+                            {
+                                System.Threading.Thread.Sleep(1000);
+                            }
+                            else
+                            {
+                                MessageBox.Show(pce.Message + " " + pce.HelpLink);
+                            }
+                        }
+                    }
+
+                }
+
+
+                if (ticket.logoDisplay)
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|1B");//printing logo
+
+                if (ticket.headderDisplay)
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b| 3C" + "\u001b|bC" + ticket.header + "\n");
+
+                if (ticket.addressDisplay)
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|1C" + ticket.address + "\n");
+
+                if (ticket.phoneDisplay)
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|1C" + ticket.phone + "\n");
+
+                string divisionLine = "_".PadLeft(printer.RecLineChars - 2, '_');
+
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n");
+
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|4C" + "Detalle de Venta" + "\u001b|1C\n");
+
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|N" + "\nFolio:" + saleID.ToString("X") + "\n");
+
+                if (lastSale.CustomerID != 0)
+                    printer.PrintNormal(PrinterStation.Receipt, "Cliente: " + new Cliente(lastSale.CustomerID).Name + "\n");
+
+                printer.PrintNormal(PrinterStation.Receipt, "Fecha: " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + "\n");
+
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n");
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|N" + "Cantidad");
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "Precio");
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Importe" + "\n");
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n" + "\u001b|N");
+
+                double discount = 0.0;
+                Console.WriteLine("before adding productds");
+                 foreach (DataGridViewRow row in dataGridView2.Rows)
+                 {
+                     var barcode = row.Cells["barcode"].Value.ToString();
+                     if (barcode != "")
+                     {
+                         string product = "";
+                         if (barcode.IndexOf("promo(") == -1)
+                         {
+                             product = new Producto(barcode).HideInTicket ? "Artículo Varios" : string.Format("{0}, {1}", row.Cells["description"].Value, row.Cells["brand"].Value);
+
+                         }
+                         else if (barcode.IndexOf("promo(") > -1)
+                         {
+                             DataSet table = Producto.getPromo(getPromoIDFromRow(row.Index));
+
+                             string description = string.Format("Promoción: ");
+
+                             foreach (DataRow childRow in table.Tables[1].Rows)
+                             {
+                                 description += Convert.ToDouble(childRow["amount"]).ToString() + " " + childRow["producto"].ToString().
+                                     Substring(0, childRow["producto"].ToString().LastIndexOf(",")) + ", ";
+                             }
+
+                             product = description.Substring(0, description.Length - 2);
+                         }
+
+
+
+                         printer.PrintNormal(PrinterStation.Receipt, product + "\n");
+
+                         var productDiscount = getDiscountFromRow(row.Index);
+
+                         Console.WriteLine("Adding Product");
+
+                         printer.PrintNormal(PrinterStation.Receipt, row.Cells["amount"].Value.ToString());
+                         printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "$" + row.Cells["UnitCost"].Value);
+                         printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "$" + getTotalFromRowWithoutDiscount(row.Index).ToString("n2") + "\n");
+
+                        if (productDiscount > 0)
+                        {
+                            printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Descuento: -$" + getDiscountFromRow(row.Index).ToString("n2") + "\n");
+                            printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Costo Final: $" + getTotalFromRow(row.Index).ToString("n2") + "\u001b|N\n");
+                        }
+                         Console.WriteLine("Product added");
+
+                         discount += productDiscount;
+                     }
+                 }
+
+                Console.WriteLine("Products added");
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n");
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Total: $" + lastSale.Total.ToString("n2") + "\n");
+
+                if (!lastSale.isPaid)
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Usted pagó: $" + lastSale.Payment.ToString("n2"));
+
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Efectivo: $" + lastSale.Cash.ToString("n2") + "\n");
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Cambio: $" + (lastSale.Cash - lastSale.Total).ToString("n2") + "\n");
+
+                if (discount > 0)   
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Usted Ahorró: $" + discount.ToString("n2") + "\n");
+
+                printer.PrintNormal(PrinterStation.Receipt, "\n");
+
+                if (ticket.footerDisplay)
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|bC" + ticket.footer + "\n");
+
+                //<<<step4>>>--Start
+                if (printer.CapRecBarCode == true)
+                {
+                    //Barcode printing
+                    printer.PrintBarCode(PrinterStation.Receipt, lastSale.ID.ToString("X8"),
+                        BarCodeSymbology.Code128, 80,
+                        printer.RecLineWidth, PosPrinter.PrinterBarCodeCenter,
+                        BarCodeTextPosition.None);
+                }
+
+                printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
+
+                printer.DeviceEnabled = false;
+                printer.Release();
+                //printer.Close();
+            }
+
+            catch (PosException e)
+            {
+                MessageBox.Show(e.Message);
+                if (printer.State != ControlState.Closed)
+                {
+                    printer.Release();
+                    //printer.Close();
+                }
+            }
+        }
+
+        private void openCashDrawer()
+        {
+            string message = "";
+            try
+            {
+                if (cashDrawer != null)
+                {
+                    //Open the device
+                    //Use a Logical Device Name which has been set on the SetupPOS.
+                    //cashDrawer.Open();
+                    message = "opened";
+
+                    //Get the exclusive control right for the opened device.
+                    //Then the device is disable from other application.
+                    cashDrawer.Claim(1000);
+                    message = "claimed";
+                    //Enable the device.
+                    cashDrawer.DeviceEnabled = true;
+                    message = "enabled";
+                    //Open the drawer by using the "OpenDrawer" method.
+                    if (!cashDrawer.DrawerOpened)
+                        cashDrawer.OpenDrawer();
+                    message = "cash drawer opened";
+
+                    //When the drawer is not closed in ten seconds after opening, beep until it is closed.
+                    //If  that method is executed, the value is not returned until the drawer is closed.
+                    // m_Drawer.WaitForDrawerClose(10000, 2000, 100, 1000);
+
+                    cashDrawer.DeviceEnabled = false;
+                    message = "disabled";
+                    cashDrawer.Release();
+                    message = "released";
+                    // cashDrawer.Close();
+                    message = "closed";
+                }
+            }
+            catch (PosControlException ex)
+            {
+                MessageBox.Show(ex.Message + " " + ex.HelpLink + " " + ex.HResult + "\n stage: " + message);
+            }
+            catch (Exception) { }
         }
 
         private double getCostOfReturnablePackages()
@@ -811,13 +1361,13 @@ namespace POS
             {
                 if (row.Visible)
                 {
-                    if (row.Cells["barcode"].Value != null && row.Cells["barcode"].Value.ToString()!="")
+                    if (row.Cells["barcode"].Value != null && row.Cells["barcode"].Value.ToString() != "")
                     {
                         if (i % 2 == 0)
                             row.DefaultCellStyle.BackColor = Color.FromArgb(217, 226, 243);
                         else
                             row.DefaultCellStyle.BackColor = Color.White;
-                        
+
                         i++;
                     }
                     else
@@ -828,7 +1378,19 @@ namespace POS
 
         private void dataGridView2_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            
+            if (dataGridView2.RowCount > 0 && e.ColumnIndex == dataGridView2.Columns["amount"].Index)
+            {
+                Bodega bodega = new Bodega(Convert.ToInt32(dataGridView2.Rows[e.RowIndex].Cells["depot"].Value));
+                string barcode = dataGridView2.Rows[e.RowIndex].Cells["barcode"].Value.ToString();
+                var stock = bodega.getProductQuantity(barcode);
+                var min = bodega.getMinStockForProduct(barcode);
+
+                if (stock - getAmountOfSinglePieces(dataGridView2.Rows[e.RowIndex].Cells["amount"].Value.ToString(), new Producto(barcode)) <= min)
+                {
+                    toolTip1.SetToolTip((Control)dataGridView2, "Stock bajo");
+                    
+                }
+            }
         }
 
         double discountForProductsWithSameMainProduct(Producto producto, int rowIndex)
@@ -895,7 +1457,7 @@ namespace POS
                 foreach (int rowindex in matchingMainProductRowIndexes)
                 {
                     dataGridView2.CurrentCell = dataGridView2.Rows[rowindex].Cells["amount"];
-                    if (!editingRow && getDiscountFromRow(rowindex) !=0)
+                    if (!editingRow && getDiscountFromRow(rowindex) != 0)
                     {
                         editingRow = true;
                         addOneMoreProduct();
@@ -926,9 +1488,11 @@ namespace POS
 
         private void dataGridView2_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
+            dataGridView2.Rows[e.RowIndex].Cells["depot"].Value = 1;
             if (this.dataGridView2.RowCount - 1 == this.dataGridView2.FirstDisplayedScrollingRowIndex + this.dataGridView2.DisplayedRowCount(true) - 1)
                 return;
             this.dataGridView2.FirstDisplayedScrollingRowIndex = this.dataGridView2.RowCount - 1;
+
         }
 
         private void dataGridView2_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -962,8 +1526,7 @@ namespace POS
         private void selectPromo(int rowindex)
         {
             //looking for the begining of the promo
-
-            for (int i =rowindex; i >= 0; i--)
+            for (int i = rowindex; i >= 0; i--)
             {
                 var code = dataGridView2.Rows[i].Cells["barcode"].Value.ToString();
 
@@ -1015,7 +1578,22 @@ namespace POS
             }
             catch (FormatException)
             {
-                num2 = !product.displayAsKilogram ? Convert.ToDouble(str.Substring(0, str.IndexOf("p"))) : Convert.ToDouble(cellValue.Remove(cellValue.IndexOf("Kg"), 2));
+                if (!product.displayAsKilogram)
+                {
+                    num2 = Convert.ToDouble(str.Substring(0, str.IndexOf("p")));
+                }
+                else
+                {
+                    bool hasCases = false;
+                    if (cellValue.IndexOf("caja") > -1)
+                    {
+                        num2 = product.PiecesPerCase * Convert.ToDouble(cellValue.Substring(0, cellValue.IndexOf("caja")));
+                        hasCases = true;
+                    }
+                    num2 = hasCases ? num2 + Convert.ToDouble(cellValue.Substring(cellValue.IndexOf("\n"), cellValue.ToLower().IndexOf("kg") - cellValue.IndexOf("\n"))) :
+                        Convert.ToDouble(cellValue.ToLower().Substring(0, cellValue.ToLower().IndexOf("kg")));
+                    return num2;
+                }
             }
 
             return num1 * product.PiecesPerCase + num2;
@@ -1025,57 +1603,68 @@ namespace POS
         {
             string cellValue = this.dataGridView2.Rows[rowIndex].Cells["amount"].Value.ToString();
             Producto product = new Producto(this.dataGridView2.Rows[rowIndex].Cells["barcode"].Value.ToString());
-            
+
             //if the cell value has the format-> "X cajas, N pieces"
             if (cellValue.IndexOf(",") > -1)
             {
                 int cases = Convert.ToInt32(cellValue.Substring(0, cellValue.IndexOf("c")));
 
                 cellValue = cellValue.Substring(cellValue.IndexOf(",") + 1);
-                
+
                 //converting the whole amount to pieces
-                double amount = !product.displayAsKilogram ? Convert.ToDouble(cellValue.Substring(0, cellValue.IndexOf("p"))) + (double)cases * product.PiecesPerCase : Convert.ToDouble(cellValue.Remove(cellValue.IndexOf("Kg"), 2)) + (double)cases * product.PiecesPerCase;
-                
+                double amount = !product.displayAsKilogram ? Convert.ToDouble(cellValue.Substring(0, cellValue.IndexOf("p"))) + (double)cases * product.PiecesPerCase :
+                    Convert.ToDouble(cellValue.Remove(cellValue.IndexOf("Kg"), 2)) + (double)cases * product.PiecesPerCase;
+
                 //customer discount
                 double discount = amount * product.RetailCost - this.customer.getCost(product.Barcode, amount) * amount;
 
-
-
-
                 //cost for each case and adding the cost of every piece that does not make an entire case
-                double num2 =  cases * product.CostPerCase + (cases * product.PiecesPerCase - amount) * product.RetailCost;
+                double caseDiscount = product.RetailCost * amount - cases * product.CostPerCase;//+ (cases * product.PiecesPerCase) * product.RetailCost;
 
-                //adding the general discount
-                double num3 = discount + num2 / 100.0 * this.generalDiscount;
+                //getting general discount
+                double genDisc = getTotalFromRowWithoutDiscount(rowIndex) / 100.0 * this.generalDiscount;
+
+                //selecting the best discount for the customer
+                double finalDisc = discount > caseDiscount ? discount : caseDiscount;
+
+                finalDisc = finalDisc > genDisc ? finalDisc : genDisc;
+
 
                 //if the final cost minus the discount is less than the purchase cost then adjust the discount for the user income become zero
-                if (num2  - num3 < product.PurchaseCost / product.PiecesPerCase * amount)
-                    num3 = amount * this.customer.getCost(product.Barcode, amount) - product.PurchaseCost / product.PiecesPerCase * amount;
-                
-                if (num3 > 0.0 && !this.customer.DontApplyAnyDiscount)
+                if (getTotalFromRowWithoutDiscount(rowIndex) - finalDisc < product.PurchaseCost / product.PiecesPerCase * amount)
+                    finalDisc = amount * product.RetailCost - product.PurchaseCost / product.PiecesPerCase * amount;
+
+                if (finalDisc > 0.0 && !this.customer.DontApplyAnyDiscount)
                 {
-                    this.dataGridView2.Rows[rowIndex].Cells["Total"].Value = ((amount * product.RetailCost).ToString("n2") + "\r\n-" + num3.ToString("n2"));
+                    this.dataGridView2.Rows[rowIndex].Cells["Total"].Value = ((amount * product.RetailCost).ToString("n2") + "\r\n-" + finalDisc.ToString("n2"));
                 }
-                else
+                else//if theres no discount
                 {
                     double num4 = amount * product.RetailCost;
                     double num5 = amount - (double)cases * product.PiecesPerCase;
                     double num6 = num4 - (num5 * product.RetailCost + (double)cases * product.CostPerCase);
                     if (num6 > product.PurchaseCost)
-                        num6 = num2 - product.PurchaseCost;
+                        num6 = caseDiscount - product.PurchaseCost;
                     if (this.customer.DontApplyAnyDiscount)
                         num6 = 0.0;
-                    this.dataGridView2.Rows[rowIndex].Cells["Total"].Value = num6 > 0.0 ? (object)string.Format("{0}\r\n-{1}", (object)num4.ToString("n2"), (object)num6.ToString("n2")) : (object)string.Format("{0}", (object)num4.ToString("n2"));
+                    this.dataGridView2.Rows[rowIndex].Cells["Total"].Value = num6 > 0.0 ? string.Format("{0}\r\n-{1}", num4.ToString("n2"), num6.ToString("n2")) :
+                        string.Format("{0}", num4.ToString("n2"));
                 }
             }
             else
             {
                 double amount = Convert.ToDouble(cellValue.Substring(0, cellValue.IndexOf(".") + 3));
-                double num = amount * product.RetailCost - this.customer.getCost(product.Barcode, amount) * amount + amount * product.RetailCost / 100.0 * this.generalDiscount;
-                if (product.RetailCost * amount - num < product.PurchaseCost / product.PiecesPerCase * amount)
-                    num = amount * product.RetailCost - product.PurchaseCost / product.PiecesPerCase * amount;
-                if (num > 0.0 && !this.customer.DontApplyAnyDiscount)
-                    this.dataGridView2.Rows[rowIndex].Cells["Total"].Value = (object)((amount * product.RetailCost).ToString("n2") + "\r\n-" + num.ToString("n2"));
+                double customerDisc = amount * product.RetailCost - this.customer.getCost(product.Barcode, amount) * amount;
+                double generalDisc = amount * product.RetailCost / 100.0 * this.generalDiscount;
+
+                double finalDisc = customerDisc > generalDisc ? customerDisc : generalDisc;
+
+                if (product.RetailCost * amount - finalDisc < product.PurchaseCost / product.PiecesPerCase * amount)
+                    finalDisc = amount * product.RetailCost - product.PurchaseCost / product.PiecesPerCase * amount;
+
+                if (finalDisc > 0.0 && !this.customer.DontApplyAnyDiscount)
+                    this.dataGridView2.Rows[rowIndex].Cells["Total"].Value = (object)((amount * product.RetailCost).ToString("n2") + "\r\n-" + finalDisc.ToString("n2"));
+
                 else
                     this.dataGridView2.Rows[rowIndex].Cells["Total"].Value = (object)(amount * this.customer.getCost(product.Barcode, amount)).ToString("n2");
             }
@@ -1094,7 +1683,7 @@ namespace POS
             double num = 0.0;
             foreach (DataGridViewRow row in (IEnumerable)this.dataGridView2.Rows)
             {
-                if (row.Cells["Total"].Value != null && row.Cells["barcode"].Value.ToString()!="")
+                if (row.Cells["Total"].Value != null && row.Cells["barcode"].Value.ToString() != "")
                     num += this.getTotalFromRow(row.Index);
             }
             return num;
@@ -1102,23 +1691,25 @@ namespace POS
 
         private double getTotalFromRow(int rowIndex)
         {
-            if (this.dataGridView2.Rows.Count <= rowIndex &&dataGridView2.Rows[rowIndex].Cells["barcode"].Value.ToString()=="")
+            if (this.dataGridView2.Rows.Count <= rowIndex && dataGridView2.Rows[rowIndex].Cells["barcode"].Value.ToString() == "")
                 return 0.0;
 
             string str = this.dataGridView2.Rows[rowIndex].Cells["Total"].Value.ToString();
-            
+
             return str.IndexOf("\r\n") > -1 ? Convert.ToDouble(str.Substring(0, str.IndexOf("\r\n"))) - this.getDiscountFromRow(rowIndex) : Convert.ToDouble(this.dataGridView2.Rows[rowIndex].Cells["Total"].Value);
         }
 
         private void groupBox1_SizeChanged(object sender, EventArgs e)
         {
+            panel6.Height = CobrarBtn.Location.Y - (groupBox1.Location.Y + groupBox1.Height);
             if (this.groupBox1.Size == this.customerGroupBoxMinSize)
             {
                 this.CustomerPaymentBtn.Visible = false;
                 this.label1.Visible = false;
                 this.debtLbl.Visible = false;
                 this.pictureBox1.Size = this.pictureBoxMaxSize;
-                this.pictureBox1.Location = new Point(this.groupBox1.Location.X, (this.CobrarBtn.Location.Y - this.groupBox1.Location.Y + this.groupBox1.Width) / 2);
+                var top = (refoundBtn.Location.Y + refoundBtn.Height);
+                this.pictureBox1.Location = new Point(this.groupBox1.Location.X, top + (panel6.Height - top) / 2 - pictureBox1.Height / 2);
             }
             else if (this.groupBox1.Size == this.customerGroupBoxMaxSize)
             {
@@ -1126,7 +1717,8 @@ namespace POS
                 this.label1.Visible = true;
                 this.debtLbl.Visible = true;
                 this.pictureBox1.Size = this.pictureBoxMinSize;
-                this.pictureBox1.Location = new Point((this.pictureBox1.Parent.Width - this.pictureBox1.Width) / 2, this.CobrarBtn.Location.Y - (this.refoundBtn.Parent.Location.Y + this.refoundBtn.Location.Y + this.refoundBtn.Height) / 2);
+                var top = (refoundBtn.Location.Y + refoundBtn.Height);
+                this.pictureBox1.Location = new Point((panel6.Width - pictureBox1.Width) / 2, top + (panel6.Height - top) / 2 - pictureBox1.Height / 2);
             }
             this.CustomerPaymentBtn.Enabled = this.customer.Debt > 0.0;
             this.panel6.Location = new Point(this.panel6.Location.X, this.groupBox1.Location.Y + this.groupBox1.Height);
@@ -1149,6 +1741,7 @@ namespace POS
             this.subtractOneProduct();
 
             totalLbl.Text = string.Format("Total   ${0}", GetTotal().ToString("n2"));
+            countProducts();
         }
 
         private void LastSaleBtn_Click(object sender, EventArgs e)
@@ -1179,15 +1772,15 @@ namespace POS
         {
             if (!(ProductTxt.Text != ""))
                 return;
-            
-            
+
+
             int length = this.ProductTxt.Text.IndexOf("*");
             string str;
             double quantity;
-            
+
             if (length > -1)
             {
-                str = this.ProductTxt.Text.Substring(0, length);
+                str = this.ProductTxt.Text.Trim().Substring(0, length);
                 try
                 {
                     quantity = Convert.ToDouble(this.ProductTxt.Text.Substring(length + 1));
@@ -1196,10 +1789,10 @@ namespace POS
                 {
                     MessageBox.Show("Revise que la cantidad ingresada sea correcta.", "Error de Formato", MessageBoxButtons.OK);
                     int num2 = this.ProductTxt.Text.IndexOf('*');
-                    
+
                     if (num2 <= -1)
                         return;
-                    
+
                     int num3;
                     ProductTxt.Select(num3 = num2 + 1, this.ProductTxt.Text.Length - num3);
                     return;
@@ -1207,7 +1800,7 @@ namespace POS
             }
             else
             {
-                str = ProductTxt.Text;
+                str = ProductTxt.Text.Trim();
                 quantity = 1.0;
             }
 
@@ -1216,7 +1809,7 @@ namespace POS
             {
                 str = str.Trim().ToLower();
 
-                if (str.IndexOf("promo(") == 0 && (str.IndexOf(")") > str.IndexOf("promo(")) )
+                if (str.IndexOf("promo(") == 0 && (str.IndexOf(")") > str.IndexOf("promo(")))
                 {
                     try
                     {
@@ -1231,6 +1824,13 @@ namespace POS
                         }
                         else
                         {
+                            System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.Windows_Battery_Low);
+                            try
+                            {
+                                player.Play();
+                                player.Play();
+                            }
+                            catch (Exception) { }
                             MessageBox.Show("No se encontró la promoción indicada.");
                             ProductTxt.Select(beginIndex, strLength);
                         }
@@ -1247,13 +1847,21 @@ namespace POS
                     DataTable table = Producto.SearchValueGetTable(str);
                     if (table.Rows.Count == 0 || str == ".")
                     {
+
+                        System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.Windows_Battery_Low);
+                        try
+                        {
+                            player.Play();
+                            player.Play();
+                        }
+                        catch (Exception) { }
                         MessageBox.Show("No se encontró el producto");
                         this.ProductTxt.SelectAll();
                     }
                     else
                     {
                         DarkForm darkForm = new DarkForm();
-                        ChooseProductForm chooseProductForm = new ChooseProductForm(table);
+                        ChooseProductForm chooseProductForm = new ChooseProductForm(table, new Empleado(EmployeeID));
                         darkForm.Show();
                         if (chooseProductForm.ShowDialog() == DialogResult.OK)
                         {
@@ -1274,6 +1882,13 @@ namespace POS
                 }
                 else
                 {
+                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.Windows_Battery_Low);
+                    try
+                    {
+                        player.Play();
+                        player.Play();
+                    }
+                    catch (Exception) { }
                     MessageBox.Show("No se encontró el producto");
                     this.ProductTxt.SelectAll();
                 }
@@ -1285,6 +1900,7 @@ namespace POS
             if (!this.isNewSale)
                 return;
             this.addOneMoreProduct();
+            countProducts();
         }
 
         public Panel_Ventas(int employeeID, FormWindowState windowState = FormWindowState.Normal)
@@ -1304,9 +1920,21 @@ namespace POS
             this.discountBtn.Visible = new Empleado(employeeID).isAdmin;
             this.generalDiscount = 0.0;
             this.isDiscountbyPercentage = false;
-            
-                    printDocument1.PrintController = new StandardPrintController();
-            
+
+            var comboColumn = dataGridView2.Columns["depot"] as DataGridViewComboBoxColumn;
+            comboColumn.DataSource = Bodega.GetDepots();
+            comboColumn.DisplayMember = "Nombre";
+            comboColumn.ValueMember = "ID_Bodega";
+
+            Color color = Color.FromArgb(new Random().Next());
+            bunifuGradientPanel1.GradientBottomLeft = bunifuGradientPanel1.GradientTopRight = color;
+            bunifuGradientPanel1.GradientBottomRight = Color.FromArgb(color.R + 100 < 255 ? color.R + 100 : 255,
+                color.G + 100 < 255 ? color.G + 100 : 255, color.B + 100 < 255 ? color.B + 100 : 255);
+            bunifuGradientPanel1.GradientTopLeft = Color.FromArgb(color.R + 100 < 255 ? color.R + 100 : 255,
+                color.G + 100 < 255 ? color.G + 100 : 255, color.B + 100 < 255 ? color.B + 100 : 255);
+
+            printDocument1.PrintController = new StandardPrintController();
+            this.Name = "window " + count.ToString();
         }
 
         private void Panel_Ventas_Load(object sender, EventArgs e)
@@ -1322,14 +1950,114 @@ namespace POS
             this.CanceledLbl.Location = new Point(-50, (this.CanceledLbl.Parent.Height - this.CanceledLbl.Height) / 2);
             this.printDialog1 = new PrintDialog();
             this.printDialog1.PrinterSettings.PrinterName = this.ticket.printerName;
+
             ProductTxt.Focus();
+
+            try
+            {
+                //Create PosExplorer
+                PosExplorer posExplorer = new PosExplorer();
+                DeviceInfo deviceInfo = null;
+                try
+                {
+                    deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, "CashDrawer");
+                    cashDrawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
+                    cashDrawer.Open();
+
+                }
+                catch (Exception) {                   /*Nothing can be used.  */       }
+
+                try
+                {
+                    printer = posExplorer.CreateInstance(posExplorer.GetDevice(DeviceType.PosPrinter, "PosPrinter")) as PosPrinter;
+                    printer.Open();
+
+                    string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
+                    
+                    printer.Claim(1000);
+                    printer.DeviceEnabled = true;
+                    printer.RecLetterQuality = true;
+
+                    if (printer.CapRecBitmap)
+                    {
+
+                        for (int iRetryCount = 0; iRetryCount < 5; iRetryCount++)
+                        {
+                            try
+                            {
+                                //Register a bitmap
+                                printer.SetBitmap(1, PrinterStation.Receipt,
+                                    logopath, printer.RecLineWidth * ticket.logoHeight / 114,
+                                    PosPrinter.PrinterBitmapCenter);
+                                break;
+                            }
+                            catch (PosControlException pce)
+                            {
+                                if (pce.ErrorCode == ErrorCode.Failure && pce.ErrorCodeExtended == 0 && pce.Message == "It is not initialized.")
+                                {
+                                    System.Threading.Thread.Sleep(1000);
+                                }
+                                else
+                                {
+                                    MessageBox.Show(pce.Message + " " + pce.HelpLink);
+                                }
+                            }
+                        }
+
+                    }
+
+                    printer.DeviceEnabled = false;
+                    printer.Release();
+                }
+                catch (Exception) { }
+
+
+            }
+            catch (PosControlException)
+            {
+                //Nothing can be used.
+                MessageBox.Show("No se tuvo acceso a la impresora o al cajon");
+            }
+
+            setimage();
+
+        }
+
+        private async void setimage()
+        {
+            await Task.Run(() => {
+
+                PrinterTicket printerTicket = new PrinterTicket();
+                Bitmap bmp = (Bitmap)printerTicket.logo;
+
+
+                Rectangle newRec = new Rectangle(0, 0, 300, 114);
+                Bitmap resize = new Bitmap(300, 114);
+
+                resize.SetResolution(bmp.HorizontalResolution, bmp.VerticalResolution);
+                using (var g = Graphics.FromImage(resize))
+                {
+                    g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                    using (var wrap = new ImageAttributes())
+                    {
+                        wrap.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
+                        g.DrawImage(bmp, newRec, 0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, wrap);
+                    }
+                }
+
+                resize.Save("new logo.bmp");
+            });
         }
 
         private void paymentLbl_TextChanged(object sender, EventArgs e)
         {
             if (this.sale == null)
                 return;
-            this.paymentLbl.ForeColor = this.sale.isPaid ? Color.Blue : Color.Tomato;
+            this.AmountProdctsLbl.ForeColor = this.sale.isPaid ? Color.Blue : Color.Tomato;
         }
 
         private void ProductTxt_Enter(object sender, EventArgs e)
@@ -1347,7 +2075,7 @@ namespace POS
                 {
                     if (this.ProductTxt.Text.Substring(this.ProductTxt.Text.IndexOf("*") + 1) == ".")
                     {
-                        int num = (int)MessageBox.Show("Debe indicar la cantidad a agregar");
+                        MessageBox.Show("Debe indicar la cantidad a agregar");
                         return;
                     }
                     if (this.ProductTxt.Text[this.ProductTxt.Text.Length - 1] == '*')
@@ -1435,7 +2163,9 @@ namespace POS
                     row.Cells["barcode"].Value.ToString().ToLower().IndexOf("promo(") == -1)
                 {
                     dataGridView2.CurrentCell = row.Cells["amount"];
-                    this.GetCustomerCostFormat(row.Index);
+                    Producto p = new Producto(row.Cells["barcode"].Value.ToString());
+                    
+                    row.Cells["total"].Value = getCost(p, row.Index);
                 }
 
             }
@@ -1461,7 +2191,7 @@ namespace POS
             int pendingPackages = this.sale.getAmountOfPendingPackagesToReturn(barcode);
             if (this.sale.Date.Date < DateTime.Today.Date.AddDays(-7.0))
             {
-                int num1 = (int)MessageBox.Show(string.Format("No se pueden retornar más envases. La fecha de compra excede los {0} días permitidos para la devolución.\n\nFecha de compra: {1} de {2} del {3}\n", (object)7, (object)this.sale.Date.Day, (object)new CultureInfo("es-MX").DateTimeFormat.GetMonthName(this.sale.Date.Month), (object)this.sale.Date.Year), "Lapso excedido");
+                MessageBox.Show(string.Format("No se pueden retornar más envases. La fecha de compra excede los {0} días permitidos para la devolución.\n\nFecha de compra: {1} de {2} del {3}\n", (object)7, (object)this.sale.Date.Day, (object)new CultureInfo("es-MX").DateTimeFormat.GetMonthName(this.sale.Date.Month), (object)this.sale.Date.Year), "Lapso excedido");
             }
             else if (pendingPackages > 0 && !this.sale.isSaleCanceled)
             {
@@ -1473,7 +2203,7 @@ namespace POS
                     this.sale.returnPackages(barcode, returnForm.AmountOfPackagesToReturn, this.EmployeeID);
                     double change = (double)(this.sale.getSingleCost(barcode) * (Decimal)returnForm.AmountOfPackagesToReturn);
                     FormCambio formCambio = new FormCambio(change);
-                    this.packageReturnedDocument = new PrintDocument();
+                    /*this.packageReturnedDocument = new PrintDocument();
                     packageReturnedDocument.PrintController = new StandardPrintController();
                     this.packageReturnedDocument.PrintPage += (PrintPageEventHandler)((s, ee) =>
                     {
@@ -1579,7 +2309,10 @@ namespace POS
                     {
                         int num2 = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
                     }
-                    int num11 = (int)formCambio.ShowDialog();
+                    */
+                    openCashDrawer();
+
+                    formCambio.ShowDialog();
                     this.setToolTip(this.dataGridView2.CurrentRow.Index);
                 }
                 darkForm.Close();
@@ -1614,14 +2347,31 @@ namespace POS
             sale = new Venta(SaleID);
             Cliente cliente = new Cliente(sale.CustomerID);
             pictureBox1.SendToBack();
-            foreach (DataRow row in (InternalDataCollectionBase)sale.getSoldProducts.Rows)
+            pictureBox1.Hide();
+            foreach (DataRow row in sale.getSoldProducts.Rows)
             {
                 Producto producto = new Producto(row["id_producto"].ToString());
-                dataGridView2.Rows.Add(producto.Barcode, producto.Description, producto.Brand, row["Cantidad"].ToString(), row["Precio"].ToString(), Convert.ToDouble(row["Descuento"]) != 0.0 ? (row["Importe"].ToString() + "\r\n -" + row["Descuento"].ToString()) : row["Importe"].ToString());
+                bool refounded = Convert.ToBoolean(row["Devolución"]);
+                int rowindex = dataGridView2.Rows.Add(producto.Barcode, refounded, producto.Description, producto.Brand, row["Cantidad"].ToString(), row["Precio"].ToString(), Convert.ToDouble(row["Descuento"]) != 0.0 ? (row["Importe"].ToString() + "\r\n -" + row["Descuento"].ToString()) : row["Importe"].ToString());
+
+                if (refounded)
+                {
+                    dataGridView2.Rows[rowindex].DefaultCellStyle.ForeColor = Color.DimGray;
+                    dataGridView2.Rows[rowindex].DefaultCellStyle.SelectionBackColor = Color.DimGray;
+                    dataGridView2.Rows[rowindex].Cells["refound"].ReadOnly = true;
+                }
+                else
+                    dataGridView2.Rows[rowindex].Cells["refound"].ReadOnly = false;
             }
+
+
+         
+
+            dataGridView2.Columns["refound"].Visible = true;
+            dataGridView2.Columns["depot"].Visible = false;
             CustomerBtn.ButtonText = cliente.Name;
             totalLbl.Text = string.Format("Total   ${0}", sale.Total);
-            paymentLbl.Text = string.Format("Abono   ${0}", sale.Payment);
+            AmountProdctsLbl.Text = string.Format("Abono   ${0}", sale.Payment);
             ProductTxt.Enabled = false;
             isNewSale = false;
             CanceledLbl.Visible = sale.isSaleCanceled;
@@ -1647,9 +2397,27 @@ namespace POS
             label8.Visible = sale.isSaleCanceled;
             EmployeeCanceldSaleLbl.Visible = sale.isSaleCanceled;
             centerToParent(EmployeeCanceldSaleLbl);
-            paymentLbl.Show();
+            AmountProdctsLbl.Show();
             ReturnPackagesBtn.Show();
             LastSaleBtn.Hide();
+            printTicketBtn.Show();
+            nextTicketBtn.Visible = true;
+            previousTicketBtn.Visible = true;
+
+
+            //***************************
+            var data = sale.getNextSaleID();
+
+            if (data.Tables[1].Rows.Count == 0)
+                nextTicketBtn.Hide();
+            else
+                nextTicketBtn.Show();
+
+
+            if (data.Tables[0].Rows.Count == 0)
+                previousTicketBtn.Hide();
+            else
+                previousTicketBtn.Show();
         }
 
         private void setToolTip(int RowIndex)
@@ -1689,33 +2457,40 @@ namespace POS
                 if (getAmountOfSinglePieces(this.dataGridView2.Rows[index].Cells["amount"].Value.ToString(), producto) - 1 <= 0.0)
                 {
                     this.dataGridView2.Rows.Remove(this.dataGridView2.Rows[index]);
+
+                    totalLbl.Text = string.Format("Total   ${0}", GetTotal().ToString("n2"));
+                    countProducts();
                     return;
                 }
 
                 else
                 {
-                    addProductToDataGrid(producto, -1.0);
-                    dataGridView2.CurrentCell = dataGridView2[1, index];
+                    addProductToDataGrid(producto, -1.0, Convert.ToInt32(dataGridView2.Rows[index].Cells["depot"].Value),index);
+                    dataGridView2.CurrentCell = dataGridView2.Rows[index].Cells["description"];
                 }
             }
             else
             {
                 selectPromo(index);
-                addPromoToGridView(getPromoIDFromRow(dataGridView2.SelectedRows[0].Index), -1);
 
-                
-                if (Convert.ToDouble(dataGridView2.SelectedRows[0].Cells["amount"].Value)<=0)
-                    for(int i=dataGridView2.SelectedRows.Count-1;i>=0;i--)
+                foreach (DataGridViewRow row in dataGridView2.SelectedRows)
+                {
+                    if (index > row.Index)
+                        index = row.Index;
+                }
+
+                addPromoToGridView(getPromoIDFromRow(index), -1, index);
+
+
+                if (dataGridView2.RowCount > 0 && Convert.ToDouble(dataGridView2.Rows[index].Cells["amount"].Value) <= 0)
+                    for (int i = dataGridView2.SelectedRows.Count - 1; i >= 0; i--)
                     {
-                        foreach (DataGridViewRow item in dataGridView2.SelectedRows)
-                        {
-                            dataGridView2.Rows.Remove(item);
-                        }
+                        dataGridView2.Rows.Remove(dataGridView2.Rows[i]);
                     }
             }
         }
 
-        
+
 
         private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
         {
@@ -1725,29 +2500,29 @@ namespace POS
             int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
             int location = 10;
 
-            Size size1 =  ticket.printLogo(graphics, location);
+            Size size1 = ticket.printLogo(graphics, location);
             location = size1.Height == 0 ? location : location + size1.Height + 10;
-            Size size2 =  ticket.printHeader(graphics, location);
+            Size size2 = ticket.printHeader(graphics, location);
             location = size2.Height == 0 ? location : location + size2.Height + 10;
-            Size size3 =  ticket.printAddress(graphics, location);
+            Size size3 = ticket.printAddress(graphics, location);
             location = size3.Height == 0 ? location : location + size3.Height + 10;
-            Size size4 =  ticket.printPhone(graphics, location);
+            Size size4 = ticket.printPhone(graphics, location);
             location = size4.Height == 0 ? location : location + size4.Height + 10;
             graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
             location = location + 5;
-            
+
             Venta lastSale = Venta.getLastSale();
-            
+
             string str1 = "Detalle de Venta";
-            Font font1 = PrinterTicket.getFont(str1, width-10, FontStyle.Regular);
+            Font font1 = PrinterTicket.getFont(str1, width - 10, FontStyle.Regular);
             Size stringSize1 = PrinterTicket.getStringSize(str1, font1);
             graphics.DrawString(str1, font1, Brushes.Black, (float)((width - stringSize1.Width) / 2), (float)location);
             location = location + (15 + stringSize1.Height);
-            
+
             string str2 = string.Format("Folio: {0}", (object)lastSale.ID.ToString("X"));
             Font font2 = new Font("Times new Roman", 8f);
             Size stringSize2 = PrinterTicket.getStringSize(str2, font2);
-            
+
             if (stringSize2.Width + 10 < width)
             {
                 graphics.DrawString(str2, font2, Brushes.Black, 10f, (float)location);
@@ -1770,7 +2545,7 @@ namespace POS
 
             string str3 = string.Format("Fecha: {0}\t{1}", lastSale.Date.ToShortDateString(), lastSale.Date.ToShortTimeString());
             Font font3 = new Font("Times new Roman", 8f);
-            
+
             if (PrinterTicket.getStringSize(str3, font3).Width + 10 < width)
             {
                 graphics.DrawString(str3, font3, Brushes.Black, 10f, (float)location);
@@ -1787,19 +2562,19 @@ namespace POS
             DataTable getSoldProducts = lastSale.getSoldProducts;
             graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
             location = location + 1;
-            
+
             string text = "Cantidad\tPrecio\tImporte";
             Font font4 = font2;
             Size stringSize4 = PrinterTicket.getStringSize(text, font4);
-           
+
             graphics.DrawString("Cantidad", font4, Brushes.Black, 10f, (float)location);
             graphics.DrawString("Precio", font4, Brushes.Black, ((width - PrinterTicket.getStringSize("Precio", font4).Width) / 2), location);
             graphics.DrawString("Importe", font4, Brushes.Black, (width - PrinterTicket.getStringSize("Importe", font4).Width), location);
-           
+
             location = location + (stringSize4.Height + 1);
             graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
             location = location + 2;
-            
+
             double num9 = 0.0;
             foreach (DataGridViewRow row in dataGridView2.Rows)
             {
@@ -1810,9 +2585,9 @@ namespace POS
                     if (barcode.IndexOf("promo(") == -1)
                     {
                         str4 = new Producto(barcode).HideInTicket ? "Artículo Varios" : string.Format("{0}, {1}", row.Cells["description"].Value, row.Cells["brand"].Value);
-                        
+
                     }
-                    else if ( barcode.IndexOf("promo(") > -1)
+                    else if (barcode.IndexOf("promo(") > -1)
                     {
                         DataSet table = Producto.getPromo(getPromoIDFromRow(row.Index));
 
@@ -1881,7 +2656,7 @@ namespace POS
             Size size5 = ticket.printFooter(graphics, y5);
             int y6 = size5.Height == 0 ? y5 : y5 + size5.Height + 10;
             Image image = BarcodeDrawFactory.Code128WithChecksum.Draw(lastSale.ID.ToString("X8"), 50);
-            graphics.DrawImage(image, (width-((int)(width * 0.75)))/2, y6,(int) (width *0.75), 40);
+            graphics.DrawImage(image, (width - ((int)(width * 0.75))) / 2, y6, (int)(width * 0.75), 40);
 
             y6 += 30 + 30;
             graphics.DrawLine(Pens.White, new Point(0, y6), new Point(width, y6));
@@ -1993,12 +2768,81 @@ namespace POS
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            
-            if (keyData == (Keys.N | Keys.Shift | Keys.Control))
+            if (dataGridView2.RowCount > 1)
+            {
+                if (keyData == Keys.Down)
+                {
+                    try
+                    {
+                        dataGridView2.Rows[dataGridView2.CurrentCell.RowIndex].Selected = false;
+                        dataGridView2.CurrentCell = dataGridView2.Rows[dataGridView2.CurrentCell.RowIndex + 1].Cells[dataGridView2.CurrentCell.ColumnIndex];
+                        dataGridView2.Rows[dataGridView2.CurrentCell.RowIndex].Selected = true;
+                    }
+                    catch (ArgumentOutOfRangeException) { dataGridView2.Rows[dataGridView2.CurrentCell.RowIndex].Selected = true; }
+                }
+                else if (keyData == Keys.Up)
+                {
+                    try
+                    {
+                        dataGridView2.Rows[dataGridView2.CurrentCell.RowIndex].Selected = false;
+                        dataGridView2.CurrentCell = dataGridView2.Rows[dataGridView2.CurrentCell.RowIndex - 1].Cells[dataGridView2.CurrentCell.ColumnIndex];
+                        dataGridView2.Rows[dataGridView2.CurrentCell.RowIndex].Selected = true;
+                    }
+                    catch (ArgumentOutOfRangeException) { dataGridView2.Rows[dataGridView2.CurrentCell.RowIndex].Selected = true; }
+                }
+            }
+            if (keyData == (Keys.Alt | Keys.Add))
+            {
+                if (dataGridView2.RowCount > 0)
+                {
+                    addOneMoreProduct();
+                    return true;
+                }
+            }
+
+            if (keyData == (Keys.Alt | Keys.Subtract))
+            {
+                if (dataGridView2.RowCount > 0)
+                {
+                    subtractOneProduct();
+                    return true;
+                }
+            }
+
+            if (keyData == (Keys.Alt | Keys.Delete))
+            {
+                if (dataGridView2.RowCount > 0)
+                {
+                    dataGridView2.Rows.Remove(dataGridView2.CurrentRow);
+
+                }
+
+                totalLbl.Text = string.Format("Total   ${0}", GetTotal().ToString("n2"));
+                countProducts();
+            }
+
+            if (keyData == (Keys.Alt | Keys.C))
+            {
+                if (dataGridView2.RowCount > 0)
+                {
+                    CobrarBtn_Click(this, null);
+                }
+            }
+
+            if (keyData == (Keys.Alt | Keys.I))
+                checkBox1.Checked = !checkBox1.Checked;
+
+            if (keyData == (Keys.N | Keys.Alt))
             {
                 this.openNewWindow();
                 return true;
             }
+            if(keyData == (Keys.Alt|Keys.O))
+            {
+                openCashDrawer();
+                return true;
+            }
+
             if (keyData != (Keys.F4 | Keys.Alt))
                 return base.ProcessCmdKey(ref msg, keyData);
             this.closeWindow();
@@ -2007,7 +2851,11 @@ namespace POS
 
         private void openNewWindow()
         {
-            new Panel_Ventas(this.EmployeeID, FormWindowState.Maximized).Show();
+            Panel_Ventas panel = new Panel_Ventas(this.EmployeeID, FormWindowState.Maximized);
+            Thread thread = new Thread(() => panel.ShowDialog());
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.IsBackground = true;
+            thread.Start();
         }
 
         private void bunifuImageButton1_Click(object sender, EventArgs e)
@@ -2040,21 +2888,21 @@ namespace POS
 
         private void discountList_MouseHover(object sender, EventArgs e)
         {
-            var font =discountList.Font;
-            discountList.Font = new Font(font.FontFamily, font.Size,  FontStyle.Bold);
+            var font = discountList.Font;
+            discountList.Font = new Font(font.FontFamily, font.Size, FontStyle.Bold);
         }
 
         private void discountList_MouseLeave(object sender, EventArgs e)
         {
             var font = discountList.Font;
-            discountList.Font = new Font(font.FontFamily, font.Size,  FontStyle.Regular);
+            discountList.Font = new Font(font.FontFamily, font.Size, FontStyle.Regular);
         }
 
         private void discountList_Click(object sender, EventArgs e)
         {
             DarkForm dk = new DarkForm();
             panel_ventas_select_promo promo = new panel_ventas_select_promo();
-            
+
             dk.Show();
             if (promo.ShowDialog() == DialogResult.OK)
             {
@@ -2073,6 +2921,315 @@ namespace POS
         private void pictureBox1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void Panel_Ventas_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+            if (cashDrawer != null)
+            {
+                try
+                {
+                    //Cancel the device
+                    cashDrawer.DeviceEnabled = false;
+
+                    //Release the device exclusive control right.
+                    cashDrawer.Release();
+                    //Finish using the device.
+                    cashDrawer.Close();
+
+                }
+                catch (PosControlException)
+                {
+                }
+            }
+            if (printer != null)
+            {
+                try
+                {
+                    //Cancel the device
+                    printer.DeviceEnabled = false;
+
+                    //Release the device exclusive control right.
+                    printer.Release();
+                    //Finish using the device.
+                    printer.Close();
+
+                }
+                catch (PosControlException)
+                {
+                }
+            }
+            try
+            {
+                dataGridView2.Columns.Remove(dataGridView2.Columns["Depot"]);
+                dataGridView2.Dispose();
+                pictureBox1.Dispose();
+            }
+            catch (Exception) { }
+           
+
+            if(File.Exists(this.Name+".bmp"))
+            {
+                File.Delete(this.Name + ".bmp");
+            }
+        }
+
+        private void dataGridView2_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            if (dataGridView2.RowCount == 0)
+            {
+                pictureBox1.Image = null;
+            }
+        }
+
+        private void printTicketBtn_Click(object sender, EventArgs e)
+        {/*
+            try
+            {
+                this.reprintTicket.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
+                this.printDialog1.Document = this.reprintTicket;
+                this.reprintTicket.Print();
+            }
+            catch (InvalidPrinterException)
+            {
+                MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
+            }
+
+            reprintTicket = new PrintDocument();
+            reprintTicket.PrintController = new StandardPrintController();
+            reprintTicket.PrintPage += new PrintPageEventHandler(reprintTicket_PrintPage);*/
+            printTicket(sale.ID);
+        }
+
+        private void reprintTicket_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            Graphics graphics = e.Graphics;
+            printDialog1.PrinterSettings.PrinterName = this.ticket.printerName;
+            printDocument1.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
+            int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
+            int location = 10;
+
+            Size size1 = ticket.printLogo(graphics, location);
+            location = size1.Height == 0 ? location : location + size1.Height + 10;
+            Size size2 = ticket.printHeader(graphics, location);
+            location = size2.Height == 0 ? location : location + size2.Height + 10;
+            Size size3 = ticket.printAddress(graphics, location);
+            location = size3.Height == 0 ? location : location + size3.Height + 10;
+            Size size4 = ticket.printPhone(graphics, location);
+            location = size4.Height == 0 ? location : location + size4.Height + 10;
+            graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
+            location = location + 5;
+
+            Venta lastSale = sale;
+
+            string str1 = "Detalle de Venta";
+            Font font1 = PrinterTicket.getFont(str1, width - 10, FontStyle.Regular);
+            Size stringSize1 = PrinterTicket.getStringSize(str1, font1);
+            graphics.DrawString(str1, font1, Brushes.Black, (float)((width - stringSize1.Width) / 2), (float)location);
+            location = location + (15 + stringSize1.Height);
+
+            string str2 = string.Format("Folio: {0}", (object)lastSale.ID.ToString("X"));
+            Font font2 = new Font("Times new Roman", 8f);
+            Size stringSize2 = PrinterTicket.getStringSize(str2, font2);
+
+            if (stringSize2.Width + 10 < width)
+            {
+                graphics.DrawString(str2, font2, Brushes.Black, 10f, (float)location);
+                location = location + (stringSize2.Height + 1);
+            }
+            else
+            {
+                font2 = PrinterTicket.getFont(str2, width - 10, FontStyle.Bold);
+                stringSize2 = PrinterTicket.getStringSize(str2, font2);
+                graphics.DrawString(str2, font2, Brushes.Black, 10f, (float)location);
+                location = location + (stringSize2.Height + 1);
+            }
+
+            if (customer.ID != 0)
+            {
+                Size stringSize3 = PrinterTicket.getStringSize("Cliente: " + customer.Name, font2);
+                graphics.DrawString("Cliente: " + customer.Name, font2, Brushes.Black, 10f, (float)location);
+                location += stringSize3.Height + 10;
+            }
+
+            string str3 = string.Format("Fecha: {0}\t{1}", lastSale.Date.ToShortDateString(), lastSale.Date.ToShortTimeString());
+            Font font3 = new Font("Times new Roman", 8f);
+
+            if (PrinterTicket.getStringSize(str3, font3).Width + 10 < width)
+            {
+                graphics.DrawString(str3, font3, Brushes.Black, 10f, (float)location);
+                location = location + (stringSize2.Height + 1);
+            }
+            else
+            {
+                font2 = PrinterTicket.getFont(lastSale.ID.ToString(), width - 10, FontStyle.Bold);
+                stringSize2 = PrinterTicket.getStringSize(lastSale.ID.ToString(), font2);
+                graphics.DrawString(lastSale.ID.ToString(), font2, Brushes.Black, 10f, (float)location);
+                location = location + (stringSize2.Height + 1);
+            }
+
+            DataTable getSoldProducts = lastSale.getSoldProducts;
+            graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
+            location = location + 1;
+
+            string text = "Cantidad\tPrecio\tImporte";
+            Font font4 = font2;
+            Size stringSize4 = PrinterTicket.getStringSize(text, font4);
+
+            graphics.DrawString("Cantidad", font4, Brushes.Black, 10f, (float)location);
+            graphics.DrawString("Precio", font4, Brushes.Black, ((width - PrinterTicket.getStringSize("Precio", font4).Width) / 2), location);
+            graphics.DrawString("Importe", font4, Brushes.Black, (width - PrinterTicket.getStringSize("Importe", font4).Width), location);
+
+            location = location + (stringSize4.Height + 1);
+            graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
+            location = location + 2;
+
+            double num9 = 0.0;
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                var barcode = row.Cells["barcode"].Value.ToString();
+                if (barcode != "")
+                {
+                    string str4 = "";
+                    if (barcode.IndexOf("promo(") == -1)
+                    {
+                        str4 = new Producto(barcode).HideInTicket ? "Artículo Varios" : string.Format("{0}, {1}", row.Cells["description"].Value, row.Cells["brand"].Value);
+
+                    }
+                    else if (barcode.IndexOf("promo(") > -1)
+                    {
+                        DataSet table = Producto.getPromo(getPromoIDFromRow(row.Index));
+
+                        string description = string.Format("Promoción: ");
+
+                        foreach (DataRow childRow in table.Tables[1].Rows)
+                        {
+                            description += Convert.ToDouble(childRow["amount"]).ToString() + " " + childRow["producto"].ToString().
+                                Substring(0, childRow["producto"].ToString().LastIndexOf(",")) + ", ";
+                        }
+
+                        str4 = description.Substring(0, description.Length - 2);
+                    }
+
+                    Font font5 = new Font(font4, FontStyle.Regular);
+                    Size stringSize3 = PrinterTicket.getStringSize(str4, font5);
+                    if (stringSize3.Width > width)
+                    {
+                        int letterByMeasuring = PrinterTicket.getLastLetterByMeasuring(str4, font5, width);
+                        str4 = str4.Insert(letterByMeasuring, str4[letterByMeasuring] == ' ' ? "\n" : "-\n");
+                        stringSize3 = PrinterTicket.getStringSize(str4, font5);
+                    }
+                    graphics.DrawString(str4, font5, Brushes.Black, 10f, location);
+                    location += stringSize3.Height + 2;
+                    getDiscountFromRow(row.Index);
+                    string.Format("{0}\t{1}\t{2}", row.Cells["amount"].Value, row.Cells["UnitCost"].Value, getTotalFromRowWithoutDiscount(row.Index).ToString("n2"));
+                    Font font6 = font5;
+                    Size stringSize5 = PrinterTicket.getStringSize("$" + row.Cells["Total"].Value.ToString(), font6);
+                    graphics.DrawString(row.Cells["amount"].Value.ToString(), font6, Brushes.Black, 10f, (float)location);
+                    graphics.DrawString("$" + row.Cells["UnitCost"].Value.ToString(), font6, Brushes.Black, (float)((width - PrinterTicket.getStringSize(row.Cells["UnitCost"].Value.ToString(), font6).Width) / 2), (float)location);
+                    graphics.DrawString("$" + row.Cells["Total"].Value.ToString(), font6, Brushes.Black, (float)(width - PrinterTicket.getStringSize(row.Cells["Total"].Value.ToString(), font6).Width), (float)location);
+                    num9 += getDiscountFromRow(row.Index);
+                    location += stringSize5.Height + 5;
+                }
+            }
+            graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
+            int num10 = location + 3;
+            string str5 = string.Format("Total: ${0}", GetTotal().ToString("n2"));
+            Font font7 = font2;
+            Size stringSize6 = PrinterTicket.getStringSize(str5, font4);
+            graphics.DrawString(str5, font7, Brushes.Black, (width - stringSize6.Width), num10);
+            int num11 = num10 + (stringSize6.Height + 3);
+            if (!lastSale.isPaid)
+            {
+                string str4 = string.Format("Usted pagó: ${0}", lastSale.Payment);
+                Size stringSize3 = PrinterTicket.getStringSize(str4, font7);
+                graphics.DrawString(str4, font7, Brushes.Black, (width - stringSize3.Width), num11);
+                num11 += stringSize3.Height + 3;
+            }
+            string str6 = string.Format("Efectivo: ${0}", lastSale.Cash);
+            Size stringSize7 = PrinterTicket.getStringSize(str6, font7);
+            graphics.DrawString(str6, font7, Brushes.Black, (width - stringSize7.Width), num11);
+            int num12 = num11 + (stringSize7.Height + 3);
+            string str7 = string.Format("Cambio: ${0}", (lastSale.Cash - lastSale.Payment));
+            Size stringSize8 = PrinterTicket.getStringSize(str7, font7);
+            graphics.DrawString(str7, font7, Brushes.Black, (width - stringSize8.Width), num12);
+            int y5 = num12 + (3 + stringSize8.Height);
+            if (num9 > 0.0)
+            {
+                string str4 = string.Format("Usted ahorró: ${0}", num9.ToString("n2"));
+                PrinterTicket.getFont(str4, width / 2 - 10, FontStyle.Bold);
+                Size stringSize3 = PrinterTicket.getStringSize(str4, font7);
+                graphics.DrawString(str4, font7, Brushes.Black, (width - stringSize3.Width), y5);
+                y5 += stringSize3.Height + 20;
+            }
+            Size size5 = ticket.printFooter(graphics, y5);
+            int y6 = size5.Height == 0 ? y5 : y5 + size5.Height + 10;
+            Image image = BarcodeDrawFactory.Code128WithChecksum.Draw(lastSale.ID.ToString("X8"), 50);
+            graphics.DrawImage(image, (width - ((int)(width * 0.75))) / 2, y6, (int)(width * 0.75), 40);
+
+            y6 += 30 + 30;
+            graphics.DrawLine(Pens.White, new Point(0, y6), new Point(width, y6));
+
+        }
+
+        private void EmployeeNameLbl_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saleCancelledDocument_PrintPage(object sender, PrintPageEventArgs e)
+        {
+        }
+
+        private void panel6_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void previousTicketBtn_MouseHover(object sender, EventArgs e)
+        {
+            var font = previousTicketBtn.Font;
+            previousTicketBtn.Font = new Font(font.FontFamily, font.Size, FontStyle.Bold);
+        }
+
+        private void previousTicketBtn_MouseLeave(object sender, EventArgs e)
+        {
+            var font = previousTicketBtn.Font;
+            previousTicketBtn.Font = new Font(font.FontFamily, font.Size, FontStyle.Regular);
+        }
+
+        private void nextTicketBtn_MouseHover(object sender, EventArgs e)
+        {
+            var font = nextTicketBtn.Font;
+            nextTicketBtn.Font = new Font(font.FontFamily, font.Size, FontStyle.Bold);
+        }
+
+        private void nextTicketBtn_MouseLeave(object sender, EventArgs e)
+        {
+            var font = nextTicketBtn.Font;
+            nextTicketBtn.Font = new Font(font.FontFamily, font.Size, FontStyle.Regular);
+        }
+
+        private void nextTicketBtn_Click(object sender, EventArgs e)
+        {
+            var data = sale.getNextSaleID();
+
+            if (data.Tables[1].Rows.Count > 0)
+                setSale(Convert.ToInt32(data.Tables[1].Rows[0][0]));
+        }
+
+        private void previousTicketBtn_Click(object sender, EventArgs e)
+        {
+            var data = sale.getNextSaleID();
+
+            if (data.Tables[0].Rows.Count > 0)
+                setSale(Convert.ToInt32(data.Tables[0].Rows[0][0]));
         }
     }
 }

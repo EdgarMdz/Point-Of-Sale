@@ -36,6 +36,11 @@ namespace POS
             this.datos.deleteReminder(reminderID);
         }
 
+        public DataTable Product_getWholeSaleCosts(string barcode)
+        {
+            return datos.Product_getWholeSaleCosts(barcode);
+        }
+
         public Queue<int> depot_getEveryDepotID()
         {
             Queue<int> queue = new Queue<int>();
@@ -56,18 +61,28 @@ namespace POS
             this.datos.depot_UpdateShowInProductSearches(show, depotid);
         }
 
+        public void product_deleteWholeSaleCost(int wholeSaleCostId, string barcode)
+        {
+            datos.product_deleteWholeSaleCost(wholeSaleCostId, barcode);
+        }
+
         /// <summary>
         /// Updates the check status of each product in the depot to be displayed as indicated in the info table the next time 
         /// the user want to check the missing products list
         /// </summary>
         /// <param name="depotID">Depot ID</param>
         /// <param name="info">Table containing the barcode and its check status</param>
-        public void depot_updateProductCheckStatus(int depotID, DataTable info)
-        => datos.depot_updateProductCheckStatus(depotID, info);
+        public void depot_updateProductCheckStatus(int depotID, string barcode)
+        => datos.depot_updateProductCheckStatus(depotID, barcode);
 
             public void DepotDelete(int DepotID)
         {
             this.datos.DepotDelete(DepotID);
+        }
+
+        public void Product_addNewWholeSaleCost(double amount, double discount, bool isPercentage, string barcode)
+        {
+            datos.Product_addNewWholeSaleCost(amount, discount, isPercentage, barcode);
         }
 
         public DataSet DepotGetInventory() =>
@@ -83,12 +98,17 @@ namespace POS
             this.datos.depotScrap(depotID, employeeID, barcode, quantity);
         }
 
+        public void Product_UpdateWholesaleCost(string barcode, int costID, double discount, bool isByPercentage)
+        {
+            datos.Product_UpdateWholesaleCost(barcode, costID, discount, isByPercentage);
+        }
+
         public DataSet DepotSetDepot(int depotID) =>
             this.datos.DepotSetDepot(depotID);
 
-        public void DepotUpdateMinStockQuantity(int depotID, string barcode, double quantity)
+        public void DepotUpdateMinStockQuantity(int depotID, string barcode, double minStock, double maxStock)
         {
-            this.datos.DepotUpdateMinStockQuantity(depotID, barcode, quantity);
+            this.datos.DepotUpdateMinStockQuantity(depotID, barcode, minStock, maxStock);
         }
 
         public void DepotUpdateProductQuantity(int depotID, string barcode, double newQuant)
@@ -164,6 +184,16 @@ namespace POS
             this.datos.Employee_updatePaymentDay(str, employeeID);
         }
 
+        public void Sale_RefoundProductsToCustomer(int iD, DataTable barcodesToBeRefounded)
+        {
+            datos.Sale_RefoundProductsToCustomer(iD, barcodesToBeRefounded);
+        }
+
+        internal DataSet getNextSaleID(int ID)
+        {
+            return datos.getNextSaleID(ID);
+        }
+
         public void Employee_UpdatePhone(string newPhone, int employeeID)
         {
             this.datos.Employee_UpdatePhone(newPhone, employeeID);
@@ -229,8 +259,8 @@ namespace POS
         public DataTable GetSupplierList() =>
             this.datos.GetSupplierList();
 
-        public DataTable GetSupplierProductList() =>
-            this.datos.getSupplierProductList();
+        public DataTable GetSupplierProductList(int supplierid) =>
+            this.datos.getSupplierProductList(supplierid);
 
         public DataTable getVisitingReminder(int SupplierId) =>
             this.datos.getVisitingReminder(SupplierId);
@@ -299,14 +329,18 @@ namespace POS
             return IDs.ToArray();
         }
 
+        public DataTable Depot_getMissingProducts(int ID)
+        {
+            return datos.Depot_getMissingProducts(ID);
+        }
 
-            /// <summary>
-            /// updates the promo with the given details
-            /// </summary>
-            /// <param name="promoID">ID of the promo to be updated</param>
-            /// <param name="promoDetails">new promo data details</param>
-            /// <param name="cost">new cost for the promo</param>
-            public void product_updatePromo(int promoID, DataTable promoDetails, double cost) =>
+        /// <summary>
+        /// updates the promo with the given details
+        /// </summary>
+        /// <param name="promoID">ID of the promo to be updated</param>
+        /// <param name="promoDetails">new promo data details</param>
+        /// <param name="cost">new cost for the promo</param>
+        public void product_updatePromo(int promoID, DataTable promoDetails, double cost) =>
             datos.product_updatePromo(promoID, promoDetails,cost);
 
 
@@ -317,20 +351,30 @@ namespace POS
         public void product_deletePromo(int promoID)
         => datos.product_deletePromo(promoID);
 
-            /// <summary>
-            /// Registers a new promo in the database
-            /// </summary>
-            /// <param name="data">table storing the barcodes and amount for each product in the promo</param>
-            /// <param name="promoCost">cost of the promo</param>
-            public void product_newPromo(DataTable data, double promoCost)
+        public double supplier_getcost(int ID, string barcode)
+        {
+            return datos.supplier_getCost(ID, barcode);
+        }
+
+        /// <summary>
+        /// Registers a new promo in the database
+        /// </summary>
+        /// <param name="data">table storing the barcodes and amount for each product in the promo</param>
+        /// <param name="promoCost">cost of the promo</param>
+        public void product_newPromo(DataTable data, double promoCost)
         => datos.product_newPromo(data, promoCost);
 
-            /// <summary>
-            /// Updates the group of mixable selling products as stablished in the given table
-            /// </summary>
-            /// <param name="groupID">ID number of the group to be updated</param>
-            /// <param name="productBarcodelist">List of barcodes to be added to the group</param>
-            public void product_updateGroup(int groupID, DataTable productBarcodelist)
+        public DataSet GetProductCostComparison(string barcode)
+        {
+            return datos.GetProductCostComparison(barcode);
+        }
+
+        /// <summary>
+        /// Updates the group of mixable selling products as stablished in the given table
+        /// </summary>
+        /// <param name="groupID">ID number of the group to be updated</param>
+        /// <param name="productBarcodelist">List of barcodes to be added to the group</param>
+        public void product_updateGroup(int groupID, DataTable productBarcodelist)
         => datos.product_updateGroup(groupID, productBarcodelist);
 
         /// <summary>
@@ -505,10 +549,10 @@ namespace POS
         public DataTable Sale_InvestmentSellsProfit(int periodOfTimeValue, DateTime date) =>
             this.datos.Sale_InvestmentSellsProfit(periodOfTimeValue, date);
 
-        public int Sale_newSale(int EmployeeID, int CustomerID, double total, double payment, Tuple<string,double, double, double>[] ListofProducts, double cash)
+        public int Sale_newSale(int EmployeeID, int CustomerID, double total, double payment, Tuple<string,double, double, double,int>[] ListofProducts, double cash)
         {
             DataTable listOfProducts = new DataTable();
-            DataColumn[] columns = new DataColumn[] { new DataColumn("barcode"), new DataColumn("cost"), new DataColumn("amount"), new DataColumn("discount"),new DataColumn ( "No.") };
+            DataColumn[] columns = new DataColumn[] { new DataColumn("barcode"), new DataColumn("cost"), new DataColumn("amount"), new DataColumn("discount"),new DataColumn ( "No.") ,new DataColumn("depotID")};
             listOfProducts.Columns.AddRange(columns);
             if (ListofProducts != null)
             {
@@ -522,6 +566,7 @@ namespace POS
                     row[3] = product.Item4;
                     listOfProducts.Rows.Add(row);
                     row[4] = i++;
+                    row[5] = product.Item5;
                 }
             }
             return this.datos.Sale_newSale(DateTime.Now, EmployeeID, CustomerID, total, payment, listOfProducts, cash);
@@ -597,6 +642,8 @@ namespace POS
             this.datos.SupplierEditProduct(SupplierID, Barcode, NewPrice, piecesPerCase);
         }
 
+        internal DataTable Supplier_SearchValueGetTable(string text, int ID)
+        => datos.Supplier_SearchValueGetTable(text, ID);
         public DataTable SupplierFilterProducts(string search) =>
             this.datos.SupplierFilterProducts(search);
 

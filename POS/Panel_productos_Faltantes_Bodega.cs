@@ -1,13 +1,17 @@
-﻿using System;
+﻿using Bunifu.Framework.UI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Forms;
+using Microsoft.PointOfService;
 
 namespace POS
 {
@@ -15,6 +19,7 @@ namespace POS
     {
         private PrinterTicket printer = new PrinterTicket();
         private Bodega depot;
+        PosPrinter posPrinter;
 
         public Panel_productos_Faltantes_Bodega(int depotID)
         {
@@ -33,26 +38,34 @@ namespace POS
 
         private void dataGrid1_DataSourceChanged(object sender, EventArgs e)
         {
-            DataGridViewCheckBoxColumn viewCheckBoxColumn = new DataGridViewCheckBoxColumn();
+            (dataGrid1.Columns["imprimir"] as DataGridViewCheckBoxColumn).TrueValue = true;
+            (dataGrid1.Columns["imprimir"] as DataGridViewCheckBoxColumn).FalseValue = false;
+            dataGrid1.Columns["id_producto"].Visible = false;
+            foreach (DataGridViewColumn item in dataGrid1.Columns)
+            {
+                item.AutoSizeMode = item.Name == "Descripción" ? DataGridViewAutoSizeColumnMode.Fill : DataGridViewAutoSizeColumnMode.AllCells;
+            }
+
+            /*DataGridViewCheckBoxColumn viewCheckBoxColumn = new DataGridViewCheckBoxColumn();
             viewCheckBoxColumn.Name = "Print";
             viewCheckBoxColumn.HeaderText = "";
             viewCheckBoxColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
             viewCheckBoxColumn.TrueValue = (object)true;
             viewCheckBoxColumn.FalseValue = (object)false;
             this.dataGrid1.Columns.Insert(0, (DataGridViewColumn)viewCheckBoxColumn);
-            this.dataGrid1.Columns[viewCheckBoxColumn.Name].Frozen = true;
-            this.adjustColumsSize();
-            foreach (DataGridViewRow row in this.dataGrid1.Rows)
+            this.dataGrid1.Columns[viewCheckBoxColumn.Name].Frozen = true;*/
+            //this.adjustColumsSize();
+           /* foreach (DataGridViewRow row in this.dataGrid1.Rows)
             {
                 row.Cells[viewCheckBoxColumn.Name].Value = Convert.ToBoolean(row.Cells["Checked"].Value) ?
                    viewCheckBoxColumn.TrueValue : viewCheckBoxColumn.FalseValue;
 
-           }
-            try
+           }*/
+           /* try
             {
                 dataGrid1.Columns["Cheked"].Visible = false;
             }
-            catch (Exception){ dataGrid1.Columns.Remove("Checked"); }
+            catch (Exception){ dataGrid1.Columns.Remove("Checked"); }*/
         }
 
         private void adjustColumsSize()
@@ -72,11 +85,54 @@ namespace POS
         {
             this.dataGrid1.CurrentCell = (DataGridViewCell)null;
             this.dataGrid1.DataSource = (object)this.depot.MissingProducts().DefaultView;
+            // setCheckAllBtn();
+
+            try
+            {
+                //Create PosExplorer
+                PosExplorer posExplorer = new PosExplorer();
+             
+                try
+                {
+                    posPrinter = posExplorer.CreateInstance(posExplorer.GetDevice(DeviceType.PosPrinter, "PosPrinter")) as PosPrinter;
+                    posPrinter.Open();
+                   
+                }
+                catch (Exception) { }
+            }
+            catch (PosControlException)
+            {
+                //Nothing can be used.
+                MessageBox.Show("No se tuvo acceso a la impresora o al cajon");
+            }
+        }
+
+        private async void setCheckAllBtn()
+        {
+            await Task.Run(() => checkTable(ref dataGrid1, ref bunifuCheckbox1));
+        }
+
+        private void checkTable(ref BunifuCustomDataGrid dataGrid, ref BunifuCheckbox bunifuCheckbox)
+        {
+            int rowCount = dataGrid.RowCount;
+
+            if (rowCount > 1)
+            {
+                for (int i = 1; i < rowCount; i++)
+                {
+                    if (Convert.ToBoolean(dataGrid1.Rows[i - 1].Cells["Imprimir"].Value) != Convert.ToBoolean(dataGrid1.Rows[i].Cells["Imprimir"].Value))
+                    {
+                        bunifuCheckbox.Checked = false;
+                        return;
+                    }
+                }
+               // bunifuCheckbox.Checked = true;//Convert.ToBoolean(dataGrid1.Rows[0].Cells["Imprimir"].Value);
+            }
         }
 
         private void dataGrid1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex != 0)
+            if (e.ColumnIndex != 1)
                 return;
             if (!Convert.ToBoolean(this.dataGrid1[e.ColumnIndex, e.RowIndex].Value))
                 this.dataGrid1.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DimGray;
@@ -89,12 +145,12 @@ namespace POS
             if (this.bunifuCheckbox1.Checked)
             {
                 foreach (DataGridViewRow row in this.dataGrid1.Rows)
-                    row.Cells[0].Value = true;
+                    row.Cells["Imprimir"].Value = true;
             }
             else
             {
                 foreach (DataGridViewRow row in this.dataGrid1.Rows)
-                    row.Cells[0].Value = false;
+                    row.Cells["imprimir"].Value = false;
             }
         }
 
@@ -107,6 +163,39 @@ namespace POS
         {
             try
             {
+                posPrinter.Claim(1000);
+                posPrinter.DeviceEnabled=true;
+                posPrinter.PrintNormal(PrinterStation.Receipt, "\u001b|4C" + "\u001b|bC" + "\u001b|cA" + "Lista de Faltantes\n");
+
+
+                string divisionLine = "_".PadLeft(posPrinter.RecLineChars - 2, '_');
+                posPrinter.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + divisionLine + "\n");
+                posPrinter.PrintNormal(PrinterStation.Receipt, "Stock Actual\tCantidad Faltante\tProducto\n");
+                posPrinter.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + divisionLine + "\n");
+
+                foreach (DataGridViewRow row in dataGrid1.Rows)
+                {
+                    if(Convert.ToBoolean(row.Cells["imprimir"].Value))
+                    {
+                        posPrinter.PrintNormal(PrinterStation.Receipt, "\u001b|N" + row.Cells["Stock actual"].Value.ToString() + "\t" + row.Cells["Faltante"].Value.ToString()
+                            + "\t" + row.Cells["descripción"].Value.ToString()+", "+ row.Cells["marca"].Value.ToString()+"\n");
+                    }
+                }
+
+                posPrinter.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
+
+                posPrinter.DeviceEnabled = false;
+                posPrinter.Release();
+            }
+            catch
+            {
+
+            }
+            
+            
+            /*
+            try
+            {
                 PrintDocument printDocument = new PrintDocument() { PrintController = new StandardPrintController() };
                 
                 printDocument.PrinterSettings.PrinterName = this.printer.printerName;
@@ -117,12 +206,12 @@ namespace POS
             catch (InvalidPrinterException)
             {
                 int num = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-            }
+            }*/
         }
 
         private void prepareTicket(object sender, PrintPageEventArgs e)
         {
-            int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
+            /*int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
             int num1 = 0;
             Graphics graphics = e.Graphics;
             string str1 = string.Format("Faltantes {0}", (object)this.depot.name);
@@ -140,7 +229,7 @@ namespace POS
             int num4 = num3 + (stringSize2.Height + 2);
             graphics.DrawLine(Pens.Black, 10, num4, this.Width - 10, num4);
             int num5 = num4 + 2; 
-            DataTable checkboxes = new DataTable();
+           /* DataTable checkboxes = new DataTable();
 
             checkboxes.Columns.Add("barcode");
             checkboxes.Columns.Add("isChecked");
@@ -182,7 +271,7 @@ namespace POS
             }
 
 
-            Bodega.updateProductCheckStatus(depot.ID, checkboxes);
+            Bodega.updateProductCheckStatus(depot.ID, checkboxes);*/
         }
 
         private Font fitFont(string text, int width, FontStyle style = FontStyle.Regular)
@@ -223,6 +312,44 @@ namespace POS
         private void dataGrid1_Click(object sender, EventArgs e)
         {
             var cell = dataGrid1.CurrentCell;
+        }
+
+        private void dataGrid1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if(e.ColumnIndex == dataGrid1.Columns["Imprimir"].Index)
+            {
+                var cell= (dataGrid1[e.ColumnIndex, e.RowIndex] as DataGridViewCheckBoxCell);
+
+                cell.Value = Convert.ToBoolean(dataGrid1[e.ColumnIndex, e.RowIndex].Value) == true ? cell.FalseValue : cell.TrueValue;
+                Bodega.updateProductCheckStatus(depot.ID, dataGrid1.Rows[e.RowIndex].Cells["id_producto"].Value.ToString());
+                dataGrid1.EndEdit();
+            }    
+        }
+
+        private void Panel_productos_Faltantes_Bodega_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+            if (posPrinter != null)
+            {
+                try
+                {
+                    //Cancel the device
+                    posPrinter.DeviceEnabled = false;
+
+                    //Release the device exclusive control right.
+                    posPrinter.Release();
+                    //Finish using the device.
+                    posPrinter.Close();
+
+                }
+                catch (PosControlException)
+                {
+                    //Finish using the device.
+                    posPrinter.Close();
+                }
+            }
+
+            dataGrid1.Dispose();
         }
     }
 }

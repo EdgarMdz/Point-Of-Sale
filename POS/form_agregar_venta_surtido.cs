@@ -193,11 +193,6 @@ namespace POS
             dk.Close();
         }
 
-        private void form_agregar_venta_surtido_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void closeBtn_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -256,6 +251,49 @@ namespace POS
                 MessageBox.Show("La operación se realizó con éxito");
                 this.Close();
             }
+        }
+
+        private void form_agregar_venta_surtido_Paint(object sender, PaintEventArgs e)
+        {
+            Pen p = new Pen(Brushes.Black, 3);
+
+            e.Graphics.DrawRectangle(p, this.ClientRectangle);
+            p.Dispose();
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+            Pen p = new Pen(Brushes.Black, 3);
+
+            e.Graphics.DrawLine(p, 0,0,this.Width,0);//top
+            e.Graphics.DrawLine(p, 0, 0, 0, this.Height);//left
+            e.Graphics.DrawLine(p, this.Width-1, 0, this.Width-1, this.Height);//right
+            p.Dispose();
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+            
+            Pen p = new Pen(Brushes.Black, 3);
+
+            e.Graphics.DrawLine(p, 0, 0, 0, this.Height);//left
+            e.Graphics.DrawLine(p, this.Width - 1, 0, this.Width - 1, this.Height);//right
+
+            if (!panel3.Visible)
+                e.Graphics.DrawLine(p, 0, panel2.Height - 1, panel2.Width - 1, panel2.Height - 1);
+            p.Dispose();
+
+
+        }
+
+        private void panel3_Paint(object sender, PaintEventArgs e)
+        {
+
+            Pen p = new Pen(Brushes.Black, 3);
+            e.Graphics.DrawLine(p, 0, 0, 0, this.Height);//left
+            e.Graphics.DrawLine(p, this.Width - 1, 0, this.Width - 1, this.Height);//right
+            e.Graphics.DrawLine(p, 0, panel3.Height - 1, panel3.Width - 1, panel3.Height - 1);//bottom
+            p.Dispose();
         }
     }
 }

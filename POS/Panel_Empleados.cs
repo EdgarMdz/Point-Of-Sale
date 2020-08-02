@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.PointOfService;
 
 namespace POS
 {
@@ -16,6 +17,7 @@ namespace POS
         private bool[] paymentDays = new bool[7];
         private Empleado employee;
         private int User_employeeID;
+        private CashDrawer m_Drawer;
         private bool changingEmployee { get; set; }
 
         public Panel_Empleados(int employeeID, FormWindowState windowState = FormWindowState.Normal)
@@ -29,6 +31,7 @@ namespace POS
             this.User_employeeID = employeeID;
             this.printDialog1.PrinterSettings.PrinterName = new PrinterTicket().printerName;
             printDocument1.PrintController = new StandardPrintController();
+
         }
 
         private void searchEmployeeTxt_KeyDown(object sender, KeyEventArgs e)
@@ -361,7 +364,7 @@ namespace POS
             {
                 if (empleado.isAdmin)
                 {
-                    try
+                    /*try
                     {
                         this.printDocument1.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
                         this.printDialog1.Document = this.printDocument1;
@@ -370,18 +373,53 @@ namespace POS
                     catch (InvalidPrinterException)
                     {
                         int num2 = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-                    }
+                    }*/
+
+                    openDrawer();
                     this.employee.paySalary();
-                    int num3 = (int)formCambio.ShowDialog();
+                    formCambio.ShowDialog();
                     goto label_7;
                 }
             }
             if (formLogin.DialogResult == DialogResult.OK && !empleado.isAdmin)
             {
-                int num4 = (int)MessageBox.Show("No dispone de los permisos necesarios para realizar el pago");
+                MessageBox.Show("No dispone de los permisos necesarios para realizar el pago");
             }
         label_7:
             darkForm.Close();
+        }
+
+        private void openDrawer()
+        {
+            if (m_Drawer != null)
+            {
+                try
+                {
+
+                    //Open the device
+                    //Use a Logical Device Name which has been set on the SetupPOS.
+                    m_Drawer.Open();
+
+                    //Get the exclusive control right for the opened device.
+                    //Then the device is disable from other application.
+                    m_Drawer.Claim(1000);
+
+                    //Enable the device.
+                    m_Drawer.DeviceEnabled = true;
+
+                    //Open the drawer by using the "OpenDrawer" method.
+                    m_Drawer.OpenDrawer();
+
+                    m_Drawer.DeviceEnabled = false;
+                    m_Drawer.Release();
+                    m_Drawer.Close();
+
+
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
 
         private void paymentDebtBtn_Click(object sender, EventArgs e)
@@ -557,7 +595,7 @@ namespace POS
                 double num1 = loan;
                 venta.newSale(this.User_employeeID, cliente.ID, loan, Payment, null, num1);
                 FormCambio formCambio = new FormCambio(num1);
-                try
+                /*try
                 {
                     this.printDocument1.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
                     this.printDialog1.Document = this.printDocument1;
@@ -566,8 +604,9 @@ namespace POS
                 catch (InvalidPrinterException ex)
                 {
                     int num2 = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-                }
-                int num3 = (int)formCambio.ShowDialog();
+                }*/
+                openDrawer();
+                formCambio.ShowDialog();
                 this.debtLbl.Text = "$" + (cliente.Debt + loan).ToString("n2");
             }
             darkForm.Close();
@@ -686,6 +725,62 @@ namespace POS
         private void MimimizeBtn_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void Panel_Empleados_Load(object sender, EventArgs e)
+        {
+            //<<< step1 >>> --Start
+            //Use a Logical Device Name which has been set on the SetupPOS.
+            string strLogicalName = "CashDrawer";
+
+            try
+            {
+                //Create PosExplorer
+                PosExplorer posExplorer = new PosExplorer();
+
+                DeviceInfo deviceInfo = null;
+
+                try
+                {
+                    deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, strLogicalName);
+                    m_Drawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
+                }
+                catch (Exception)
+                {
+                    //Nothing can be used.
+                    return;
+                }
+
+            }
+            catch (PosControlException)
+            {
+                //Nothing can be used.
+                //Nothing can be used.
+            }
+            //<<<step1>>>--End
+        }
+
+        private void Panel_Empleados_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //<<<step1>>>--Start
+            if (m_Drawer != null)
+            {
+                try
+                {
+                    //Cancel the device
+                    m_Drawer.DeviceEnabled = false;
+
+                    //Release the device exclusive control right.
+                    m_Drawer.Release();
+                    //Finish using the device.
+                    m_Drawer.Close();
+
+                }
+                catch (PosControlException)
+                {
+                }
+            }
+            //<<<step1>>>--End
         }
     }
 }

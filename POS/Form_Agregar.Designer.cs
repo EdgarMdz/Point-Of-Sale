@@ -43,7 +43,6 @@ namespace POS
             this.label16 = new System.Windows.Forms.Label();
             this.LoadImageBtn = new System.Windows.Forms.Button();
             this.AcceptButton = new System.Windows.Forms.Button();
-            this.bunifuElipse1 = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.PhotoBtnElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -87,7 +86,8 @@ namespace POS
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.bunifuImageButton1 = new Bunifu.Framework.UI.BunifuImageButton();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.bunifuElipse2 = new Bunifu.Framework.UI.BunifuElipse(this.components);
+            this.bunifuDragControl1 = new Bunifu.Framework.UI.BunifuDragControl(this.components);
+            this.wholesaleCostsBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -197,7 +197,7 @@ namespace POS
             this.LoadImageBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.LoadImageBtn.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LoadImageBtn.ForeColor = System.Drawing.Color.White;
-            this.LoadImageBtn.Location = new System.Drawing.Point(672, 314);
+            this.LoadImageBtn.Location = new System.Drawing.Point(672, 281);
             this.LoadImageBtn.Margin = new System.Windows.Forms.Padding(2);
             this.LoadImageBtn.Name = "LoadImageBtn";
             this.LoadImageBtn.Size = new System.Drawing.Size(138, 35);
@@ -221,11 +221,6 @@ namespace POS
             this.AcceptButton.Text = "Aceptar";
             this.AcceptButton.UseVisualStyleBackColor = false;
             this.AcceptButton.Click += new System.EventHandler(this.AcceptButton_Click);
-            // 
-            // bunifuElipse1
-            // 
-            this.bunifuElipse1.ElipseRadius = 30;
-            this.bunifuElipse1.TargetControl = this;
             // 
             // PhotoBtnElipse
             // 
@@ -725,7 +720,7 @@ namespace POS
             // 
             this.panel11.Controls.Add(this.label1);
             this.panel11.Controls.Add(this.comboBox1);
-            this.panel11.Location = new System.Drawing.Point(615, 360);
+            this.panel11.Location = new System.Drawing.Point(615, 325);
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(252, 55);
             this.panel11.TabIndex = 45;
@@ -736,7 +731,7 @@ namespace POS
             this.groupBox1.Controls.Add(this.linkedProductPanel);
             this.groupBox1.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold);
             this.groupBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.groupBox1.Location = new System.Drawing.Point(620, 527);
+            this.groupBox1.Location = new System.Drawing.Point(620, 492);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(259, 140);
             this.groupBox1.TabIndex = 47;
@@ -761,7 +756,7 @@ namespace POS
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Century Gothic", 16.2F);
             this.checkBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.checkBox1.Location = new System.Drawing.Point(615, 422);
+            this.checkBox1.Location = new System.Drawing.Point(615, 387);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(177, 29);
             this.checkBox1.TabIndex = 48;
@@ -773,7 +768,7 @@ namespace POS
             this.displayAsKilogramCheckBox.AutoSize = true;
             this.displayAsKilogramCheckBox.Font = new System.Drawing.Font("Century Gothic", 16.2F);
             this.displayAsKilogramCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.displayAsKilogramCheckBox.Location = new System.Drawing.Point(615, 455);
+            this.displayAsKilogramCheckBox.Location = new System.Drawing.Point(615, 420);
             this.displayAsKilogramCheckBox.Name = "displayAsKilogramCheckBox";
             this.displayAsKilogramCheckBox.Size = new System.Drawing.Size(224, 29);
             this.displayAsKilogramCheckBox.TabIndex = 49;
@@ -786,7 +781,7 @@ namespace POS
             this.hideInTicketCheckBox.AutoSize = true;
             this.hideInTicketCheckBox.Font = new System.Drawing.Font("Century Gothic", 16.2F);
             this.hideInTicketCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.hideInTicketCheckBox.Location = new System.Drawing.Point(615, 488);
+            this.hideInTicketCheckBox.Location = new System.Drawing.Point(615, 453);
             this.hideInTicketCheckBox.Name = "hideInTicketCheckBox";
             this.hideInTicketCheckBox.Size = new System.Drawing.Size(240, 29);
             this.hideInTicketCheckBox.TabIndex = 50;
@@ -836,15 +831,45 @@ namespace POS
             this.pictureBox1.Location = new System.Drawing.Point(615, 53);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(252, 252);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.Size = new System.Drawing.Size(252, 224);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 22;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.DoubleClick += new System.EventHandler(this.pictureBox1_DoubleClick);
             // 
-            // bunifuElipse2
+            // bunifuDragControl1
             // 
-            this.bunifuElipse2.ElipseRadius = 30;
+            this.bunifuDragControl1.Fixed = true;
+            this.bunifuDragControl1.Horizontal = true;
+            this.bunifuDragControl1.TargetControl = this;
+            this.bunifuDragControl1.Vertical = true;
+            // 
+            // wholesaleCostsBtn
+            // 
+            this.wholesaleCostsBtn.ActiveBorderThickness = 1;
+            this.wholesaleCostsBtn.ActiveCornerRadius = 20;
+            this.wholesaleCostsBtn.ActiveFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
+            this.wholesaleCostsBtn.ActiveForecolor = System.Drawing.Color.White;
+            this.wholesaleCostsBtn.ActiveLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
+            this.wholesaleCostsBtn.BackColor = System.Drawing.Color.White;
+            this.wholesaleCostsBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("wholesaleCostsBtn.BackgroundImage")));
+            this.wholesaleCostsBtn.ButtonText = "Precios de Mayoreo";
+            this.wholesaleCostsBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.wholesaleCostsBtn.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.wholesaleCostsBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
+            this.wholesaleCostsBtn.IdleBorderThickness = 1;
+            this.wholesaleCostsBtn.IdleCornerRadius = 20;
+            this.wholesaleCostsBtn.IdleFillColor = System.Drawing.Color.White;
+            this.wholesaleCostsBtn.IdleForecolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
+            this.wholesaleCostsBtn.IdleLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
+            this.wholesaleCostsBtn.Location = new System.Drawing.Point(650, 640);
+            this.wholesaleCostsBtn.Margin = new System.Windows.Forms.Padding(5);
+            this.wholesaleCostsBtn.Name = "wholesaleCostsBtn";
+            this.wholesaleCostsBtn.Size = new System.Drawing.Size(181, 41);
+            this.wholesaleCostsBtn.TabIndex = 52;
+            this.wholesaleCostsBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.wholesaleCostsBtn.Visible = false;
+            this.wholesaleCostsBtn.Click += new System.EventHandler(this.wholesaleCostsBtn_Click);
             // 
             // Form_Agregar
             // 
@@ -853,6 +878,7 @@ namespace POS
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(886, 795);
+            this.Controls.Add(this.wholesaleCostsBtn);
             this.Controls.Add(this.bunifuImageButton1);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
@@ -887,6 +913,7 @@ namespace POS
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Producto | Point of Sale";
             this.Load += new System.EventHandler(this.Form_Agregar_Load);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form_Agregar_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -930,7 +957,6 @@ namespace POS
         private System.Windows.Forms.Button LoadImageBtn;
         private System.Windows.Forms.Button AcceptButton;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private Bunifu.Framework.UI.BunifuElipse bunifuElipse1;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.CheckBox hideInTicketCheckBox;
@@ -973,6 +999,7 @@ namespace POS
         private Bunifu.Framework.UI.BunifuElipse PhotoBtnElipse;
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton1;
-        private Bunifu.Framework.UI.BunifuElipse bunifuElipse2;
+        private Bunifu.Framework.UI.BunifuDragControl bunifuDragControl1;
+        private Bunifu.Framework.UI.BunifuThinButton2 wholesaleCostsBtn;
     }
 }

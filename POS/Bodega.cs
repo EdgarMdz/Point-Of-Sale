@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using System.Windows.Media.TextFormatting;
+
 namespace POS
 {
     class Bodega
@@ -63,7 +65,7 @@ namespace POS
 
         public double getProductQuantity(string barcode)
         {
-             foreach (DataRow row in (InternalDataCollectionBase)this.products.Rows)
+            foreach (DataRow row in (InternalDataCollectionBase)this.products.Rows)
             {
                 if (row["Código de Barras"].ToString() == barcode)
                     return Convert.ToDouble(row["Cantidad"]);
@@ -100,6 +102,8 @@ namespace POS
                 dataTable.Columns.Add(row["Nombre"].ToString());
                 dataTable.Columns[row["Nombre"].ToString()].Caption = row["ID_Bodega"].ToString();
             }
+
+            int count = 0;
             foreach (DataRow row1 in (InternalDataCollectionBase)inventory.Tables[1].Rows)
             {
                 int index1 = -1;
@@ -131,8 +135,12 @@ namespace POS
                     string index2 = row1["Nombre"].ToString();
                     dataTable.Rows[index1][index2] = Convert.ToDouble(row1["Cantidad"]) == 0.0 ? (object)"0 piezas" : (object)(Math.Truncate(Convert.ToDouble(row1["Cantidad"]) / Convert.ToDouble(row1["Piezas por Caja"])).ToString() + " cajas,\r\n" + (Convert.ToDouble(row1["Cantidad"]) % Convert.ToDouble(row1["Piezas por Caja"])).ToString() + " piezas");
                 }
+
+                if (++count > 200)
+                    break;
             }
             return dataTable;
+
         }
 
         public static DataTable getInventory(string text)
@@ -172,7 +180,7 @@ namespace POS
                     for (int index3 = 3; index3 < dataTable.Columns.Count; ++index3)
                     {
                         if (row2[index3].ToString() == "")
-                            row2[index3] =  "0 piezas";
+                            row2[index3] = "0 piezas";
                     }
                 }
                 else
@@ -206,9 +214,9 @@ namespace POS
             this.negocio.DepotDelete(this.ID);
         }
 
-        public void UpdateMinStockQuantity(string barcode, double quantity)
+        public void UpdateMinStockQuantity(string barcode, double minStock, double maxStock)
         {
-            this.negocio.DepotUpdateMinStockQuantity(this.ID, barcode, quantity);
+            this.negocio.DepotUpdateMinStockQuantity(this.ID, barcode, minStock, maxStock);
         }
 
         public void UpdateProductQuantity(double newQuantity, string barcode)
@@ -233,14 +241,14 @@ namespace POS
         /// </summary>
         /// <param name="depotID">Depot ID</param>
         /// <param name="info">Table containing the barcode and its check status</param>
-        public static void updateProductCheckStatus(int depotID, DataTable info)
+        public static void updateProductCheckStatus(int depotID, string barcode)
         {
-            new Capa_de_Negocio().depot_updateProductCheckStatus(depotID, info);
+            new Capa_de_Negocio().depot_updateProductCheckStatus(depotID, barcode);
         }
 
-            public DataTable MissingProducts()
+        public DataTable MissingProducts()
         {
-            DataTable dataTable = new DataTable();
+            /*DataTable dataTable = new DataTable();
             string columnName1 = "Código de Barras";
             string columnName2 = "Descripción";
             string columnName3 = "Marca";
@@ -271,8 +279,8 @@ namespace POS
                     dataTable.AcceptChanges();
                     row2[ischecked] = row1[ischecked];
                 }
-            }
-            return dataTable;
+            }*/
+            return  negocio.Depot_getMissingProducts(ID);
         }
     }
 }

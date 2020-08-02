@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using System.Xml;
 
 namespace POS
 {
@@ -34,6 +36,23 @@ namespace POS
             this.CloseSqlConnection();
         }
 
+        public DataTable Product_getWholeSaleCosts(string barcode)
+        {
+            SqlCommand command = new SqlCommand("Product_GetWholeSaleCosts", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
+
+            DataTable dt = new DataTable();
+
+
+            command.Parameters.AddWithValue("@barcode", barcode);
+
+            dt.Load(command.ExecuteReader());
+
+            CloseSqlConnection();
+
+            return dt;
+            
+        }
+
         public void addReminder(int SupplierID, DateTime startTime, DateTime endTime, bool[] repetitionDays, string message, bool canDelete)
         {
             SqlCommand command = new SqlCommand("Reminder_AddReminder", this.OpenSqlConnection());
@@ -53,6 +72,41 @@ namespace POS
             command.Parameters.AddWithValue("@canDelete", canDelete);
             command.ExecuteNonQuery();
             this.CloseSqlConnection();
+        }
+
+        public void product_deleteWholeSaleCost(int wholeSaleCostId, string barcode)
+        {
+            SqlCommand command = new SqlCommand("product_deleteWholesaleCost", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
+            command.Parameters.AddWithValue("@wholecostID", wholeSaleCostId);
+            command.Parameters.AddWithValue("@barcode", barcode);
+            command.ExecuteNonQuery();
+            CloseSqlConnection();
+
+        }
+
+        public void Product_UpdateWholesaleCost(string barcode, int costID, double discount, bool isByPercentage)
+        {
+            SqlCommand command = new SqlCommand("product_updateWholesaleCost", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
+
+            command.Parameters.AddWithValue("@costID", costID);
+            command.Parameters.AddWithValue("@barcode", barcode);
+            command.Parameters.AddWithValue("@newCost", discount);
+            command.Parameters.AddWithValue("@isByPercentage", isByPercentage);
+
+            command.ExecuteNonQuery();
+            CloseSqlConnection();
+        }
+
+        public void Product_addNewWholeSaleCost(double amount, double discount, bool isPercentage, string barcode)
+        {
+            SqlCommand command = new SqlCommand("Product_AddNewWholesaleCost", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
+            command.Parameters.AddWithValue("@barcode", barcode);
+            command.Parameters.AddWithValue("@amount", amount);
+            command.Parameters.AddWithValue("@discount", discount);
+            command.Parameters.AddWithValue("@isdicount", isPercentage);
+
+            command.ExecuteNonQuery();
+            CloseSqlConnection();
         }
 
         private void CloseSqlConnection()
@@ -151,19 +205,47 @@ namespace POS
             this.CloseSqlConnection();
         }
 
+        public void Sale_RefoundProductsToCustomer(int iD, DataTable barcodesToBeRefounded)
+        {
+            SqlCommand command = new SqlCommand("sale_RefoundSomeProducts", OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            command.Parameters.AddWithValue("@saleID", iD);
+            command.Parameters.AddWithValue("@products", barcodesToBeRefounded);
+
+            command.ExecuteNonQuery();
+            CloseSqlConnection();
+        
+        }
+
+        internal DataSet getNextSaleID(int ID)
+        {
+            SqlCommand com = new SqlCommand("sale_getNextAndPreviousTicket", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
+            com.Parameters.AddWithValue("@saleID", ID);
+            
+            SqlDataAdapter adapter = new SqlDataAdapter(com);
+            DataSet ds = new DataSet();
+
+            adapter.Fill(ds);
+
+            CloseSqlConnection();
+            return ds;
+        }
+
         /// <summary>
         /// Updates the check status of each product in the depot to be displayed as indicated in the info table the next time 
         /// the user want to check the missing products list
         /// </summary>
         /// <param name="depotID">Depot ID</param>
         /// <param name="info">Table containing the barcode and its check status</param>
-        public void depot_updateProductCheckStatus(int  depotID, DataTable info)
+        public void depot_updateProductCheckStatus(int  depotID, string barcode)
         {
             SqlCommand com = new SqlCommand("depot_updateProductCheckStatus", OpenSqlConnection())
             { CommandType = CommandType.StoredProcedure };
 
             com.Parameters.AddWithValue("@depotID", depotID);
-            com.Parameters.AddWithValue("@listOfProducts", info);
+            com.Parameters.AddWithValue("@barcode", barcode);
 
             com.ExecuteNonQuery();
 
@@ -189,7 +271,8 @@ namespace POS
             {
                 CommandType = CommandType.StoredProcedure
             };
-            new SqlDataAdapter(selectCommand).Fill(dataSet);
+            SqlDataAdapter ad = new SqlDataAdapter(selectCommand);
+            ad.Fill(dataSet);
             this.CloseSqlConnection();
             return dataSet;
         }
@@ -248,7 +331,7 @@ namespace POS
             return dataSet;
         }
 
-        public void DepotUpdateMinStockQuantity(int depotID, string barcode, double quantity)
+        public void DepotUpdateMinStockQuantity(int depotID, string barcode, double minStock, double maxStock)
         {
             SqlCommand command = new SqlCommand("[depot_UpdateMinStockQuantity]", this.OpenSqlConnection())
             {
@@ -256,7 +339,8 @@ namespace POS
             };
             command.Parameters.AddWithValue("@depotID", depotID);
             command.Parameters.AddWithValue("@barcode", barcode);
-            command.Parameters.AddWithValue("@quantity", quantity);
+            command.Parameters.AddWithValue("@minStock", minStock);
+            command.Parameters.AddWithValue("@maxStock", maxStock);
             command.ExecuteNonQuery();
             this.CloseSqlConnection();
         }
@@ -298,6 +382,47 @@ namespace POS
             command.Parameters.AddWithValue("@hideInTicket", hideInTicket);
             command.ExecuteNonQuery();
             this.CloseSqlConnection();
+        }
+
+        internal DataTable Depot_getMissingProducts(int iD)
+        {
+            SqlCommand com = new SqlCommand("Depot_MissingProducts", OpenSqlConnection())
+            {
+                CommandType= CommandType.StoredProcedure
+            };
+
+            com.Parameters.AddWithValue("@depotID", iD);
+
+            DataTable dt = new DataTable();
+            dt.Load(com.ExecuteReader());
+            CloseSqlConnection();
+            return dt;
+        }
+
+        public DataSet GetProductCostComparison(string barcode)
+        {
+            DataSet ds = new DataSet();
+            SqlCommand com = new SqlCommand("suppliert_CompareCosts", OpenSqlConnection()) { CommandType= CommandType.StoredProcedure};
+            com.Parameters.AddWithValue("@barcode", barcode);
+
+            new SqlDataAdapter() { SelectCommand = com }.Fill(ds);
+
+            CloseSqlConnection();
+            return ds;
+        }
+
+        internal double supplier_getCost(int iD, string barcode)
+        {
+            SqlCommand com = new SqlCommand("supplier_GetCost", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
+            com.Parameters.AddWithValue("@barcode", barcode);
+            com.Parameters.AddWithValue("@supplierID", iD);
+
+            var result = com.ExecuteScalar();
+
+            CloseSqlConnection();
+
+
+            return Convert.ToDouble(result);
         }
 
         public void Employee_changePassword(int employeeID, string newPassword)
@@ -556,6 +681,19 @@ namespace POS
             return table;
         }
 
+        internal DataTable Supplier_SearchValueGetTable(string text, int iD)
+        {
+            DataTable dt = new DataTable();
+            SqlCommand com = new SqlCommand("findProductInSupplier", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
+            com.Parameters.AddWithValue("@value", text);
+            com.Parameters.AddWithValue("@supplierID", iD);
+
+            dt.Load(com.ExecuteReader());
+
+            CloseSqlConnection();
+            return dt;
+        }
+
         public DataTable FindCustomer(string Name)
         {
             DataTable table = new DataTable();
@@ -723,10 +861,14 @@ namespace POS
             return table;
         }
 
-        public DataTable getSupplierProductList()
+        public DataTable getSupplierProductList(int supplierID)
         {
             DataTable table = new DataTable();
-            table.Load(new SqlCommand("GetSupplierProductList", this.OpenSqlConnection()) { CommandType = CommandType.StoredProcedure }.ExecuteReader());
+            SqlCommand com = new SqlCommand("GetSupplierProductList", OpenSqlConnection());
+            com.CommandType = CommandType.StoredProcedure;
+            com.Parameters.AddWithValue("@id", supplierID);
+
+            table.Load(com.ExecuteReader());
             this.CloseSqlConnection();
             return table;
         }
@@ -776,6 +918,8 @@ namespace POS
                 listOfProducts.Columns.Add("amount");
                 listOfProducts.Columns.Add("cost");
                 listOfProducts.Columns.Add("discount");
+                listOfProducts.Columns.Add("No.");
+                listOfProducts.Columns.Add("DepotID");
                 this.Sale_newSale(DateTime.Now, id_employee, customerID, debt, 0.0, listOfProducts, 0.0);
             }
         }
@@ -800,7 +944,7 @@ namespace POS
         {
             this.con = new SqlConnection()
             {
-                // ConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\TIENDA\source\repos\POS\POS\Data\FinalDB.mdf;Integrated Security=True;Connect Timeout=30"
+                // ConnectionString = @"Data Source = localhost\SQLEXPRESS; Initial Catalog = C:\USERS\TIENDA\SOURCE\REPOS\POS\POS\DATA\FINALDB.MDF; Integrated Security = True"
                 ConnectionString = @"Data Source=localhost\SQLEXPRESS;Initial Catalog=C:\USERS\TIENDA\SOURCE\REPOS\POS\POS\DATA\FINALDB.MDF;Integrated Security=True"
             };
            

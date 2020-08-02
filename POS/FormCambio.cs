@@ -46,6 +46,7 @@ namespace POS
         }
 
         private void FormCambio_Paint(object sender, PaintEventArgs e)
+        
         {
             Pen pen = new Pen(Color.LimeGreen);
             Graphics graphics = e.Graphics;

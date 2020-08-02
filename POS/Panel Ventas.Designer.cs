@@ -35,8 +35,9 @@ namespace POS
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Panel_Ventas));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LastSaleElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.LastSaleBtn = new System.Windows.Forms.Button();
             this.LookForTicketBtn = new Bunifu.Framework.UI.BunifuElipse(this.components);
@@ -46,15 +47,10 @@ namespace POS
             this.panel1 = new System.Windows.Forms.Panel();
             this.CanceledLbl = new Bunifu.Framework.UI.BunifuCustomLabel();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.barcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.description = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.brand = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UnitCost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.paymentLbl = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.AmountProdctsLbl = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.nextTicketBtn = new System.Windows.Forms.Button();
+            this.previousTicketBtn = new System.Windows.Forms.Button();
             this.ProductTxt = new System.Windows.Forms.RichTextBox();
             this.panel5 = new System.Windows.Forms.Panel();
             this.totalLbl = new System.Windows.Forms.Label();
@@ -70,6 +66,7 @@ namespace POS
             this.label1 = new System.Windows.Forms.Label();
             this.CustomerBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.printTicketBtn = new System.Windows.Forms.Button();
             this.EmployeeCanceldSaleLbl = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.cancelationDateLbl = new System.Windows.Forms.Label();
@@ -79,6 +76,7 @@ namespace POS
             this.label4 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.ReturnPackagesBtn = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.CancelSaleBtn = new System.Windows.Forms.Button();
@@ -87,14 +85,29 @@ namespace POS
             this.moreBtn = new System.Windows.Forms.Button();
             this.CobrarBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.autoGrouping = new System.Windows.Forms.CheckBox();
             this.discountList = new System.Windows.Forms.Button();
             this.newWindowBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.discountBtn = new Bunifu.Framework.UI.BunifuImageButton();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.bunifuGradientPanel1 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.MimimizeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.bunifuElipse1 = new Bunifu.Framework.UI.BunifuElipse(this.components);
+            this.printDocument2 = new System.Drawing.Printing.PrintDocument();
+            this.reprintTicket = new System.Drawing.Printing.PrintDocument();
+            this.reprintElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.barcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.refound = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.description = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.brand = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UnitCost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.depot = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.WholesaleDiscountApplied = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.panel4.SuspendLayout();
@@ -103,15 +116,16 @@ namespace POS
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ClearCustomerBtn)).BeginInit();
             this.panel6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.newWindowBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.discountBtn)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.bunifuGradientPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).BeginInit();
+            this.panel7.SuspendLayout();
             this.SuspendLayout();
             // 
             // LastSaleElipse
@@ -162,18 +176,18 @@ namespace POS
             // 
             // printDocument1
             // 
+            this.printDocument1.DocumentName = " ";
             this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.CanceledLbl);
             this.panel1.Controls.Add(this.dataGridView2);
-            this.panel1.Controls.Add(this.paymentLbl);
-            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.AmountProdctsLbl);
             this.panel1.Controls.Add(this.panel4);
             this.panel1.Controls.Add(this.panel5);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 25);
+            this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(889, 1075);
             this.panel1.TabIndex = 40;
@@ -211,132 +225,111 @@ namespace POS
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.barcode,
+            this.refound,
             this.description,
             this.brand,
             this.amount,
             this.UnitCost,
-            this.Total});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView2.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Total,
+            this.depot,
+            this.WholesaleDiscountApplied});
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Century Gothic", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView2.DefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView2.EnableHeadersVisualStyles = false;
             this.dataGridView2.Location = new System.Drawing.Point(0, 100);
             this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.ReadOnly = true;
             this.dataGridView2.RowHeadersVisible = false;
             this.dataGridView2.RowTemplate.Height = 35;
             this.dataGridView2.RowTemplate.ReadOnly = true;
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(889, 815);
+            this.dataGridView2.Size = new System.Drawing.Size(889, 855);
             this.dataGridView2.TabIndex = 2;
+            this.toolTip1.SetToolTip(this.dataGridView2, "bullshit");
             this.dataGridView2.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView2_CellFormatting);
             this.dataGridView2.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView2_CellMouseClick);
             this.dataGridView2.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellValueChanged);
             this.dataGridView2.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_RowEnter);
             this.dataGridView2.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView2_RowsAdded);
+            this.dataGridView2.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView2_RowsRemoved);
             this.dataGridView2.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dataGridView2_Scroll);
             this.dataGridView2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView2_KeyDown);
             // 
-            // barcode
+            // AmountProdctsLbl
             // 
-            this.barcode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.barcode.HeaderText = "Código de Barras";
-            this.barcode.Name = "barcode";
-            this.barcode.ReadOnly = true;
-            this.barcode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.barcode.Visible = false;
-            // 
-            // description
-            // 
-            this.description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.description.HeaderText = "Descripción";
-            this.description.Name = "description";
-            this.description.ReadOnly = true;
-            this.description.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // brand
-            // 
-            this.brand.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.brand.HeaderText = "Marca";
-            this.brand.Name = "brand";
-            this.brand.ReadOnly = true;
-            this.brand.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.brand.Width = 113;
-            // 
-            // amount
-            // 
-            this.amount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.amount.HeaderText = "Cantidad";
-            this.amount.Name = "amount";
-            this.amount.ReadOnly = true;
-            this.amount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.amount.Width = 153;
-            // 
-            // UnitCost
-            // 
-            this.UnitCost.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.UnitCost.HeaderText = "Precio Unitario";
-            this.UnitCost.Name = "UnitCost";
-            this.UnitCost.ReadOnly = true;
-            this.UnitCost.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.UnitCost.Width = 202;
-            // 
-            // Total
-            // 
-            this.Total.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Total.HeaderText = "Total";
-            this.Total.Name = "Total";
-            this.Total.ReadOnly = true;
-            this.Total.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Total.Width = 87;
-            // 
-            // paymentLbl
-            // 
-            this.paymentLbl.BackColor = System.Drawing.Color.White;
-            this.paymentLbl.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.paymentLbl.Font = new System.Drawing.Font("Century Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.paymentLbl.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.paymentLbl.Location = new System.Drawing.Point(0, 915);
-            this.paymentLbl.Name = "paymentLbl";
-            this.paymentLbl.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.paymentLbl.Size = new System.Drawing.Size(889, 47);
-            this.paymentLbl.TabIndex = 17;
-            this.paymentLbl.Text = "Abono $0.00";
-            this.paymentLbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.paymentLbl.Visible = false;
-            this.paymentLbl.TextChanged += new System.EventHandler(this.paymentLbl_TextChanged);
-            // 
-            // label3
-            // 
-            this.label3.BackColor = System.Drawing.Color.White;
-            this.label3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label3.Font = new System.Drawing.Font("Century Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.Color.Tomato;
-            this.label3.Location = new System.Drawing.Point(0, 962);
-            this.label3.Name = "label3";
-            this.label3.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label3.Size = new System.Drawing.Size(889, 47);
-            this.label3.TabIndex = 44;
-            this.label3.Text = "Importe de envases $0.00";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.label3.Visible = false;
+            this.AmountProdctsLbl.BackColor = System.Drawing.Color.White;
+            this.AmountProdctsLbl.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.AmountProdctsLbl.Font = new System.Drawing.Font("Century Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AmountProdctsLbl.ForeColor = System.Drawing.Color.CornflowerBlue;
+            this.AmountProdctsLbl.Location = new System.Drawing.Point(0, 955);
+            this.AmountProdctsLbl.Name = "AmountProdctsLbl";
+            this.AmountProdctsLbl.Padding = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.AmountProdctsLbl.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.AmountProdctsLbl.Size = new System.Drawing.Size(889, 47);
+            this.AmountProdctsLbl.TabIndex = 17;
+            this.AmountProdctsLbl.Text = "Productos: 0";
+            this.AmountProdctsLbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.AmountProdctsLbl.Visible = false;
+            this.AmountProdctsLbl.TextChanged += new System.EventHandler(this.paymentLbl_TextChanged);
             // 
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.White;
+            this.panel4.Controls.Add(this.nextTicketBtn);
+            this.panel4.Controls.Add(this.previousTicketBtn);
             this.panel4.Controls.Add(this.ProductTxt);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(889, 100);
             this.panel4.TabIndex = 41;
+            // 
+            // nextTicketBtn
+            // 
+            this.nextTicketBtn.BackColor = System.Drawing.Color.White;
+            this.nextTicketBtn.FlatAppearance.BorderSize = 0;
+            this.nextTicketBtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+            this.nextTicketBtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+            this.nextTicketBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.nextTicketBtn.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nextTicketBtn.ForeColor = System.Drawing.Color.Teal;
+            this.nextTicketBtn.Location = new System.Drawing.Point(126, 3);
+            this.nextTicketBtn.Name = "nextTicketBtn";
+            this.nextTicketBtn.Size = new System.Drawing.Size(120, 30);
+            this.nextTicketBtn.TabIndex = 51;
+            this.nextTicketBtn.Text = "Ticket Siguiente ->";
+            this.nextTicketBtn.UseVisualStyleBackColor = false;
+            this.nextTicketBtn.Visible = false;
+            this.nextTicketBtn.Click += new System.EventHandler(this.nextTicketBtn_Click);
+            this.nextTicketBtn.MouseLeave += new System.EventHandler(this.nextTicketBtn_MouseLeave);
+            this.nextTicketBtn.MouseHover += new System.EventHandler(this.nextTicketBtn_MouseHover);
+            // 
+            // previousTicketBtn
+            // 
+            this.previousTicketBtn.BackColor = System.Drawing.Color.White;
+            this.previousTicketBtn.FlatAppearance.BorderSize = 0;
+            this.previousTicketBtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+            this.previousTicketBtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+            this.previousTicketBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.previousTicketBtn.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.previousTicketBtn.ForeColor = System.Drawing.Color.Teal;
+            this.previousTicketBtn.Location = new System.Drawing.Point(10, 3);
+            this.previousTicketBtn.Name = "previousTicketBtn";
+            this.previousTicketBtn.Size = new System.Drawing.Size(110, 30);
+            this.previousTicketBtn.TabIndex = 50;
+            this.previousTicketBtn.Text = "<- Ticket Anterior";
+            this.previousTicketBtn.UseVisualStyleBackColor = false;
+            this.previousTicketBtn.Visible = false;
+            this.previousTicketBtn.Click += new System.EventHandler(this.previousTicketBtn_Click);
+            this.previousTicketBtn.MouseLeave += new System.EventHandler(this.previousTicketBtn_MouseLeave);
+            this.previousTicketBtn.MouseHover += new System.EventHandler(this.previousTicketBtn_MouseHover);
             // 
             // ProductTxt
             // 
@@ -363,21 +356,22 @@ namespace POS
             this.panel5.Controls.Add(this.totalLbl);
             this.panel5.Controls.Add(this.panel3);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel5.Location = new System.Drawing.Point(0, 1009);
+            this.panel5.Location = new System.Drawing.Point(0, 1002);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(889, 66);
+            this.panel5.Size = new System.Drawing.Size(889, 73);
             this.panel5.TabIndex = 42;
             // 
             // totalLbl
             // 
             this.totalLbl.BackColor = System.Drawing.Color.White;
             this.totalLbl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.totalLbl.Font = new System.Drawing.Font("Century Gothic", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.totalLbl.Font = new System.Drawing.Font("Century Gothic", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalLbl.ForeColor = System.Drawing.Color.LimeGreen;
+            this.totalLbl.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.totalLbl.Location = new System.Drawing.Point(246, 0);
             this.totalLbl.Name = "totalLbl";
             this.totalLbl.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.totalLbl.Size = new System.Drawing.Size(643, 66);
+            this.totalLbl.Size = new System.Drawing.Size(643, 73);
             this.totalLbl.TabIndex = 8;
             this.totalLbl.Text = "Total   $0.00";
             this.totalLbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -389,7 +383,7 @@ namespace POS
             this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(246, 66);
+            this.panel3.Size = new System.Drawing.Size(246, 73);
             this.panel3.TabIndex = 10;
             // 
             // cancelBtn
@@ -401,11 +395,12 @@ namespace POS
             this.cancelBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cancelBtn.Font = new System.Drawing.Font("Century Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cancelBtn.ForeColor = System.Drawing.Color.White;
-            this.cancelBtn.Location = new System.Drawing.Point(16, 8);
+            this.cancelBtn.Location = new System.Drawing.Point(16, 15);
             this.cancelBtn.Margin = new System.Windows.Forms.Padding(2);
             this.cancelBtn.Name = "cancelBtn";
             this.cancelBtn.Size = new System.Drawing.Size(215, 51);
             this.cancelBtn.TabIndex = 9;
+            this.cancelBtn.TabStop = false;
             this.cancelBtn.Text = "Limpiar";
             this.cancelBtn.UseVisualStyleBackColor = false;
             this.cancelBtn.Click += new System.EventHandler(this.cancelBtn_Click_1);
@@ -413,6 +408,10 @@ namespace POS
             // customerPaymentDocument
             // 
             this.customerPaymentDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.customerPaymentDocument_PrintPage);
+            // 
+            // saleCancelledDocument
+            // 
+            this.saleCancelledDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.saleCancelledDocument_PrintPage);
             // 
             // groupBox1
             // 
@@ -525,7 +524,7 @@ namespace POS
             // 
             // panel6
             // 
-            this.panel6.Controls.Add(this.refoundBtn);
+            this.panel6.Controls.Add(this.printTicketBtn);
             this.panel6.Controls.Add(this.EmployeeCanceldSaleLbl);
             this.panel6.Controls.Add(this.label8);
             this.panel6.Controls.Add(this.cancelationDateLbl);
@@ -534,19 +533,41 @@ namespace POS
             this.panel6.Controls.Add(this.dateOfSaleLbl);
             this.panel6.Controls.Add(this.label4);
             this.panel6.Controls.Add(this.label2);
-            this.panel6.Controls.Add(this.LastSaleBtn);
             this.panel6.Controls.Add(this.ReturnPackagesBtn);
+            this.panel6.Controls.Add(this.pictureBox1);
+            this.panel6.Controls.Add(this.LastSaleBtn);
+            this.panel6.Controls.Add(this.refoundBtn);
             this.panel6.Location = new System.Drawing.Point(0, 382);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(478, 575);
             this.panel6.TabIndex = 44;
+            this.panel6.Paint += new System.Windows.Forms.PaintEventHandler(this.panel6_Paint);
+            // 
+            // printTicketBtn
+            // 
+            this.printTicketBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.printTicketBtn.AutoSize = true;
+            this.printTicketBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(150)))), ((int)(((byte)(190)))));
+            this.printTicketBtn.FlatAppearance.BorderSize = 0;
+            this.printTicketBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.printTicketBtn.Font = new System.Drawing.Font("Century Gothic", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.printTicketBtn.ForeColor = System.Drawing.Color.White;
+            this.printTicketBtn.Location = new System.Drawing.Point(91, 144);
+            this.printTicketBtn.Margin = new System.Windows.Forms.Padding(2);
+            this.printTicketBtn.Name = "printTicketBtn";
+            this.printTicketBtn.Size = new System.Drawing.Size(297, 46);
+            this.printTicketBtn.TabIndex = 18;
+            this.printTicketBtn.Text = "Reimprimir";
+            this.printTicketBtn.UseVisualStyleBackColor = false;
+            this.printTicketBtn.Visible = false;
+            this.printTicketBtn.Click += new System.EventHandler(this.printTicketBtn_Click);
             // 
             // EmployeeCanceldSaleLbl
             // 
             this.EmployeeCanceldSaleLbl.AutoSize = true;
             this.EmployeeCanceldSaleLbl.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold);
             this.EmployeeCanceldSaleLbl.ForeColor = System.Drawing.Color.Tomato;
-            this.EmployeeCanceldSaleLbl.Location = new System.Drawing.Point(42, 511);
+            this.EmployeeCanceldSaleLbl.Location = new System.Drawing.Point(42, 484);
             this.EmployeeCanceldSaleLbl.Name = "EmployeeCanceldSaleLbl";
             this.EmployeeCanceldSaleLbl.Size = new System.Drawing.Size(369, 32);
             this.EmployeeCanceldSaleLbl.TabIndex = 16;
@@ -558,7 +579,7 @@ namespace POS
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold);
             this.label8.ForeColor = System.Drawing.Color.LimeGreen;
-            this.label8.Location = new System.Drawing.Point(164, 478);
+            this.label8.Location = new System.Drawing.Point(164, 451);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(135, 32);
             this.label8.TabIndex = 15;
@@ -570,7 +591,7 @@ namespace POS
             this.cancelationDateLbl.AutoSize = true;
             this.cancelationDateLbl.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold);
             this.cancelationDateLbl.ForeColor = System.Drawing.Color.Tomato;
-            this.cancelationDateLbl.Location = new System.Drawing.Point(44, 403);
+            this.cancelationDateLbl.Location = new System.Drawing.Point(44, 398);
             this.cancelationDateLbl.Name = "cancelationDateLbl";
             this.cancelationDateLbl.Size = new System.Drawing.Size(362, 32);
             this.cancelationDateLbl.TabIndex = 14;
@@ -582,7 +603,7 @@ namespace POS
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold);
             this.label7.ForeColor = System.Drawing.Color.LimeGreen;
-            this.label7.Location = new System.Drawing.Point(69, 370);
+            this.label7.Location = new System.Drawing.Point(69, 365);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(316, 32);
             this.label7.TabIndex = 13;
@@ -594,19 +615,20 @@ namespace POS
             this.EmployeeNameLbl.AutoSize = true;
             this.EmployeeNameLbl.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold);
             this.EmployeeNameLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.EmployeeNameLbl.Location = new System.Drawing.Point(32, 295);
+            this.EmployeeNameLbl.Location = new System.Drawing.Point(32, 314);
             this.EmployeeNameLbl.Name = "EmployeeNameLbl";
             this.EmployeeNameLbl.Size = new System.Drawing.Size(387, 32);
             this.EmployeeNameLbl.TabIndex = 12;
-            this.EmployeeNameLbl.Text = "Eduardo Uriel Mendez Arvizu";
+            this.EmployeeNameLbl.Text = "Eduardo Uriel Méndez Arvizu";
             this.EmployeeNameLbl.Visible = false;
+            this.EmployeeNameLbl.Click += new System.EventHandler(this.EmployeeNameLbl_Click);
             // 
             // dateOfSaleLbl
             // 
             this.dateOfSaleLbl.AutoSize = true;
             this.dateOfSaleLbl.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold);
             this.dateOfSaleLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.dateOfSaleLbl.Location = new System.Drawing.Point(44, 187);
+            this.dateOfSaleLbl.Location = new System.Drawing.Point(44, 229);
             this.dateOfSaleLbl.Name = "dateOfSaleLbl";
             this.dateOfSaleLbl.Size = new System.Drawing.Size(362, 32);
             this.dateOfSaleLbl.TabIndex = 10;
@@ -618,7 +640,7 @@ namespace POS
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold);
             this.label4.ForeColor = System.Drawing.Color.LimeGreen;
-            this.label4.Location = new System.Drawing.Point(131, 262);
+            this.label4.Location = new System.Drawing.Point(131, 281);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(201, 32);
             this.label4.TabIndex = 11;
@@ -630,7 +652,7 @@ namespace POS
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold);
             this.label2.ForeColor = System.Drawing.Color.LimeGreen;
-            this.label2.Location = new System.Drawing.Point(115, 154);
+            this.label2.Location = new System.Drawing.Point(115, 196);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(229, 32);
             this.label2.TabIndex = 9;
@@ -657,6 +679,17 @@ namespace POS
             this.ReturnPackagesBtn.Visible = false;
             this.ReturnPackagesBtn.Click += new System.EventHandler(this.ReturnPackagesBtn_Click);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBox1.Location = new System.Drawing.Point(43, 195);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(388, 359);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 46;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.checkBox1);
@@ -668,6 +701,7 @@ namespace POS
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Ticket";
+            this.groupBox3.Enter += new System.EventHandler(this.groupBox3_Enter);
             // 
             // checkBox1
             // 
@@ -772,10 +806,10 @@ namespace POS
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.White;
+            this.panel2.Controls.Add(this.autoGrouping);
             this.panel2.Controls.Add(this.discountList);
             this.panel2.Controls.Add(this.newWindowBtn);
             this.panel2.Controls.Add(this.discountBtn);
-            this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Controls.Add(this.CobrarBtn);
             this.panel2.Controls.Add(this.groupBox2);
             this.panel2.Controls.Add(this.CancelSaleBtn);
@@ -783,10 +817,24 @@ namespace POS
             this.panel2.Controls.Add(this.panel6);
             this.panel2.Controls.Add(this.groupBox1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(889, 25);
+            this.panel2.Location = new System.Drawing.Point(889, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(478, 1075);
             this.panel2.TabIndex = 41;
+            // 
+            // autoGrouping
+            // 
+            this.autoGrouping.AutoSize = true;
+            this.autoGrouping.Checked = true;
+            this.autoGrouping.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.autoGrouping.Font = new System.Drawing.Font("Century Gothic", 8.25F);
+            this.autoGrouping.Location = new System.Drawing.Point(50, 7);
+            this.autoGrouping.Name = "autoGrouping";
+            this.autoGrouping.Size = new System.Drawing.Size(172, 20);
+            this.autoGrouping.TabIndex = 50;
+            this.autoGrouping.Text = "Agrupar Automáticamente";
+            this.autoGrouping.UseVisualStyleBackColor = true;
+            this.autoGrouping.Visible = false;
             // 
             // discountList
             // 
@@ -795,7 +843,7 @@ namespace POS
             this.discountList.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
             this.discountList.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
             this.discountList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.discountList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.discountList.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.discountList.Location = new System.Drawing.Point(326, 6);
             this.discountList.Name = "discountList";
             this.discountList.Size = new System.Drawing.Size(61, 30);
@@ -836,16 +884,6 @@ namespace POS
             this.discountBtn.Visible = false;
             this.discountBtn.Zoom = 10;
             this.discountBtn.Click += new System.EventHandler(this.discountBtn_Click);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(45, 556);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(388, 359);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 46;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // bunifuGradientPanel1
             // 
@@ -894,14 +932,112 @@ namespace POS
             this.MimimizeBtn.Zoom = 10;
             this.MimimizeBtn.Click += new System.EventHandler(this.MimimizeBtn_Click);
             // 
+            // bunifuElipse1
+            // 
+            this.bunifuElipse1.ElipseRadius = 10;
+            this.bunifuElipse1.TargetControl = this.refoundBtn;
+            // 
+            // reprintTicket
+            // 
+            this.reprintTicket.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.reprintTicket_PrintPage);
+            // 
+            // reprintElipse
+            // 
+            this.reprintElipse.ElipseRadius = 10;
+            this.reprintElipse.TargetControl = this.printTicketBtn;
+            // 
+            // panel7
+            // 
+            this.panel7.Controls.Add(this.panel1);
+            this.panel7.Controls.Add(this.panel2);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel7.Location = new System.Drawing.Point(0, 25);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(1367, 1075);
+            this.panel7.TabIndex = 46;
+            // 
+            // barcode
+            // 
+            this.barcode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.barcode.HeaderText = "Código de Barras";
+            this.barcode.Name = "barcode";
+            this.barcode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.barcode.Visible = false;
+            this.barcode.Width = 267;
+            // 
+            // refound
+            // 
+            this.refound.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.refound.HeaderText = "Devolución";
+            this.refound.Name = "refound";
+            this.refound.Visible = false;
+            this.refound.Width = 181;
+            // 
+            // description
+            // 
+            this.description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.description.HeaderText = "Descripción";
+            this.description.Name = "description";
+            this.description.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // brand
+            // 
+            this.brand.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.brand.HeaderText = "Marca";
+            this.brand.Name = "brand";
+            this.brand.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.brand.Width = 113;
+            // 
+            // amount
+            // 
+            this.amount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.amount.HeaderText = "Cantidad";
+            this.amount.Name = "amount";
+            this.amount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.amount.Width = 153;
+            // 
+            // UnitCost
+            // 
+            this.UnitCost.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.UnitCost.HeaderText = "Precio Unitario";
+            this.UnitCost.Name = "UnitCost";
+            this.UnitCost.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.UnitCost.Width = 202;
+            // 
+            // Total
+            // 
+            this.Total.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Total.HeaderText = "Total";
+            this.Total.Name = "Total";
+            this.Total.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Total.Width = 87;
+            // 
+            // depot
+            // 
+            this.depot.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.depot.DefaultCellStyle = dataGridViewCellStyle2;
+            this.depot.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.depot.HeaderText = "Bodega";
+            this.depot.Name = "depot";
+            this.depot.ReadOnly = true;
+            this.depot.Width = 133;
+            // 
+            // WholesaleDiscountApplied
+            // 
+            this.WholesaleDiscountApplied.FalseValue = "false";
+            this.WholesaleDiscountApplied.HeaderText = "Precio por Mayoreo Aplicado";
+            this.WholesaleDiscountApplied.IndeterminateValue = "false";
+            this.WholesaleDiscountApplied.Name = "WholesaleDiscountApplied";
+            this.WholesaleDiscountApplied.TrueValue = "true";
+            // 
             // Panel_Ventas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1367, 1100);
-            this.Controls.Add(this.panel1);
-            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel7);
             this.Controls.Add(this.bunifuGradientPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -909,6 +1045,8 @@ namespace POS
             this.Name = "Panel_Ventas";
             this.ShowInTaskbar = false;
             this.Text = "Venta | Point of Sale";
+            this.TransparencyKey = System.Drawing.Color.Olive;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Panel_Ventas_FormClosing);
             this.Load += new System.EventHandler(this.Panel_Ventas_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -922,6 +1060,7 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.ClearCustomerBtn)).EndInit();
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -930,10 +1069,10 @@ namespace POS
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.newWindowBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.discountBtn)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.bunifuGradientPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).EndInit();
+            this.panel7.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -954,8 +1093,7 @@ namespace POS
         private System.Windows.Forms.PrintDialog printDialog1;
         private System.Drawing.Printing.PrintDocument printDocument1;
         private RichTextBox ProductTxt;
-        private Label paymentLbl;
-        private Label label3;
+        private Label AmountProdctsLbl;
         private System.Drawing.Printing.PrintDocument customerPaymentDocument;
         private System.Drawing.Printing.PrintDocument saleCancelledDocument;
         private System.Drawing.Printing.PrintDocument packageReturnedDocument;
@@ -993,12 +1131,25 @@ namespace POS
         private Panel panel2;
         private Bunifu.Framework.UI.BunifuImageButton closeBtn;
         private Button discountList;
+        private Timer timer1;
+        private Bunifu.Framework.UI.BunifuElipse bunifuElipse1;
+        private Button printTicketBtn;
+        private PrintDocument printDocument2;
+        private PrintDocument reprintTicket;
+        private Bunifu.Framework.UI.BunifuElipse reprintElipse;
+        private Panel panel7;
+        private CheckBox autoGrouping;
+        private ToolTip toolTip1;
+        private Button nextTicketBtn;
+        private Button previousTicketBtn;
         private DataGridViewTextBoxColumn barcode;
+        private DataGridViewCheckBoxColumn refound;
         private DataGridViewTextBoxColumn description;
         private DataGridViewTextBoxColumn brand;
         private DataGridViewTextBoxColumn amount;
         private DataGridViewTextBoxColumn UnitCost;
         private DataGridViewTextBoxColumn Total;
-        private Timer timer1;
+        private DataGridViewComboBoxColumn depot;
+        private DataGridViewCheckBoxColumn WholesaleDiscountApplied;
     }
 }

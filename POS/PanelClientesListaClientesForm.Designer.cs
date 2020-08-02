@@ -48,10 +48,12 @@ namespace POS
             this.panel1 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.bunifuImageButton1 = new Bunifu.Framework.UI.BunifuImageButton();
             this.panel2 = new Bunifu.Framework.UI.BunifuGradientPanel();
+            this.panel3 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).BeginInit();
             this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // BuscarClientetxt
@@ -61,9 +63,9 @@ namespace POS
             this.BuscarClientetxt.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.BuscarClientetxt.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.BuscarClientetxt.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BuscarClientetxt.Location = new System.Drawing.Point(183, 46);
+            this.BuscarClientetxt.Location = new System.Drawing.Point(339, 21);
             this.BuscarClientetxt.Name = "BuscarClientetxt";
-            this.BuscarClientetxt.Size = new System.Drawing.Size(816, 29);
+            this.BuscarClientetxt.Size = new System.Drawing.Size(479, 29);
             this.BuscarClientetxt.TabIndex = 44;
             this.BuscarClientetxt.TextChanged += new System.EventHandler(this.BuscarClientetxt_TextChanged);
             this.BuscarClientetxt.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.dataGridView1_PreviewKeyDown);
@@ -75,7 +77,7 @@ namespace POS
             this.BuscarLbl.AutoSize = true;
             this.BuscarLbl.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BuscarLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.BuscarLbl.Location = new System.Drawing.Point(55, 43);
+            this.BuscarLbl.Location = new System.Drawing.Point(236, 22);
             this.BuscarLbl.Name = "BuscarLbl";
             this.BuscarLbl.Size = new System.Drawing.Size(97, 28);
             this.BuscarLbl.TabIndex = 45;
@@ -107,13 +109,13 @@ namespace POS
             this.DeshabilitarBtn.IconVisible = true;
             this.DeshabilitarBtn.IconZoom = 90D;
             this.DeshabilitarBtn.IsTab = false;
-            this.DeshabilitarBtn.Location = new System.Drawing.Point(703, 14);
+            this.DeshabilitarBtn.Location = new System.Drawing.Point(707, 13);
             this.DeshabilitarBtn.Name = "DeshabilitarBtn";
             this.DeshabilitarBtn.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
             this.DeshabilitarBtn.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(101)))), ((int)(((byte)(163)))));
             this.DeshabilitarBtn.OnHoverTextColor = System.Drawing.Color.White;
             this.DeshabilitarBtn.selected = false;
-            this.DeshabilitarBtn.Size = new System.Drawing.Size(248, 74);
+            this.DeshabilitarBtn.Size = new System.Drawing.Size(211, 41);
             this.DeshabilitarBtn.TabIndex = 41;
             this.DeshabilitarBtn.Text = "Deshabilitar";
             this.DeshabilitarBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -148,13 +150,13 @@ namespace POS
             this.AbrirBtn.IconVisible = true;
             this.AbrirBtn.IconZoom = 90D;
             this.AbrirBtn.IsTab = false;
-            this.AbrirBtn.Location = new System.Drawing.Point(103, 14);
+            this.AbrirBtn.Location = new System.Drawing.Point(137, 13);
             this.AbrirBtn.Name = "AbrirBtn";
             this.AbrirBtn.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
             this.AbrirBtn.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(101)))), ((int)(((byte)(163)))));
             this.AbrirBtn.OnHoverTextColor = System.Drawing.Color.White;
             this.AbrirBtn.selected = false;
-            this.AbrirBtn.Size = new System.Drawing.Size(248, 74);
+            this.AbrirBtn.Size = new System.Drawing.Size(211, 41);
             this.AbrirBtn.TabIndex = 0;
             this.AbrirBtn.Text = "Abrir";
             this.AbrirBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -167,9 +169,6 @@ namespace POS
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
@@ -193,9 +192,10 @@ namespace POS
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.EnableHeadersVisualStyles = false;
             this.dataGridView1.GridColor = System.Drawing.Color.White;
-            this.dataGridView1.Location = new System.Drawing.Point(1, 92);
+            this.dataGridView1.Location = new System.Drawing.Point(0, 70);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
@@ -214,7 +214,7 @@ namespace POS
             this.dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1051, 569);
+            this.dataGridView1.Size = new System.Drawing.Size(1054, 526);
             this.dataGridView1.TabIndex = 46;
             this.dataGridView1.DataSourceChanged += new System.EventHandler(this.dataGridView1_DataSourceChanged);
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_Click);
@@ -228,10 +228,9 @@ namespace POS
             // 
             this.panel1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel1.BackgroundImage")));
             this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel1.Controls.Add(this.bunifuImageButton1);
-            this.panel1.Controls.Add(this.BuscarClientetxt);
             this.panel1.Controls.Add(this.dataGridView1);
-            this.panel1.Controls.Add(this.BuscarLbl);
+            this.panel1.Controls.Add(this.panel2);
+            this.panel1.Controls.Add(this.panel3);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.GradientBottomLeft = System.Drawing.Color.White;
             this.panel1.GradientBottomRight = System.Drawing.Color.White;
@@ -270,13 +269,24 @@ namespace POS
             this.panel2.GradientBottomRight = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.panel2.GradientTopLeft = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.panel2.GradientTopRight = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.panel2.Location = new System.Drawing.Point(0, 564);
+            this.panel2.Location = new System.Drawing.Point(0, 596);
             this.panel2.Name = "panel2";
             this.panel2.Quality = 10;
-            this.panel2.Size = new System.Drawing.Size(1054, 99);
+            this.panel2.Size = new System.Drawing.Size(1054, 67);
             this.panel2.TabIndex = 48;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             this.panel2.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.dataGridView1_PreviewKeyDown);
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.BuscarLbl);
+            this.panel3.Controls.Add(this.BuscarClientetxt);
+            this.panel3.Controls.Add(this.bunifuImageButton1);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1054, 70);
+            this.panel3.TabIndex = 49;
             // 
             // PanelClientesListaClientesForm
             // 
@@ -284,7 +294,6 @@ namespace POS
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1054, 663);
-            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -295,9 +304,10 @@ namespace POS
             this.Load += new System.EventHandler(this.PanelClientesListaClientesForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).EndInit();
             this.panel2.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -313,5 +323,6 @@ namespace POS
         private Bunifu.Framework.UI.BunifuGradientPanel panel1;
         private System.Windows.Forms.DataGridView dataGridView1;
         private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton1;
+        private Panel panel3;
     }
 }

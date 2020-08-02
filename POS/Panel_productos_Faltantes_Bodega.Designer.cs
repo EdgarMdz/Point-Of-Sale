@@ -83,9 +83,9 @@ namespace POS
             // 
             // bunifuCheckbox1
             // 
-            this.bunifuCheckbox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.bunifuCheckbox1.BackColor = System.Drawing.Color.LightGray;
             this.bunifuCheckbox1.ChechedOffColor = System.Drawing.Color.LightGray;
-            this.bunifuCheckbox1.Checked = true;
+            this.bunifuCheckbox1.Checked = false;
             this.bunifuCheckbox1.CheckedOnColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.bunifuCheckbox1.ForeColor = System.Drawing.Color.White;
             this.bunifuCheckbox1.Location = new System.Drawing.Point(19, 15);
@@ -160,7 +160,7 @@ namespace POS
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.LimeGreen;
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
@@ -182,13 +182,14 @@ namespace POS
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGrid1.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.dataGrid1.RowHeadersVisible = false;
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.Blue;
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.Black;
             this.dataGrid1.RowsDefaultCellStyle = dataGridViewCellStyle5;
             this.dataGrid1.RowTemplate.Height = 35;
             this.dataGrid1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGrid1.Size = new System.Drawing.Size(1112, 509);
             this.dataGrid1.TabIndex = 1;
             this.dataGrid1.DataSourceChanged += new System.EventHandler(this.dataGrid1_DataSourceChanged);
+            this.dataGrid1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGrid1_CellClick);
             this.dataGrid1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGrid1_CellValueChanged);
             this.dataGrid1.SelectionChanged += new System.EventHandler(this.dataGrid1_SelectionChanged);
             this.dataGrid1.Click += new System.EventHandler(this.dataGrid1_Click);
@@ -209,6 +210,7 @@ namespace POS
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Lista de Faltantes | Point of Sale";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Panel_productos_Faltantes_Bodega_FormClosing);
             this.Load += new System.EventHandler(this.Panel_productos_Faltantes_Bodega_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

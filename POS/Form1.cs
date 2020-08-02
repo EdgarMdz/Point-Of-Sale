@@ -15,75 +15,63 @@ namespace POS
 {
     public partial class Form1 : Form
     {
-        Control _control;
-        private Control con
-        {
-            get { return _control; }
+        Control con;
+       
 
-
-            set
-            {
-                if (_control != null && VentasButton.BackColor != this.homeBtn.Parent.BackColor)
-                {
-                    if (!(_control as Panel_Ventas).canClose)
-                        if (MessageBox.Show("¿Desea cambiar de pestaña?. \nPerderá la información", "Cerrar", MessageBoxButtons.YesNo) == DialogResult.No)
-                        {
-                            return;
-                        }
-
-                    _control = value;
-                }
-                else
-                {
-
-                    _control = value;
-                }
-            }
-        }
-
-            string xd { get; set; }
         private Empleado employee;
         private ContextMenu menu;
         private bool displayingReminder;
+        private ActiveWindow currentWindow;
+
+        private enum ActiveWindow
+        {
+            Home, Sales, Inventory, Statistics, Customers, Suppliers, Purchases, Employees, Settings
+        }
 
         public Form1(int EmployeeID)
         {
-            this.InitializeComponent();
+             InitializeComponent();
             Turno.SetFirsUsage(DateTime.Now);
             Recordatorio.resetReminders();
-            this.WindowState = FormWindowState.Maximized;
-            this.timer();
-            this.HourLbl.Visible = true;
-            this.MinutesLbl.Visible = true;
-            this.Daylbl.Visible = true;
-            this.DateLbl.Visible = true;
-            this.employee = new Empleado(EmployeeID);
-            this.displayHideTabs();
-            Button control = this.VentasButton;
-            this.menu = new ContextMenu();
-            this.menu.MenuItems.Add(new MenuItem("Abrir en nueva ventana"));
-            control.ContextMenu = this.menu;
+             WindowState = FormWindowState.Maximized;
+             timer();
+             HourLbl.Visible = true;
+             MinutesLbl.Visible = true;
+             Daylbl.Visible = true;
+             DateLbl.Visible = true;
+             employee = new Empleado(EmployeeID);
+             displayHideTabs();
+            Button control =  VentasButton;
+             menu = new ContextMenu();
+             menu.MenuItems.Add(new MenuItem("Abrir en nueva ventana"));
+            control.ContextMenu =  menu;
             control.ContextMenu.MenuItems[0].Click += (EventHandler)((s, e) =>
             {
-                if (control.Name == this.homeBtn.Name)
-                    new Panel_Inicio(this.time, this.employee.ID, this.ContainerPanel.Size, FormWindowState.Maximized).Show();
-                else if (control.Name == this.VentasButton.Name)
-                    new Panel_Ventas(this.employee.ID, FormWindowState.Maximized).Show();
-                else if (control.Name == this.ProductsButton.Name)
-                    new Panel_Productos(FormWindowState.Maximized).Show();
-                else if (control.Name == this.ClientesBtn.Name)
-                    new Panel_Clientes(FormWindowState.Maximized).Show();
-                else if (control.Name == this.SuppliersBtn.Name)
-                    new Panel_proveedores_Form(this.time, this.employee.ID, FormWindowState.Maximized).Show();
-                else if (control.Name == this.PurchasesBtn.Name)
+                if (control.Name == homeBtn.Name)
+                    new Panel_Inicio(time, employee.ID, ContainerPanel.Size, FormWindowState.Maximized).Show();
+                else if (control.Name == VentasButton.Name)
                 {
-                    new PanelCompras(this.employee.ID, FormWindowState.Maximized).Show();
+                    Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized);
+                    Thread thread = new Thread(() => panel.ShowDialog());
+                    thread.SetApartmentState(ApartmentState.STA);
+                    thread.IsBackground = true;
+                    thread.Start();
+                }
+                else if (control.Name == ProductsButton.Name)
+                    new Panel_Productos(FormWindowState.Maximized).Show();
+                else if (control.Name == ClientesBtn.Name)
+                    new Panel_Clientes(FormWindowState.Maximized).Show();
+                else if (control.Name == SuppliersBtn.Name)
+                    new Panel_proveedores_Form(time, employee.ID, FormWindowState.Maximized).Show();
+                else if (control.Name == PurchasesBtn.Name)
+                {
+                    new PanelCompras(employee.ID, FormWindowState.Maximized).Show();
                 }
                 else
                 {
-                    if (!(control.Name == this.employeeBtn.Name))
+                    if (!(control.Name == employeeBtn.Name))
                         return;
-                    new Panel_Empleados(this.employee.ID, FormWindowState.Maximized).Show();
+                    new Panel_Empleados(employee.ID, FormWindowState.Maximized).Show();
                 }
             });
 
@@ -91,76 +79,139 @@ namespace POS
 
         private void displayHideTabs()
         {
-            this.ProductsButton.Visible = this.employee.isAdmin;
-            this.ClientesBtn.Visible = this.employee.isAdmin;
-            this.employeeBtn.Visible = this.employee.isAdmin;
-            this.settingsBtn.Visible = this.employee.isAdmin;
+             ProductsButton.Visible =  employee.isAdmin;
+             ClientesBtn.Visible =  employee.isAdmin;
+             employeeBtn.Visible =  employee.isAdmin;
+             settingsBtn.Visible =  employee.isAdmin;
             statisticsBtn.Visible = employee.isAdmin;
-            this.userNameLbl.Text = string.Format("   {0}", this.employee.name.IndexOf(' ') > 0 ? (object)this.employee.name.Substring(0, this.employee.name.IndexOf(' ')) : (object)this.employee.name);
+             userNameLbl.Text = string.Format("   {0}",  employee.name.IndexOf(' ') > 0 ? (object) employee.name.Substring(0,  employee.name.IndexOf(' ')) : (object) employee.name);
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
-        {
+        {           
             Application.Exit();
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Minimized;
+             WindowState = FormWindowState.Minimized;
         }
 
         private void VentasButton_Click(object sender, EventArgs e)
         {
-            if (!(this.VentasButton.BackColor == this.homeBtn.Parent.BackColor))
+            if (!( VentasButton.BackColor ==  homeBtn.Parent.BackColor))
                 return;
-            if (this.con != null)
+            if (con != null)
             {
-                this.ContainerPanel.Controls.Clear();
-                this.con = null;
+                closeWindow();
             }
+
             if (con == null)
             {
-                Panel_Ventas panelVentas = new Panel_Ventas(this.employee.ID, FormWindowState.Normal);
-                this.con = (Control)panelVentas;
+                Panel_Ventas panelVentas = new Panel_Ventas(employee.ID, FormWindowState.Normal);
+                con = (Control)panelVentas;
                 panelVentas.TopLevel = false;
-                this.ContainerPanel.Controls.Add((Control)panelVentas);
+                ContainerPanel.Controls.Add((Control)panelVentas);
                 panelVentas.Dock = DockStyle.Fill;
                 panelVentas.Show();
-                this.disableButton((Control)this.VentasButton);
+                disableButton((Control)VentasButton);
+                currentWindow = ActiveWindow.Sales;
             }
-            else
+        }
+
+        private void closeWindow()
+        { 
+            switch(currentWindow)
             {
-                ContainerPanel.Controls.Add(con);
+                case ActiveWindow.Customers:
+                    (con as Panel_Clientes).Close();
+                    con = null;
+                    break;
+                
+                case ActiveWindow.Employees:
+                    (con as Panel_Empleados).Close();
+                    con = null;
+                    break;
+
+                case ActiveWindow.Home:
+                    (con as Panel_Inicio).Close();
+                    con = null;
+                    break;
+
+                case ActiveWindow.Inventory:
+                    (con as Panel_Productos).Close();
+                    con = null;
+                    break;
+
+                case ActiveWindow.Purchases:
+                    (con as PanelCompras).Close();
+                    con = null;
+                    break;
+
+                case ActiveWindow.Sales:
+                    if (con != null && VentasButton.BackColor != homeBtn.Parent.BackColor)
+                    {
+                        if (!(con as Panel_Ventas).canClose)
+                            if (MessageBox.Show("¿Desea cambiar de pestaña?. \nPerderá la información", "Cerrar", MessageBoxButtons.YesNo) == DialogResult.No)
+                            {
+                                return;
+                            }
+                        (con as Panel_Ventas).Close();
+                        con = null;
+                    }
+                    else
+                    {
+
+                        (con as Panel_Ventas).Close();
+                        con = null;
+                    }
+                    break;
+
+                case ActiveWindow.Settings:
+                    (con as Panel_Configuracion).Close();
+                    con = null;
+                    break;
+
+                case ActiveWindow.Statistics:
+                    (con as panel_Estadisticas).Close();
+                    con = null;
+                    break;
+
+                case ActiveWindow.Suppliers:
+                    (con as Panel_proveedores_Form).Close();
+                    con = null;
+                    break;
+
             }
         }
 
         private void disableButton(Control button)
         {
-            this.VentasButton.BackColor = this.TabPanel.BackColor;
+            VentasButton.BackColor = TabPanel.BackColor;
             VentasButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 133, 207);
 
-            this.ProductsButton.BackColor = this.TabPanel.BackColor;
+            ProductsButton.BackColor = TabPanel.BackColor;
             ProductsButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 133, 207);
 
-            this.ClientesBtn.BackColor = this.TabPanel.BackColor;
+            ClientesBtn.BackColor = TabPanel.BackColor;
             ClientesBtn.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 133, 207);
 
-            this.SuppliersBtn.BackColor = this.TabPanel.BackColor;
+            SuppliersBtn.BackColor = TabPanel.BackColor;
             SuppliersBtn.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 133, 207);
 
-            this.PurchasesBtn.BackColor = this.TabPanel.BackColor;
+            PurchasesBtn.BackColor = TabPanel.BackColor;
             PurchasesBtn.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 133, 207);
 
-            this.settingsBtn.BackColor = this.TabPanel.BackColor;
+            settingsBtn.BackColor = TabPanel.BackColor;
 
 
-            this.employeeBtn.BackColor = this.TabPanel.BackColor;
+            employeeBtn.BackColor = TabPanel.BackColor;
             employeeBtn.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 133, 207);
 
-            this.homeBtn.BackColor = this.TabPanel.BackColor;
+            homeBtn.BackColor = TabPanel.BackColor;
             homeBtn.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 133, 207);
 
-            this.statisticsBtn.BackColor = this.TabPanel.BackColor;
+            statisticsBtn.BackColor = TabPanel.BackColor;
             statisticsBtn.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 133, 207);
 
 
@@ -171,39 +222,35 @@ namespace POS
 
         private void ProductsButton_Click(object sender, EventArgs e)
         {
-            if (!(this.ProductsButton.BackColor == this.homeBtn.Parent.BackColor))
+            if (!( ProductsButton.BackColor ==  homeBtn.Parent.BackColor))
                 return;
-            if (this.con != null)
+            if ( con != null)
             {
-                this.ContainerPanel.Controls.Clear();
-                this.con = null;
+                closeWindow();
             }
 
             if (con == null)
             {
                 Panel_Productos panelProductos = new Panel_Productos(FormWindowState.Normal);
                 panelProductos.TopLevel = false;
-                this.con = (Control)panelProductos;
+                con = (Control)panelProductos;
                 panelProductos.TopLevel = false;
                 panelProductos.AutoScroll = true;
                 panelProductos.Dock = DockStyle.Fill;
                 panelProductos.Show();
-                this.ContainerPanel.Controls.Add(this.con);
-                this.disableButton((Control)this.ProductsButton);
-            }
-            else
-            {
                 ContainerPanel.Controls.Add(con);
+                disableButton((Control)ProductsButton);
+                currentWindow = ActiveWindow.Inventory;
             }
         }
 
 
         private void timer()
         {
-            this.time = new System.Windows.Forms.Timer();
-            this.time.Interval = 1000;
-            this.time.Tick += new EventHandler(this.t_Tick);
-            this.time.Enabled = true;
+             time = new System.Windows.Forms.Timer();
+             time.Interval = 1000;
+             time.Tick += new EventHandler( t_Tick);
+             time.Enabled = true;
         }
 
         private void t_Tick(object sender, EventArgs e)
@@ -216,11 +263,11 @@ namespace POS
             Daylbl.Text = (char.ToUpper(str1[0]).ToString() + str1.Substring(1) + ",").Substring(0, 3);
             string str2 = cultureInfo.DateTimeFormat.GetMonthName(now.Month).Substring(0, 3);
             DateLbl.Text = str2.Substring(0, 1).ToUpper() + str2.Substring(1) + " " + now.Day.ToString();
-            
+
             if (DateTime.Now.TimeOfDay == new TimeSpan(0, 0, 0))
                 Recordatorio.resetReminders();
-            
-            this.setUpReminders();
+
+           //  setUpReminders();
         }
 
         private async void setUpReminders()
@@ -229,11 +276,11 @@ namespace POS
             {
                 if (displayingReminder)
                     return;
-                
-                this.displayingReminder = true;
+
+                 displayingReminder = true;
                 DataTable unseenReminders = Recordatorio.getUnseenReminders();
                 SoundPlayer soundPlayer = new SoundPlayer(Properties.Resources.Windows_Notify_Calendar);
-                
+
                 foreach (DataRow row in unseenReminders.Rows)
                 {
                     soundPlayer.Play();
@@ -244,172 +291,154 @@ namespace POS
                         Thread.Sleep(1000);
                     }
                 }
-                this.displayingReminder = false;
+                 displayingReminder = false;
             }));
         }
 
         private void ClientesBtn_Click(object sender, EventArgs e)
         {
-            if (!(this.ClientesBtn.BackColor == this.homeBtn.Parent.BackColor))
+            if (!( ClientesBtn.BackColor ==  homeBtn.Parent.BackColor))
                 return;
-            if (this.con != null)
+            
+            if (con != null)
             {
-                this.ContainerPanel.Controls.Clear();
-                con = null;
+                closeWindow();
             }
+
             if (con == null)
             {
                 Panel_Clientes panelClientes = new Panel_Clientes(FormWindowState.Normal);
-                panelClientes.EmployeeID = this.employee.ID;
+                panelClientes.EmployeeID = employee.ID;
                 panelClientes.TopLevel = false;
-                this.con = (Control)panelClientes;
+                con = (Control)panelClientes;
                 panelClientes.TopLevel = false;
                 panelClientes.AutoScroll = true;
-                this.SuppliersBtn.Enabled = true;
+                SuppliersBtn.Enabled = true;
                 panelClientes.Dock = DockStyle.Fill;
                 panelClientes.Show();
-                this.ContainerPanel.Controls.Add(this.con);
-                this.disableButton((Control)this.ClientesBtn);
-            }
-            else
-            {
                 ContainerPanel.Controls.Add(con);
+                disableButton((Control)ClientesBtn);
+                currentWindow = ActiveWindow.Customers;
             }
         }
         private void SuppliersBtn_Click(object sender, EventArgs e)
         {
-            if (!(this.SuppliersBtn.BackColor == this.homeBtn.Parent.BackColor))
+            if (!( SuppliersBtn.BackColor ==  homeBtn.Parent.BackColor))
                 return;
-            if (this.con != null)
+
+            if ( con != null)
             {
-                this.ContainerPanel.Controls.Clear();
-                con = null;
+                closeWindow();
             }
+
             if (con == null)
             {
-                Panel_proveedores_Form panelProveedoresForm = new Panel_proveedores_Form(this.time, this.employee.ID, FormWindowState.Normal);
+                Panel_proveedores_Form panelProveedoresForm = new Panel_proveedores_Form(time, employee.ID, FormWindowState.Normal);
                 panelProveedoresForm.TopLevel = false;
-                this.con = (Control)panelProveedoresForm;
+                con = (Control)panelProveedoresForm;
                 panelProveedoresForm.TopLevel = false;
                 panelProveedoresForm.AutoScroll = true;
                 panelProveedoresForm.Dock = DockStyle.Fill;
                 panelProveedoresForm.Show();
-                this.ContainerPanel.Controls.Add(this.con);
-                this.disableButton((Control)this.SuppliersBtn);
-            }
-            else
-            {
                 ContainerPanel.Controls.Add(con);
+                disableButton((Control)SuppliersBtn);
+                currentWindow = ActiveWindow.Suppliers;
             }
         }
 
         private void PurchasesBtn_Click(object sender, EventArgs e)
         {
-            if (!(this.PurchasesBtn.BackColor == this.homeBtn.Parent.BackColor))
+            if (!( PurchasesBtn.BackColor ==  homeBtn.Parent.BackColor))
                 return;
-            if (this.con != null)
+            if ( con != null)
             {
-                this.ContainerPanel.Controls.Clear();
-                con = null;
+                closeWindow();
             }
+
             if (con == null)
             {
-                PanelCompras panelCompras = new PanelCompras(this.employee.ID, FormWindowState.Normal);
+                PanelCompras panelCompras = new PanelCompras(employee.ID, FormWindowState.Normal);
                 panelCompras.TopLevel = false;
-                this.con = panelCompras;
+                con = panelCompras;
                 panelCompras.TopLevel = false;
                 panelCompras.AutoScroll = true;
                 panelCompras.Dock = DockStyle.Fill;
                 panelCompras.Show();
-                this.ContainerPanel.Controls.Add(con);
-                this.disableButton((Control)this.PurchasesBtn);
-            }
-            else
-            {
                 ContainerPanel.Controls.Add(con);
+                disableButton((Control)PurchasesBtn);
+                currentWindow = ActiveWindow.Purchases;
             }
         }
 
         private void settingsBtn_Click(object sender, EventArgs e)
         {
-            if (!(this.settingsBtn.BackColor == this.homeBtn.Parent.BackColor))
+            if (!( settingsBtn.BackColor ==  homeBtn.Parent.BackColor))
                 return;
-            if (this.con != null)
+            
+            if ( con != null)
             {
-                this.ContainerPanel.Controls.Clear();
-                con = null;
+                closeWindow();
             }
+            
             if (con == null)
             {
                 Panel_Configuracion panelConfiguracion = new Panel_Configuracion();
                 panelConfiguracion.TopLevel = false;
-                this.con = (Control)panelConfiguracion;
+                con = (Control)panelConfiguracion;
                 panelConfiguracion.TopLevel = false;
                 panelConfiguracion.AutoScroll = true;
                 panelConfiguracion.Dock = DockStyle.Fill;
                 panelConfiguracion.Show();
-                this.ContainerPanel.Controls.Add(this.con);
-                this.disableButton((Control)this.settingsBtn);
-            }
-            else
-            {
                 ContainerPanel.Controls.Add(con);
+                disableButton((Control)settingsBtn);
+                currentWindow = ActiveWindow.Settings;
             }
         }
         private void employeeBtn_Click(object sender, EventArgs e)
         {
-            if (!(this.employeeBtn.BackColor == this.homeBtn.Parent.BackColor))
+            if (!( employeeBtn.BackColor ==  homeBtn.Parent.BackColor))
                 return;
-            if (this.con != null)
+            if ( con != null)
             {
-                this.ContainerPanel.Controls.Clear();
-                this.con = null;
+                closeWindow();
             }
             if (con == null)
             {
-                Panel_Empleados panelEmpleados = new Panel_Empleados(this.employee.ID, FormWindowState.Normal);
+                Panel_Empleados panelEmpleados = new Panel_Empleados(employee.ID, FormWindowState.Normal);
                 panelEmpleados.TopLevel = false;
-                this.con = (Control)panelEmpleados;
+                con = (Control)panelEmpleados;
                 panelEmpleados.TopLevel = false;
                 panelEmpleados.AutoScroll = true;
                 panelEmpleados.Dock = DockStyle.Fill;
                 panelEmpleados.Show();
-                this.ContainerPanel.Controls.Add(this.con);
-                this.disableButton((Control)this.employeeBtn);
-            }
-            else
-            {
                 ContainerPanel.Controls.Add(con);
+                disableButton((Control)employeeBtn);
+                currentWindow = ActiveWindow.Employees;
             }
         }
 
         private void homeBtn_Click(object sender, EventArgs e)
         {
-            if (!(this.homeBtn.BackColor == this.homeBtn.Parent.BackColor))
+            if (!( homeBtn.BackColor ==  homeBtn.Parent.BackColor))
                 return;
-            if (this.con != null)
+            if (con != null)
             {
-                this.ContainerPanel.Controls.Clear();
-                this.con=null;
+                closeWindow();
             }
-
             if (con == null)
             {
-                Panel_Inicio panelInicio = new Panel_Inicio(this.time, this.employee.ID, this.ContainerPanel.Size, FormWindowState.Normal);
+                Panel_Inicio panelInicio = new Panel_Inicio(time, employee.ID, ContainerPanel.Size, FormWindowState.Normal);
                 panelInicio.TopLevel = false;
-                this.con = (Control)panelInicio;
-                this.con.Tag = (object)panelInicio;
+                con = panelInicio;
+                con.Tag = (object)panelInicio;
                 panelInicio.TopLevel = false;
                 panelInicio.TopMost = true;
                 panelInicio.AutoScroll = true;
                 panelInicio.Dock = DockStyle.Fill;
                 panelInicio.Show();
-                this.ContainerPanel.Controls.Add(this.con);
-                this.disableButton((Control)this.homeBtn);
-            }
-            else
-            {
                 ContainerPanel.Controls.Add(con);
+                disableButton(homeBtn);
+                currentWindow = ActiveWindow.Home;
             }
         }
 
@@ -426,41 +455,38 @@ namespace POS
             darkForm.Show();
             if (formLogin.ShowDialog() == DialogResult.OK)
             {
-                this.employee = new Empleado(formLogin.ID);
-                this.displayHideTabs();
-                this.homeBtn_Click((object)this, (EventArgs)null);
+                 employee = new Empleado(formLogin.ID);
+                 displayHideTabs();
+                 homeBtn_Click((object)this, (EventArgs)null);
             }
             darkForm.Close();
         }
 
-       
+
         private void statisticsBtn_Click(object sender, EventArgs e)
         {
-            if (!(this.statisticsBtn.BackColor == this.statisticsBtn.Parent.BackColor))
+            if (!( statisticsBtn.BackColor ==  statisticsBtn.Parent.BackColor))
                 return;
 
-            if (this.con != null)
+            if ( con != null)
             {
-                this.ContainerPanel.Controls.Clear();
-                this.con = null;
+                closeWindow();
             }
+
             if (con == null)
             {
                 panel_Estadisticas statistics = new panel_Estadisticas();
                 statistics.TopLevel = false;
-                this.con = (Control)statistics;
-                this.con.Tag = (object)statistics;
+                con = (Control)statistics;
+                con.Tag = (object)statistics;
                 statistics.TopLevel = false;
                 statistics.TopMost = true;
                 statistics.AutoScroll = true;
                 statistics.Dock = DockStyle.Fill;
                 statistics.Show();
-                this.ContainerPanel.Controls.Add(this.con);
-                this.disableButton(statisticsBtn);
-            }
-            else
-            {
                 ContainerPanel.Controls.Add(con);
+                disableButton(statisticsBtn);
+                currentWindow = ActiveWindow.Statistics;
             }
         }
 

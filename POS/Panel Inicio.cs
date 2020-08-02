@@ -9,6 +9,7 @@ using System.Drawing.Printing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Layout;
+using Microsoft.PointOfService;
 
 namespace POS
 {
@@ -17,6 +18,7 @@ namespace POS
         private Timer time;
         private int employeeID;
         private DateTime date;
+        private CashDrawer m_Drawer;
 
         private bool isPopulating { get; set; }
 
@@ -79,11 +81,43 @@ namespace POS
 
         private void Panel_Inicio_Load(object sender, EventArgs e)
         {
+
             if (Turno.shiftActive)
                 this.setGroupBoxInfo();
             if (Turno.shiftActive || new Empleado(this.employeeID).isAdmin)
                 return;
             this.startNewShift();
+
+
+            //<<<step1>>>--Start
+            //Use a Logical Device Name which has been set on the SetupPOS.
+            string strLogicalName = "CashDrawer";
+
+            try
+            {
+                //Create PosExplorer
+                PosExplorer posExplorer = new PosExplorer();
+
+                DeviceInfo deviceInfo = null;
+
+                try
+                {
+                    deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, strLogicalName);
+                    m_Drawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
+                }
+                catch (Exception)
+                {
+                    //Nothing can be used.
+                    return;
+                }
+
+            }
+            catch (PosControlException)
+            {
+                //Nothing can be used.
+                //Nothing can be used.
+            }
+            //<<<step1>>>--End
         }
 
         private void Panel_Inicio_SizeChanged(object sender, EventArgs e)
@@ -384,7 +418,7 @@ namespace POS
             {
                 if (formShiftAddMoney.ShowDialog() == DialogResult.OK)
                 {
-                    try
+                   /* try
                     {
                         PrintDocument printDocument = new PrintDocument();
                         printDocument.PrintController = new StandardPrintController();
@@ -395,9 +429,39 @@ namespace POS
                     catch (InvalidPrinterException)
                     {
                         int num2 = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
+                    }*/
+                    //<<< step1 >>> --Start
+                    //When outputting to a printer,a mouse cursor becomes like a hourglass.
+            
+
+                    try
+                    {
+                        //Open the device
+                        //Use a Logical Device Name which has been set on the SetupPOS.
+                        m_Drawer.Open();
+
+                        //Get the exclusive control right for the opened device.
+                        //Then the device is disable from other application.
+                        m_Drawer.Claim(1000);
+
+                        //Enable the device.
+                        m_Drawer.DeviceEnabled = true;
+                        //Open the drawer by using the "OpenDrawer" method.
+                        m_Drawer.OpenDrawer();
+
+
+                        m_Drawer.DeviceEnabled = false;
+                        m_Drawer.Release();
+                        m_Drawer.Close();
+
                     }
+                    catch (PosControlException)
+                    {
+                    }
+                    //<<<step1>>>--End
+
                     Turno.AddCashToDrawer(empleado.ID, formShiftAddMoney.cash);
-                    int num3 = (int)MessageBox.Show("Se realizó correctamente");
+                    MessageBox.Show("Se realizó correctamente");
                     this.setGroupBoxInfo();
                 }
             }
@@ -435,5 +499,26 @@ namespace POS
 
         }
 
+        private void Panel_Inicio_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //<<<step1>>>--Start
+            if (m_Drawer != null)
+            {
+                try
+                {
+                    //Cancel the device
+                    m_Drawer.DeviceEnabled = false;
+
+                    //Release the device exclusive control right.
+                    m_Drawer.Release();
+
+                    //Finish using the device.
+                    m_Drawer.Close();
+                }
+                catch (PosControlException)
+                {
+                }
+            }
+        }
     }
 }
