@@ -32,13 +32,12 @@ namespace POS
         private void AddBtn_Click(object sender, EventArgs e)
         {
             Form_new_wholesale_cost cost = new Form_new_wholesale_cost(barcode);
-            this.Hide();
+            
             if (cost.ShowDialog() == DialogResult.OK)
             {
                 FillTable();
             }
 
-            this.Show();
         }
 
         private void FillTable()

@@ -1735,7 +1735,7 @@ namespace POS
             this.CloseSqlConnection();
         }
 
-        public DataTable SupplierFilterProducts(string search)
+        public DataTable SupplierFilterProducts(string search, int supplierId)
         {
             DataTable table = new DataTable();
             SqlCommand command = new SqlCommand("[SearchSupplierProductByCoincidence]", this.OpenSqlConnection())
@@ -1743,6 +1743,7 @@ namespace POS
                 CommandType = CommandType.StoredProcedure
             };
             command.Parameters.AddWithValue("@search", search);
+            command.Parameters.AddWithValue("@id", supplierId);
             table.Load(command.ExecuteReader());
             this.CloseSqlConnection();
             return table;

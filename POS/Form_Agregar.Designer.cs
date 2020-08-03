@@ -912,6 +912,7 @@ namespace POS
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Producto | Point of Sale";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Agregar_FormClosing);
             this.Load += new System.EventHandler(this.Form_Agregar_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form_Agregar_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();

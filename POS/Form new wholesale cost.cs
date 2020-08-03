@@ -178,5 +178,17 @@ namespace POS
                 }
             }
         }
+
+        private void Form_new_wholesale_cost_Paint(object sender, PaintEventArgs e)
+        {
+            Pen p = new Pen(Color.FromArgb(0,100,140)) { Width = 3 };
+
+            e.Graphics.DrawLine(p, 0, 2, this.Width, 2);//upper border
+            e.Graphics.DrawLine(p, 0, this.Height - 2, this.Width, this.Height - 2);//bottom border
+            e.Graphics.DrawLine(p, 2, 0, 2, this.Height);//left border
+            e.Graphics.DrawLine(p, this.Width - 2, 0, this.Width - 2, this.Height);//right border
+
+            p.Dispose();
+        }
     }
 }

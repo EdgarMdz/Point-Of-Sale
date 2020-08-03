@@ -674,5 +674,12 @@ namespace POS
 
 
         }
+
+        private void Form_Agregar_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            pictureBox1.Dispose();
+
+
+        }
     }
 }

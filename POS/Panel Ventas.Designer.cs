@@ -1030,6 +1030,7 @@ namespace POS
             this.WholesaleDiscountApplied.IndeterminateValue = "false";
             this.WholesaleDiscountApplied.Name = "WholesaleDiscountApplied";
             this.WholesaleDiscountApplied.TrueValue = "true";
+            this.WholesaleDiscountApplied.Visible = false;
             // 
             // Panel_Ventas
             // 

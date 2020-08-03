@@ -1,5 +1,4 @@
-﻿using Bunifu.Framework.UI;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +12,7 @@ using Zen.Barcode;
 using Microsoft.PointOfService;
 using System.IO;
 using System.Drawing.Imaging;
-using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace POS
 {
@@ -451,12 +450,12 @@ namespace POS
                 }
             }
             var wholedisc = product.GetWholesaleDiscount(countOfTotalPices) / countOfTotalPices;
-
+            
+            //When there is an applicable wholesale discount
             if (wholedisc > 0)
             {
                 discount = wholedisc *
                     getAmountOfSinglePieces(dataGridView2.Rows[values[product.Barcode].Item1].Cells["amount"].Value.ToString(), product);
-
 
                 values.Remove(product.Barcode);
 

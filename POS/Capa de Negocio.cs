@@ -644,8 +644,8 @@ namespace POS
 
         internal DataTable Supplier_SearchValueGetTable(string text, int ID)
         => datos.Supplier_SearchValueGetTable(text, ID);
-        public DataTable SupplierFilterProducts(string search) =>
-            this.datos.SupplierFilterProducts(search);
+        public DataTable SupplierFilterProducts(string search, int supplierID) =>
+            this.datos.SupplierFilterProducts(search, supplierID);
 
         public int SupplierGeneratePO(int SupplierID, int EmployeeID, DateTime arrivalDate, DateTime paymentDueDate, double total, double Payment) =>
             this.datos.SupplierGeneratePO(SupplierID, EmployeeID, arrivalDate, paymentDueDate, total, Payment);

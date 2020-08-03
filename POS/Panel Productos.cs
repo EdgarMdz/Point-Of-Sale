@@ -194,23 +194,31 @@ namespace POS
         {
             SearchTxt.Focus();
             this.loadtable();
+        }
+
+        private async void loadtable()
+        {
+            dataGridView1.DataSource = await Task.Run(() => Bodega.getInventory());
+            
             if (this.dataGridView1.RowCount <= 0)
                 return;
             this.dataGridView1.FirstDisplayedCell = this.dataGridView1.Rows[0].Cells[0];
+
+            CellFormatting();
+
+        }
+        private async void loadtable(string text)
+        {
+            dataGridView1.DataSource = await Task.Run(() => Bodega.getInventory(text));
+
+            if (this.dataGridView1.RowCount <= 0)
+                return;
+            this.dataGridView1.FirstDisplayedCell = this.dataGridView1.Rows[0].Cells[0];
+
+            CellFormatting();
+
         }
 
-        private void  loadtable()
-        {
-            /* Producto producto = new Producto();
-             int index = this.dataGridView1.CurrentRow != null ? (this.dataGridView1.RowCount > 0 ? this.dataGridView1.CurrentRow.Index : 0) : 0;
-             this.dataGridView1.DataSource = Bodega.getInventory();
-             this.highlightProductsBellowMinStock();
-             this.periodTimeCombo.SelectedIndex = 1;
-             this.dataGridView1.CurrentCell = this.dataGridView1.RowCount > 0 ? this.dataGridView1[0, index] : (DataGridViewCell)null;
-             this.SearchTxt.Text += " ";
-             this.SearchTxt.Text = this.SearchTxt.Text.Substring(0, this.SearchTxt.Text.Length - 1);*/
-            dataGridView1.DataSource = Bodega.getInventory();
-        }
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
@@ -464,22 +472,21 @@ namespace POS
             {
                 if (SearchTxt.Text.Trim() != "")
                 {
-                    dataGridView1.DataSource = Bodega.getInventory(SearchTxt.Text);
-                    CellFormatting();
+                    loadtable(SearchTxt.Text);
                 }
             }
             else if(e.KeyCode == Keys.Escape)
             {
                 SearchTxt.Text = "";
-                dataGridView1.DataSource = Bodega.getInventory();
-                CellFormatting();
+                loadtable();
+                
             }
         }
 
         private void SearchTxt_Enter(object sender, EventArgs e)
         {
-            SearchTxt.SelectAll();
+            SearchTxt.Focus();
+            SearchTxt.Select(0, SearchTxt.Text.Length);
         }
-
     }
 }

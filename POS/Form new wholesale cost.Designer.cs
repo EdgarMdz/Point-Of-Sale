@@ -49,9 +49,9 @@
             this.headerPanel.Controls.Add(this.label1);
             this.headerPanel.Controls.Add(this.bunifuImageButton1);
             this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.headerPanel.Location = new System.Drawing.Point(0, 0);
+            this.headerPanel.Location = new System.Drawing.Point(5, 5);
             this.headerPanel.Name = "headerPanel";
-            this.headerPanel.Size = new System.Drawing.Size(615, 23);
+            this.headerPanel.Size = new System.Drawing.Size(605, 23);
             this.headerPanel.TabIndex = 2;
             // 
             // label1
@@ -70,7 +70,7 @@
             this.bunifuImageButton1.BackColor = System.Drawing.Color.Transparent;
             this.bunifuImageButton1.Image = ((System.Drawing.Image)(resources.GetObject("bunifuImageButton1.Image")));
             this.bunifuImageButton1.ImageActive = null;
-            this.bunifuImageButton1.Location = new System.Drawing.Point(593, 3);
+            this.bunifuImageButton1.Location = new System.Drawing.Point(583, 3);
             this.bunifuImageButton1.Name = "bunifuImageButton1";
             this.bunifuImageButton1.Size = new System.Drawing.Size(19, 20);
             this.bunifuImageButton1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -147,7 +147,7 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(147, 243);
+            this.checkBox1.Location = new System.Drawing.Point(152, 248);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(320, 29);
             this.checkBox1.TabIndex = 8;
@@ -175,8 +175,10 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.Name = "Form_new_wholesale_cost";
+            this.Padding = new System.Windows.Forms.Padding(5);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form_new_wholesale_cost";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form_new_wholesale_cost_Paint);
             this.headerPanel.ResumeLayout(false);
             this.headerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).EndInit();

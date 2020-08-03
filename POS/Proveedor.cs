@@ -282,12 +282,12 @@ namespace POS
 
         public DataTable SupplierFilterProducts(string search)
         {
-            return this.negocio.SupplierFilterProducts(search);
+            return this.negocio.SupplierFilterProducts(search,ID);
         }
 
         public List<string> SupplierFilterProductsForNextPurchase(string search)
         {
-            DataTable dataTable = this.negocio.SupplierFilterProducts(search);
+            DataTable dataTable = this.negocio.SupplierFilterProducts(search, ID);
             List<string> stringList = new List<string>();
             foreach (DataRow row in (InternalDataCollectionBase)dataTable.Rows)
             {
