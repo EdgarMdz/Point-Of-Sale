@@ -36,8 +36,8 @@ namespace POS
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Panel_Ventas));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Panel_Ventas));
             this.LastSaleElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.LastSaleBtn = new System.Windows.Forms.Button();
             this.LookForTicketBtn = new Bunifu.Framework.UI.BunifuElipse(this.components);
@@ -47,6 +47,15 @@ namespace POS
             this.panel1 = new System.Windows.Forms.Panel();
             this.CanceledLbl = new Bunifu.Framework.UI.BunifuCustomLabel();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.barcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.refound = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.description = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.brand = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UnitCost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.depot = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.WholesaleDiscountApplied = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.AmountProdctsLbl = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.nextTicketBtn = new System.Windows.Forms.Button();
@@ -99,15 +108,6 @@ namespace POS
             this.reprintElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.panel7 = new System.Windows.Forms.Panel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.barcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.refound = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.description = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.brand = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UnitCost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.depot = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.WholesaleDiscountApplied = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.panel4.SuspendLayout();
@@ -261,6 +261,80 @@ namespace POS
             this.dataGridView2.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView2_RowsRemoved);
             this.dataGridView2.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dataGridView2_Scroll);
             this.dataGridView2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView2_KeyDown);
+            // 
+            // barcode
+            // 
+            this.barcode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.barcode.HeaderText = "Código de Barras";
+            this.barcode.Name = "barcode";
+            this.barcode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.barcode.Visible = false;
+            // 
+            // refound
+            // 
+            this.refound.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.refound.HeaderText = "Devolución";
+            this.refound.Name = "refound";
+            this.refound.Visible = false;
+            // 
+            // description
+            // 
+            this.description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.description.HeaderText = "Descripción";
+            this.description.Name = "description";
+            this.description.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // brand
+            // 
+            this.brand.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.brand.HeaderText = "Marca";
+            this.brand.Name = "brand";
+            this.brand.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.brand.Width = 113;
+            // 
+            // amount
+            // 
+            this.amount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.amount.HeaderText = "Cantidad";
+            this.amount.Name = "amount";
+            this.amount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.amount.Width = 153;
+            // 
+            // UnitCost
+            // 
+            this.UnitCost.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.UnitCost.HeaderText = "Precio Unitario";
+            this.UnitCost.Name = "UnitCost";
+            this.UnitCost.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.UnitCost.Width = 202;
+            // 
+            // Total
+            // 
+            this.Total.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Total.HeaderText = "Total";
+            this.Total.Name = "Total";
+            this.Total.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Total.Width = 87;
+            // 
+            // depot
+            // 
+            this.depot.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.depot.DefaultCellStyle = dataGridViewCellStyle2;
+            this.depot.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.depot.HeaderText = "Bodega";
+            this.depot.Name = "depot";
+            this.depot.ReadOnly = true;
+            this.depot.Width = 133;
+            // 
+            // WholesaleDiscountApplied
+            // 
+            this.WholesaleDiscountApplied.FalseValue = "false";
+            this.WholesaleDiscountApplied.HeaderText = "Precio por Mayoreo Aplicado";
+            this.WholesaleDiscountApplied.IndeterminateValue = "false";
+            this.WholesaleDiscountApplied.Name = "WholesaleDiscountApplied";
+            this.WholesaleDiscountApplied.TrueValue = "true";
+            this.WholesaleDiscountApplied.Visible = false;
             // 
             // AmountProdctsLbl
             // 
@@ -955,82 +1029,6 @@ namespace POS
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(1367, 1075);
             this.panel7.TabIndex = 46;
-            // 
-            // barcode
-            // 
-            this.barcode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.barcode.HeaderText = "Código de Barras";
-            this.barcode.Name = "barcode";
-            this.barcode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.barcode.Visible = false;
-            this.barcode.Width = 267;
-            // 
-            // refound
-            // 
-            this.refound.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.refound.HeaderText = "Devolución";
-            this.refound.Name = "refound";
-            this.refound.Visible = false;
-            this.refound.Width = 181;
-            // 
-            // description
-            // 
-            this.description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.description.HeaderText = "Descripción";
-            this.description.Name = "description";
-            this.description.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // brand
-            // 
-            this.brand.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.brand.HeaderText = "Marca";
-            this.brand.Name = "brand";
-            this.brand.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.brand.Width = 113;
-            // 
-            // amount
-            // 
-            this.amount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.amount.HeaderText = "Cantidad";
-            this.amount.Name = "amount";
-            this.amount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.amount.Width = 153;
-            // 
-            // UnitCost
-            // 
-            this.UnitCost.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.UnitCost.HeaderText = "Precio Unitario";
-            this.UnitCost.Name = "UnitCost";
-            this.UnitCost.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.UnitCost.Width = 202;
-            // 
-            // Total
-            // 
-            this.Total.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Total.HeaderText = "Total";
-            this.Total.Name = "Total";
-            this.Total.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Total.Width = 87;
-            // 
-            // depot
-            // 
-            this.depot.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.depot.DefaultCellStyle = dataGridViewCellStyle2;
-            this.depot.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.depot.HeaderText = "Bodega";
-            this.depot.Name = "depot";
-            this.depot.ReadOnly = true;
-            this.depot.Width = 133;
-            // 
-            // WholesaleDiscountApplied
-            // 
-            this.WholesaleDiscountApplied.FalseValue = "false";
-            this.WholesaleDiscountApplied.HeaderText = "Precio por Mayoreo Aplicado";
-            this.WholesaleDiscountApplied.IndeterminateValue = "false";
-            this.WholesaleDiscountApplied.Name = "WholesaleDiscountApplied";
-            this.WholesaleDiscountApplied.TrueValue = "true";
-            this.WholesaleDiscountApplied.Visible = false;
             // 
             // Panel_Ventas
             // 

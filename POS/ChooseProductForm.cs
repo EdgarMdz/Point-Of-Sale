@@ -105,6 +105,10 @@ namespace POS
             this.dataGridView1.Columns["Código de Barras"].DisplayIndex = 0;
             this.dataGridView1.Columns["Precio de Compra por Pieza"].Visible = emp != null && emp.isAdmin;
 
+            this.dataGridView1.Columns["Código de Barras"].Frozen = true;
+            this.dataGridView1.Columns["Descripción"].Frozen = true;
+            this.dataGridView1.Columns["Marca"].Frozen = true;
+
             this.resizeGridView();
 
             if (dataGridView1.RowCount > 0)

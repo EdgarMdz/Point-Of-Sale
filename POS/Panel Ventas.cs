@@ -850,8 +850,8 @@ namespace POS
                     }
                     else
                         continue;
-                    
-                    printingString += "\u001b|N" + row.Cells["amount"].Value.ToString();
+
+                    printingString += "\u001b|N" + getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), new Producto(barcode)) + "piezas";
                     printingString += "\u001b|cA" + "$" + row.Cells["UnitCost"].Value;
                     printingString += "\u001b|rA" + "$" + getTotalFromRowWithoutDiscount(row.Index).ToString("n2") + "\n";
 
@@ -1933,7 +1933,6 @@ namespace POS
                 color.G + 100 < 255 ? color.G + 100 : 255, color.B + 100 < 255 ? color.B + 100 : 255);
 
             printDocument1.PrintController = new StandardPrintController();
-            this.Name = "window " + count.ToString();
         }
 
         private void Panel_Ventas_Load(object sender, EventArgs e)
@@ -1952,6 +1951,12 @@ namespace POS
 
             ProductTxt.Focus();
 
+            setUpPOSDevices();
+            setimage();
+        }
+
+        private async void setUpPOSDevices()
+        {
             try
             {
                 //Create PosExplorer
@@ -1961,7 +1966,7 @@ namespace POS
                 {
                     deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, "CashDrawer");
                     cashDrawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
-                    cashDrawer.Open();
+                    await Task.Run(() => cashDrawer.Open());
 
                 }
                 catch (Exception) {                   /*Nothing can be used.  */       }
@@ -1972,7 +1977,7 @@ namespace POS
                     printer.Open();
 
                     string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
-                    
+
                     printer.Claim(1000);
                     printer.DeviceEnabled = true;
                     printer.RecLetterQuality = true;
@@ -2017,9 +2022,6 @@ namespace POS
                 //Nothing can be used.
                 MessageBox.Show("No se tuvo acceso a la impresora o al cajon");
             }
-
-            setimage();
-
         }
 
         private async void setimage()
@@ -2753,11 +2755,15 @@ namespace POS
             this.closeWindow();
         }
 
-        private void closeWindow()
+        public void closeWindow()
         {
-            if (this.dataGridView2.RowCount > 0 && MessageBox.Show("¿Desea cerrar la ventana?. Se perderá la infomación.", "Cerrar ventana", MessageBoxButtons.YesNo) == DialogResult.No)
-                return;
-            this.Close();
+            this.Invoke((MethodInvoker)delegate
+            {
+                if (this.dataGridView2.RowCount > 0 && MessageBox.Show("¿Desea cerrar la ventana?. Se perderá la infomación.", "Cerrar ventana", MessageBoxButtons.YesNo) == DialogResult.No)
+                    return;
+                this.Close();
+            });
+            
         }
 
         private void MimimizeBtn_Click(object sender, EventArgs e)
@@ -2961,9 +2967,12 @@ namespace POS
             }
             try
             {
-                dataGridView2.Columns.Remove(dataGridView2.Columns["Depot"]);
-                dataGridView2.Dispose();
-                pictureBox1.Dispose();
+                this.Invoke((MethodInvoker)delegate
+                {
+                    dataGridView2.Columns.Remove(dataGridView2.Columns["Depot"]);
+                    dataGridView2.Dispose();
+                    pictureBox1.Dispose();
+                });
             }
             catch (Exception) { }
            
