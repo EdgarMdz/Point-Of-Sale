@@ -35,24 +35,24 @@ namespace POS
                 Width = this.Width,
                 Height = this.Height - 2
             })));
-            this.FillDataGridView();
-            this.panel2.Height = 0;
-            this.panel2.Visible = false;
+            this.FillDataGridView();    
             this.Refresh();
+            BuscarClientetxt.Select();
         }
 
         private void FillDataGridView()
         {
-            DataTable dataTable = new DataTable();
             DataTable customerList = this.cliente.GetCustomerList();
             customerList.Columns["Id_Cliente"].ColumnName = "Número de Cliente";
-            this.dataGridView1.DataSource = (object)customerList;
+            this.dataGridView1.DataSource = customerList;
+
+            if (customerList.Rows.Count > 0)
+                dataGridView1.CurrentCell = dataGridView1[dataGridView1.Columns["Nombre"].Index, 0];
         }
 
         private void BuscarClientetxt_TextChanged(object sender, EventArgs e)
-        {
-            DataTable dataTable1 = new DataTable();
-            DataTable dataTable2 = !(this.BuscarClientetxt.Text != "") ? this.cliente.GetCustomerList() : this.cliente.SearchCustomer(this.BuscarClientetxt.Text);
+        {;
+            DataTable dataTable2 = BuscarClientetxt.Text == "" ? this.cliente.GetCustomerList() : this.cliente.SearchCustomer(this.BuscarClientetxt.Text);
             dataTable2.Columns["Id_Cliente"].ColumnName = "Número de Cliente";
             this.dataGridView1.DataSource = (object)dataTable2;
         }
@@ -64,23 +64,28 @@ namespace POS
 
         private void openCustomer()
         {
-            this.IDCustomer = int.Parse(this.dataGridView1.SelectedRows[0].Cells["Número de Cliente"].Value.ToString());
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            if (dataGridView1.CurrentRow != null)
+            {
+                this.IDCustomer = int.Parse(this.dataGridView1.SelectedRows[0].Cells["Número de Cliente"].Value.ToString());
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
         }
 
         private void DeshabilitarBtn_Click_1(object sender, EventArgs e)
         {
-            this.cliente.Name = this.dataGridView1.SelectedRows[0].Cells["Nombre"].Value.ToString();
-            this.cliente.ID = int.Parse(this.dataGridView1.SelectedRows[0].Cells["Número de cliente"].Value.ToString());
-            string str = this.dataGridView1.SelectedRows[0].Cells["Estado"].Value.ToString();
-            int index = this.dataGridView1.SelectedRows[0].Index;
-            this.cliente.Status = !(str == "Inactivo") ? "Inactivo" : "Activo";
-            this.cliente.UpdateStatus();
-            this.FillDataGridView();
-            this.dataGridView1.Rows[index].Selected = true;
+            if (dataGridView1.CurrentRow != null)
+            {
+                this.cliente.Name = this.dataGridView1.SelectedRows[0].Cells["Nombre"].Value.ToString();
+                this.cliente.ID = int.Parse(this.dataGridView1.SelectedRows[0].Cells["Número de cliente"].Value.ToString());
+                string str = this.dataGridView1.SelectedRows[0].Cells["Estado"].Value.ToString();
+                int index = this.dataGridView1.SelectedRows[0].Index;
+                this.cliente.Status = !(str == "Inactivo") ? "Inactivo" : "Activo";
+                this.cliente.UpdateStatus();
+                this.FillDataGridView();
+                this.dataGridView1.Rows[index].Selected = true;
+            }
         }
-
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             Pen pen = new Pen(Color.FromArgb(0, 111, 173));
@@ -189,6 +194,26 @@ namespace POS
         private void bunifuImageButton1_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void BuscarClientetxt_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Down && dataGridView1.RowCount > 0 && dataGridView1.CurrentRow.Index + 1 < dataGridView1.RowCount) 
+            {
+                dataGridView1.CurrentCell = dataGridView1[dataGridView1.CurrentCell.ColumnIndex, dataGridView1.CurrentRow.Index + 1];
+                e.SuppressKeyPress = true;
+            }
+
+            if (e.KeyCode == Keys.Up && dataGridView1.RowCount > 0 && dataGridView1.CurrentRow.Index -1  >=0)
+            {
+                dataGridView1.CurrentCell = dataGridView1[dataGridView1.CurrentCell.ColumnIndex, dataGridView1.CurrentRow.Index - 1];
+                e.SuppressKeyPress = true;
+            }
+
+            if (e.KeyCode == Keys.Enter && dataGridView1.RowCount > 0 && dataGridView1.CurrentRow!=null)
+            {
+                openCustomer();
+            }
         }
     }
 }

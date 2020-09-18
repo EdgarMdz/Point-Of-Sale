@@ -413,13 +413,17 @@ namespace POS
                 discount = product.RetailCost * amount - product.PurchaseCost / product.PiecesPerCase * amount;
 
             return discount;
-        }
+        }   
 
         double getDiscountForMixedCase(int rowIndex, Producto product)
         {
             //list to store values
             //Dictionary<barcode,tuple<rowindex,amount,accumulated amount>
             Dictionary<string, Tuple<int, double, double>> values = new Dictionary<string, Tuple<int, double, double>>();
+
+            //Dictionary<barcode,tuple<rowindex,amount,accumulated amount>
+            Dictionary<int, Tuple<string, double, double>> valuesx = new Dictionary<int, Tuple<string, double, double>>();
+
 
             double discount = 0;
             double countOfTotalPices = 0;
@@ -440,51 +444,56 @@ namespace POS
 
                     countOfTotalPices += casesNsingle.Item2;
 
-                    values.Add(p.Barcode, new Tuple<int, double, double>(i, casesNsingle.Item2, countOfTotalPices));
+                  //  values.Add(p.Barcode, new Tuple<int, double, double>(i, casesNsingle.Item2, countOfTotalPices));
+                    valuesx.Add(i, new Tuple<string, double, double>(p.Barcode, casesNsingle.Item2, countOfTotalPices));
 
                 }
             }
-            var wholedisc = countOfTotalPices > 0 ? product.GetWholesaleDiscount(countOfTotalPices) / countOfTotalPices : 0;
 
+            var wholedisc = getWholeSaleDiscountPerPiece(product,countOfTotalPices);
+            
             //When there is an applicable wholesale discount
             if (wholedisc > 0)
             {
+
                 discount = wholedisc *
-                    getAmountOfSinglePieces(dataGridView2.Rows[values[product.Barcode].Item1].Cells["amount"].Value.ToString(), product);
+                    getAmountOfSinglePieces(dataGridView2.Rows[rowIndex].Cells["amount"].Value.ToString(), product);
 
-                values.Remove(product.Barcode);
+                valuesx.Remove(rowIndex);
 
-                foreach (KeyValuePair<string, Tuple<int, double, double>> item in values)
+              // foreach (KeyValuePair<string, Tuple<int, double, double>> item in values)
+              foreach(KeyValuePair<int, Tuple<string, double, double>> item in valuesx )
                 {
-                    var p = new Producto(item.Key);
-                    addDiscountToRow(item.Value.Item1, wholedisc *
-                        getAmountOfSinglePieces(dataGridView2.Rows[values[p.Barcode].Item1].Cells["amount"].Value.ToString(), p));
-                    (dataGridView2.Rows[item.Value.Item1].Cells["WholesaleDiscountApplied"] as DataGridViewCheckBoxCell).Value = true;
+                    var p = new Producto(item.Value.Item1);
+
+                    addDiscountToRow(item.Key, wholedisc *
+                        getAmountOfSinglePieces(dataGridView2.Rows[item.Key].Cells["amount"].Value.ToString(), p)); //pay attention to this
+                    (dataGridView2.Rows[item.Key].Cells["WholesaleDiscountApplied"] as DataGridViewCheckBoxCell).Value = true;
                 }
             }
 
 
             //Enters in this section when the given product has at least one single piece and when there are products that, when groupped altogether, conform at least one case
-            else if (values.ContainsKey(product.Barcode) && countOfTotalPices / product.PiecesPerCase >= 1 && !Convert.ToBoolean(dataGridView2.Rows[rowIndex].Cells["WholesaleDiscountApplied"].Value))
+            else if (valuesx.ContainsKey(rowIndex) && countOfTotalPices / product.PiecesPerCase >= 1 && !Convert.ToBoolean(dataGridView2.Rows[rowIndex].Cells["WholesaleDiscountApplied"].Value))
             {
                 int cases = Producto.getCasesAndSingleProducts(product, countOfTotalPices).Item1;
 
 
-                double piecesWithDiscount = Math.Truncate(values[product.Barcode].Item3 / product.PiecesPerCase) < cases ?
-                    values[product.Barcode].Item2 :
-                    values[product.Barcode].Item2 - values[product.Barcode].Item3 % product.PiecesPerCase;
+                double piecesWithDiscount = Math.Truncate(valuesx[rowIndex].Item3 / product.PiecesPerCase) < cases ?
+                    valuesx[rowIndex].Item2 :
+                    valuesx[rowIndex].Item2 - valuesx[rowIndex].Item3 % product.PiecesPerCase;
 
                 discount = product.RetailCost * piecesWithDiscount -
                     piecesWithDiscount * product.CostPerCase / product.PiecesPerCase;
 
                 discount = discount < 0 ? 0 : discount;
 
-                values.Remove(product.Barcode);
+                valuesx.Remove(rowIndex);
 
 
-                foreach (KeyValuePair<string, Tuple<int, double, double>> item in values)
+                foreach (KeyValuePair<int, Tuple<string, double, double>> item in valuesx)
                 {
-                    Producto p = new Producto(item.Key);
+                    Producto p = new Producto(item.Value.Item1);
 
                     piecesWithDiscount = Math.Truncate(item.Value.Item3 / product.PiecesPerCase) < cases ?
                     item.Value.Item2 :
@@ -493,7 +502,7 @@ namespace POS
                     double disc = p.RetailCost * piecesWithDiscount -
                      piecesWithDiscount * p.CostPerCase / p.PiecesPerCase;
 
-                    addDiscountToRow(item.Value.Item1, disc);
+                    addDiscountToRow(item.Key, disc);
                 }
             }
             /*  else
@@ -507,6 +516,13 @@ namespace POS
                   }
               }*/
             return discount;
+        }
+
+        private double getWholeSaleDiscountPerPiece(Producto product, double countOfTotalPices)
+        {
+            return countOfTotalPices > 0 ? product.GetWholesaleDiscount(countOfTotalPices) / countOfTotalPices : 0;
+
+
         }
 
         private string amountFormat(Producto producto, double amount)
@@ -716,6 +732,9 @@ namespace POS
 
         private void ClearSale()
         {
+            if (dataGridView2.RowCount > 0)
+                if (MessageBox.Show("¡Desea borrar la lista de productos?", "Borrar Lista", MessageBoxButtons.YesNo) == DialogResult.No)
+                    return;
             this.dataGridView2.Rows.Clear();
             this.totalLbl.Text = "Total   $0.00";
             this.ClearCustomer();
@@ -1252,6 +1271,11 @@ namespace POS
         }
 
         private void CustomerBtn_Click(object sender, EventArgs e)
+        {
+            lookForCustomer();
+        }
+
+        private void lookForCustomer()
         {
             if (!this.isNewSale)
                 return;
@@ -2907,6 +2931,17 @@ namespace POS
             if (keyData == (Keys.Alt | Keys.O))
             {
                 openCashDrawer();
+                return true;
+            }
+            if (keyData == (Keys.Alt |  Keys.L))
+            {
+                lookForCustomer();
+                return true;
+            }
+
+            if (keyData == (Keys.Alt | Keys.Q))
+            {
+                ClearSale();
                 return true;
             }
 

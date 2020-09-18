@@ -385,16 +385,24 @@ namespace POS
                     return 0;
                 else
                 {
-                    var discountvalue = dt.Rows[discountRowIndex]["descuento"].ToString();
+                    //in case the given amount fits for case discount return that value
+                    if (PiecesPerCase >= Convert.ToDouble(dt.Rows[discountRowIndex]["cantidad"]))
+                        return (RetailCost - CostPerCase / PiecesPerCase) * amount;
 
-                    double discount = discountvalue.IndexOf("%") > -1 ? Convert.ToDouble(discountvalue.Substring(0, discountvalue.Length - 1)) :
-                        Convert.ToDouble(discountvalue);
-                    bool isPercentage = discountvalue.IndexOf("%") > -1;
-
-                    if (!isPercentage)
-                        return discount * amount;
+                    //if not return the corresponding discount
                     else
-                        return (RetailCost / 100 * discount) * amount;
+                    {
+                        var discountvalue = dt.Rows[discountRowIndex]["descuento"].ToString();
+
+                        double discount = discountvalue.IndexOf("%") > -1 ? Convert.ToDouble(discountvalue.Substring(0, discountvalue.Length - 1)) :
+                            Convert.ToDouble(discountvalue);
+                        bool isPercentage = discountvalue.IndexOf("%") > -1;
+
+                        if (!isPercentage)
+                            return discount * amount;
+                        else
+                            return (RetailCost / 100 * discount) * amount;
+                    }
                 }
             }
         }
