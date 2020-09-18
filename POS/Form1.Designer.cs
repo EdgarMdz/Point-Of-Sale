@@ -406,6 +406,7 @@ namespace POS
             this.ContainerPanel.Name = "ContainerPanel";
             this.ContainerPanel.Size = new System.Drawing.Size(795, 700);
             this.ContainerPanel.TabIndex = 2;
+            this.ContainerPanel.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.ContainerPanel_ControlAdded);
             // 
             // Form1
             // 

@@ -34,8 +34,8 @@ namespace POS
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Panel_Productos));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.MimimizeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.bunifuGradientPanel3 = new Bunifu.Framework.UI.BunifuGradientPanel();
@@ -128,7 +128,7 @@ namespace POS
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(0, 25);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1557, 713);
+            this.panel4.Size = new System.Drawing.Size(1557, 794);
             this.panel4.TabIndex = 13;
             // 
             // ProductPanel
@@ -138,7 +138,7 @@ namespace POS
             this.ProductPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ProductPanel.Location = new System.Drawing.Point(0, 0);
             this.ProductPanel.Name = "ProductPanel";
-            this.ProductPanel.Size = new System.Drawing.Size(1557, 713);
+            this.ProductPanel.Size = new System.Drawing.Size(1557, 794);
             this.ProductPanel.TabIndex = 10;
             // 
             // ProductListPanel
@@ -157,7 +157,7 @@ namespace POS
             this.ProductListPanel.Location = new System.Drawing.Point(0, 63);
             this.ProductListPanel.Name = "ProductListPanel";
             this.ProductListPanel.Quality = 10;
-            this.ProductListPanel.Size = new System.Drawing.Size(1557, 650);
+            this.ProductListPanel.Size = new System.Drawing.Size(1557, 731);
             this.ProductListPanel.TabIndex = 7;
             // 
             // dataGridView1
@@ -168,23 +168,23 @@ namespace POS
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridView1.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.dataGridView1.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.EnableHeadersVisualStyles = false;
             this.dataGridView1.GridColor = System.Drawing.Color.White;
@@ -194,7 +194,7 @@ namespace POS
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1479, 583);
+            this.dataGridView1.Size = new System.Drawing.Size(1479, 664);
             this.dataGridView1.TabIndex = 13;
             this.dataGridView1.DataSourceChanged += new System.EventHandler(this.dataGridView1_DataSourceChanged_1);
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
@@ -221,7 +221,7 @@ namespace POS
             this.bunifuGradientPanel1.Location = new System.Drawing.Point(0, 65);
             this.bunifuGradientPanel1.Name = "bunifuGradientPanel1";
             this.bunifuGradientPanel1.Quality = 10;
-            this.bunifuGradientPanel1.Size = new System.Drawing.Size(76, 583);
+            this.bunifuGradientPanel1.Size = new System.Drawing.Size(76, 664);
             this.bunifuGradientPanel1.TabIndex = 6;
             // 
             // promoBtn
@@ -251,6 +251,7 @@ namespace POS
             this.mixedCaseBtn.TabStop = false;
             this.mixedCaseBtn.Zoom = 10;
             this.mixedCaseBtn.Click += new System.EventHandler(this.mixedCaseBtn_Click);
+            this.mixedCaseBtn.MouseHover += new System.EventHandler(this.ActionBtn_MouseHover);
             // 
             // TransferStockBtn
             // 
@@ -265,6 +266,7 @@ namespace POS
             this.TransferStockBtn.TabStop = false;
             this.TransferStockBtn.Zoom = 10;
             this.TransferStockBtn.Click += new System.EventHandler(this.TransferStockBtn_Click);
+            this.TransferStockBtn.MouseHover += new System.EventHandler(this.ActionBtn_MouseHover);
             // 
             // EditProduct
             // 
@@ -279,6 +281,7 @@ namespace POS
             this.EditProduct.TabStop = false;
             this.EditProduct.Zoom = 10;
             this.EditProduct.Click += new System.EventHandler(this.EditProduct_Click);
+            this.EditProduct.MouseHover += new System.EventHandler(this.ActionBtn_MouseHover);
             // 
             // DeleteButton
             // 
@@ -293,6 +296,7 @@ namespace POS
             this.DeleteButton.TabStop = false;
             this.DeleteButton.Zoom = 10;
             this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
+            this.DeleteButton.MouseHover += new System.EventHandler(this.ActionBtn_MouseHover);
             // 
             // AddBtn
             // 
@@ -417,7 +421,7 @@ namespace POS
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1557, 738);
+            this.ClientSize = new System.Drawing.Size(1557, 819);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.bunifuGradientPanel3);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;

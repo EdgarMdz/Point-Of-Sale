@@ -32,7 +32,6 @@ namespace POS
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PanelProducto_Scrap));
             this.label1 = new System.Windows.Forms.Label();
             this.stockLbl = new System.Windows.Forms.Label();
@@ -42,25 +41,19 @@ namespace POS
             this.SearchTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
             this.bunifuCards1 = new Bunifu.Framework.UI.BunifuCards();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.PlusOnePieceBtn = new System.Windows.Forms.Button();
-            this.PlusOneTenthPieceBtn = new System.Windows.Forms.Button();
-            this.MinusOneTenthPieceBtn = new System.Windows.Forms.Button();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.MinusOnePieceBtn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.brandLbl = new System.Windows.Forms.Label();
             this.productLbl = new System.Windows.Forms.Label();
             this.barcodeLbl = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.NextBtn = new System.Windows.Forms.Button();
-            this.bunifuElipse1 = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.searchBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.OkBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.bunifuImageButton1 = new Bunifu.Framework.UI.BunifuImageButton();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.bunifuCards1.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.searchBtn)).BeginInit();
@@ -70,7 +63,7 @@ namespace POS
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 47);
+            this.label1.Location = new System.Drawing.Point(19, 57);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(86, 25);
             this.label1.TabIndex = 0;
@@ -142,9 +135,9 @@ namespace POS
             // bunifuCards1
             // 
             this.bunifuCards1.BackColor = System.Drawing.Color.White;
-            this.bunifuCards1.BorderRadius = 5;
+            this.bunifuCards1.BorderRadius = 0;
             this.bunifuCards1.BottomSahddow = true;
-            this.bunifuCards1.color = System.Drawing.Color.Tomato;
+            this.bunifuCards1.color = System.Drawing.Color.Salmon;
             this.bunifuCards1.Controls.Add(this.panel2);
             this.bunifuCards1.Controls.Add(this.panel1);
             this.bunifuCards1.LeftSahddow = false;
@@ -158,73 +151,16 @@ namespace POS
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.PlusOnePieceBtn);
-            this.panel2.Controls.Add(this.PlusOneTenthPieceBtn);
-            this.panel2.Controls.Add(this.MinusOneTenthPieceBtn);
-            this.panel2.Controls.Add(this.trackBar1);
+            this.panel2.Controls.Add(this.textBox1);
             this.panel2.Controls.Add(this.scrapLbl);
             this.panel2.Controls.Add(this.stockLbl);
             this.panel2.Controls.Add(this.comboBox1);
             this.panel2.Controls.Add(this.label5);
-            this.panel2.Controls.Add(this.MinusOnePieceBtn);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 200);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(605, 393);
             this.panel2.TabIndex = 15;
-            // 
-            // PlusOnePieceBtn
-            // 
-            this.PlusOnePieceBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.PlusOnePieceBtn.FlatAppearance.BorderSize = 0;
-            this.PlusOnePieceBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.PlusOnePieceBtn.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PlusOnePieceBtn.ForeColor = System.Drawing.Color.White;
-            this.PlusOnePieceBtn.Location = new System.Drawing.Point(535, 308);
-            this.PlusOnePieceBtn.Name = "PlusOnePieceBtn";
-            this.PlusOnePieceBtn.Size = new System.Drawing.Size(58, 58);
-            this.PlusOnePieceBtn.TabIndex = 11;
-            this.PlusOnePieceBtn.Text = "++";
-            this.PlusOnePieceBtn.UseVisualStyleBackColor = false;
-            this.PlusOnePieceBtn.Click += new System.EventHandler(this.PlusOnePieceBtn_Click);
-            // 
-            // PlusOneTenthPieceBtn
-            // 
-            this.PlusOneTenthPieceBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.PlusOneTenthPieceBtn.FlatAppearance.BorderSize = 0;
-            this.PlusOneTenthPieceBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.PlusOneTenthPieceBtn.Font = new System.Drawing.Font("Century Gothic", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PlusOneTenthPieceBtn.ForeColor = System.Drawing.Color.White;
-            this.PlusOneTenthPieceBtn.Location = new System.Drawing.Point(460, 308);
-            this.PlusOneTenthPieceBtn.Name = "PlusOneTenthPieceBtn";
-            this.PlusOneTenthPieceBtn.Size = new System.Drawing.Size(58, 58);
-            this.PlusOneTenthPieceBtn.TabIndex = 10;
-            this.PlusOneTenthPieceBtn.Text = "+";
-            this.PlusOneTenthPieceBtn.UseVisualStyleBackColor = false;
-            this.PlusOneTenthPieceBtn.Click += new System.EventHandler(this.PlusOneTenthPieceBtn_Click);
-            // 
-            // MinusOneTenthPieceBtn
-            // 
-            this.MinusOneTenthPieceBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.MinusOneTenthPieceBtn.FlatAppearance.BorderSize = 0;
-            this.MinusOneTenthPieceBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.MinusOneTenthPieceBtn.Font = new System.Drawing.Font("Century Gothic", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MinusOneTenthPieceBtn.ForeColor = System.Drawing.Color.White;
-            this.MinusOneTenthPieceBtn.Location = new System.Drawing.Point(86, 311);
-            this.MinusOneTenthPieceBtn.Name = "MinusOneTenthPieceBtn";
-            this.MinusOneTenthPieceBtn.Size = new System.Drawing.Size(58, 58);
-            this.MinusOneTenthPieceBtn.TabIndex = 12;
-            this.MinusOneTenthPieceBtn.Text = "-";
-            this.MinusOneTenthPieceBtn.UseVisualStyleBackColor = false;
-            this.MinusOneTenthPieceBtn.Click += new System.EventHandler(this.MinusOneTenthPieceBtn_Click);
-            // 
-            // trackBar1
-            // 
-            this.trackBar1.Location = new System.Drawing.Point(155, 324);
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(294, 45);
-            this.trackBar1.TabIndex = 9;
-            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // comboBox1
             // 
@@ -235,21 +171,6 @@ namespace POS
             this.comboBox1.Size = new System.Drawing.Size(268, 33);
             this.comboBox1.TabIndex = 7;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
-            // 
-            // MinusOnePieceBtn
-            // 
-            this.MinusOnePieceBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.MinusOnePieceBtn.FlatAppearance.BorderSize = 0;
-            this.MinusOnePieceBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.MinusOnePieceBtn.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MinusOnePieceBtn.ForeColor = System.Drawing.Color.White;
-            this.MinusOnePieceBtn.Location = new System.Drawing.Point(11, 310);
-            this.MinusOnePieceBtn.Name = "MinusOnePieceBtn";
-            this.MinusOnePieceBtn.Size = new System.Drawing.Size(58, 58);
-            this.MinusOnePieceBtn.TabIndex = 13;
-            this.MinusOnePieceBtn.Text = "- -";
-            this.MinusOnePieceBtn.UseVisualStyleBackColor = false;
-            this.MinusOnePieceBtn.Click += new System.EventHandler(this.MinusOnePieceBtn_Click);
             // 
             // panel1
             // 
@@ -300,6 +221,7 @@ namespace POS
             this.pictureBox1.Location = new System.Drawing.Point(359, 8);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(226, 184);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 8;
             this.pictureBox1.TabStop = false;
             // 
@@ -318,18 +240,13 @@ namespace POS
             this.NextBtn.UseVisualStyleBackColor = false;
             this.NextBtn.Click += new System.EventHandler(this.NextBtn_Click);
             // 
-            // bunifuElipse1
-            // 
-            this.bunifuElipse1.ElipseRadius = 35;
-            this.bunifuElipse1.TargetControl = this;
-            // 
             // searchBtn
             // 
             this.searchBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.searchBtn.BackColor = System.Drawing.Color.Transparent;
             this.searchBtn.Image = global::POS.Properties.Resources.search;
             this.searchBtn.ImageActive = null;
-            this.searchBtn.Location = new System.Drawing.Point(568, 38);
+            this.searchBtn.Location = new System.Drawing.Point(565, 38);
             this.searchBtn.Name = "searchBtn";
             this.searchBtn.Size = new System.Drawing.Size(37, 37);
             this.searchBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -379,6 +296,18 @@ namespace POS
             this.bunifuImageButton1.Zoom = 10;
             this.bunifuImageButton1.Click += new System.EventHandler(this.bunifuImageButton1_Click);
             // 
+            // textBox1
+            // 
+            this.textBox1.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.Location = new System.Drawing.Point(208, 332);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(189, 33);
+            this.textBox1.TabIndex = 16;
+            this.textBox1.Text = "0.00";
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            // 
             // PanelProducto_Scrap
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 25F);
@@ -398,14 +327,15 @@ namespace POS
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.Name = "PanelProducto_Scrap";
+            this.Padding = new System.Windows.Forms.Padding(10);
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Scrap | Point of Sale";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.PanelProducto_Scrap_Paint);
             this.Resize += new System.EventHandler(this.PanelProducto_Scrap_Resize);
             this.bunifuCards1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.searchBtn)).EndInit();
@@ -425,21 +355,16 @@ namespace POS
         private Bunifu.Framework.UI.BunifuMaterialTextbox SearchTxt;
         private Bunifu.Framework.UI.BunifuCards bunifuCards1;
         private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.Button MinusOnePieceBtn;
         private System.Windows.Forms.Button NextBtn;
         private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton1;
         private Bunifu.Framework.UI.BunifuThinButton2 OkBtn;
         private Bunifu.Framework.UI.BunifuImageButton searchBtn;
-        private Bunifu.Framework.UI.BunifuElipse bunifuElipse1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button PlusOnePieceBtn;
-        private System.Windows.Forms.Button PlusOneTenthPieceBtn;
-        private System.Windows.Forms.Button MinusOneTenthPieceBtn;
-        private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label brandLbl;
         private System.Windows.Forms.Label productLbl;
         private System.Windows.Forms.Label barcodeLbl;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private TextBox textBox1;
     }
 }

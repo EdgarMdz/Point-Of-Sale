@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 
 namespace POS
 {
@@ -43,7 +44,7 @@ namespace POS
 
         public double minStock { get; set; }
 
-  
+
         public string Photo { get; set; }
 
         public string Barcode { get; set; }
@@ -295,7 +296,7 @@ namespace POS
 
 
                     double total = 0;
-                    
+
                     foreach (DataRow item in details.Rows)
                     {
                         Producto p = new Producto(item["id_producto"].ToString());
@@ -306,13 +307,13 @@ namespace POS
                     newRow["totalAmountOfProducts"] = row["Cant. de Productos"];
 
                     general.Rows.Add(newRow);
-                    
+
                     break;
                 }
-                
+
             }
 
-            
+
 
             DataSet set = new DataSet();
 
@@ -354,7 +355,7 @@ namespace POS
 
         public static bool promoExist(int promoID)
         {
-            return new Capa_de_Negocio().product_getPromo(promoID).Rows.Count>0;
+            return new Capa_de_Negocio().product_getPromo(promoID).Rows.Count > 0;
         }
         public DataTable GetWholesaleCosts()
         {
@@ -396,6 +397,13 @@ namespace POS
                         return (RetailCost / 100 * discount) * amount;
                 }
             }
+        }
+        public static Tuple<int, double> getCasesAndSingleProducts(Producto producto, double amount)
+        {
+            int cases = producto.PiecesPerCase > 1.0 ? (int)Math.Truncate(amount / producto.PiecesPerCase) : 0;
+            double singlePieces = producto.PiecesPerCase > 1.0 ? amount % producto.PiecesPerCase : amount;
+
+            return new Tuple<int, double>(cases, singlePieces);
         }
     }
 }

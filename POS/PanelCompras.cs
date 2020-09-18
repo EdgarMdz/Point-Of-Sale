@@ -27,6 +27,8 @@ namespace POS
         private Queue<bool> request;
         private CurrencyManager cm;
         CashDrawer m_Drawer;
+        private bool inASearch;
+
 
         public PanelCompras(int employeeid, FormWindowState windowState = FormWindowState.Normal)
         {
@@ -46,10 +48,6 @@ namespace POS
         private void closeBtn_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void MaximizeBtn_Click(object sender, EventArgs e)
-        {
         }
 
         private void NormalizeBtn_Click(object sender, EventArgs e)
@@ -102,6 +100,7 @@ namespace POS
 
         private void loadPurchases()
         {
+            inASearch = false;
             DataTable allPo = OrdenCompra.getAllPO(DateTime.Now.Date);
             this.request = new Queue<bool>();
             this.PopulateLayout(allPo);
@@ -430,7 +429,7 @@ namespace POS
         }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (this.dataGridView1.Focused && keyData == Keys.Return && this.dataGridView1.SelectedCells.Count > 0)
+            if (this.dataGridView1.Focused && keyData == Keys.Return && this.dataGridView1.SelectedCells.Count > 0 && !PO.delivered)
             {
                 this.cm.SuspendBinding();
                 foreach (DataGridViewCell selectedCell in (BaseCollection)this.dataGridView1.SelectedCells)
@@ -442,7 +441,7 @@ namespace POS
                     this.dataGridView1.CurrentCell = this.dataGridView1.Rows[selectedCell.RowIndex].Cells[selectedCell.ColumnIndex];
                 }
             }
-            if (this.dataGridView1.Focused && keyData == Keys.Escape && this.dataGridView1.SelectedCells.Count > 0)
+            if (this.dataGridView1.Focused && keyData == Keys.Escape && this.dataGridView1.SelectedCells.Count > 0 && !PO.delivered)
             {
                 this.cm.SuspendBinding();
                 foreach (DataGridViewCell selectedCell in (BaseCollection)this.dataGridView1.SelectedCells)
@@ -519,60 +518,51 @@ namespace POS
                 {
                     this.PO.MakePayment(Convert.ToDouble(formPagar.Pay), this.CurrentEmployeeID);
                     this.updateValues();
-                    /*try
+
+                    if (m_Drawer != null)
                     {
-                        PrintDialog printDialog = new PrintDialog();
-                        PrintDocument printDocument = new PrintDocument();
-                        printDialog.PrinterSettings.PrinterName = new PrinterTicket().printerName;
-                        printDocument.PrinterSettings.PrinterName = printDialog.PrinterSettings.PrinterName;
-                        printDialog.Document = printDocument;
-                        printDocument.Print();
+                        try
+                        {
+
+                            //Open the device
+                            //Use a Logical Device Name which has been set on the SetupPOS.
+                            m_Drawer.Open();
+
+                            //Get the exclusive control right for the opened device.
+                            //Then the device is disable from other application.
+                            m_Drawer.Claim(1000);
+
+                            //Enable the device.
+                            m_Drawer.DeviceEnabled = true;
+
+                            //Open the drawer by using the "OpenDrawer" method.
+                            m_Drawer.OpenDrawer();
+
+
+                            m_Drawer.DeviceEnabled = false;
+                            m_Drawer.Release();
+
+                            m_Drawer.Close();
+                        }
+                        catch (PosControlException)
+                        {
+                        }
                     }
-                    catch (InvalidPrinterException)
-                    {
-                        int num = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-                    }*/
-                  
-                    
-                    //<<<step1>>>--Start
-                    //When outputting to a printer,a mouse cursor becomes like a hourglass.
-                    try
-                    {
 
-                        //Open the device
-                        //Use a Logical Device Name which has been set on the SetupPOS.
-                        m_Drawer.Open();
-
-                        //Get the exclusive control right for the opened device.
-                        //Then the device is disable from other application.
-                        m_Drawer.Claim(1000);
-
-                        //Enable the device.
-                        m_Drawer.DeviceEnabled = true;
-                        
-                        //Open the drawer by using the "OpenDrawer" method.
-                        m_Drawer.OpenDrawer();
-
-
-                        m_Drawer.DeviceEnabled = false;
-                        m_Drawer.Release();
-
-                        m_Drawer.Close();
-                    }
-                    catch (PosControlException)
-                    {
-                    }
                     //<<<step1>>>--End
                     MessageBox.Show("Se realizó abono con exito");
                     if (this.PO.paid)
-                        this.loadPurchases();
+                    {
+                        if (inASearch)
+                            searchPO();
+                        else
+                            this.loadPurchases();
+                    }
                 }
                 darkForm.Close();
             }
             else
-            {
-                int num2 = (int)MessageBox.Show("Primero debe confirmar el pedido para realizar un abono", "No se puede realizar un abono", MessageBoxButtons.OK);
-            }
+                MessageBox.Show("Primero debe confirmar el pedido para realizar un abono", "No se puede realizar un abono", MessageBoxButtons.OK);
         }
 
         private void deleteBtn_Click(object sender, EventArgs e)
@@ -587,7 +577,7 @@ namespace POS
             }
             catch (Exception ex)
             {
-                int num = (int)MessageBox.Show("Ocurrió un error:\n" + ex.Message, "Error");
+                MessageBox.Show("Ocurrió un error:\n" + ex.Message, "Error");
             }
         }
 
@@ -623,7 +613,7 @@ namespace POS
             {
                 if (row.DefaultCellStyle.ForeColor.ToKnownColor() == Color.FromArgb(0, 0, 0, 0).ToKnownColor())
                 {
-                    int num = (int)MessageBox.Show("Aún quedan artículos sin revisar");
+                    MessageBox.Show("Aún quedan artículos sin revisar");
                     return;
                 }
             }
@@ -640,16 +630,19 @@ namespace POS
                         if (correspondingIndex > -1 && row.Cells["Cantidad"].Value != this.PO._products.Rows[correspondingIndex]["Cantidad"])
                         {
                             Producto producto = new Producto(row.Cells["Código de Barras"].Value.ToString());
+
                             double num = (Convert.ToDouble(row.Cells["Cantidad"].Value) - Convert.ToDouble(this.PO._products.Rows[correspondingIndex]["Cantidad"])) * Convert.ToDouble(row.Cells["Piezas por Caja"].Value);
+
                             if (num != 0.0)
                             {
-                                producto.CurrentStock += num;
-                                producto.UpdateProduct(producto.Barcode);
+                                Bodega depot = new Bodega(producto.defaultDepotID);
+                                depot.UpdateProductQuantity(depot.getProductQuantity(producto.Barcode) + num, producto.Barcode);
                                 this.PO.UpdateProductQunantity(producto.Barcode, Convert.ToDouble(row.Cells["Cantidad"].Value));
                             }
                         }
                     }
                 }
+
                 this.PO.delivered = true;
                 this.PO._EmployeeWhoConfirmedThePurchaseID = formLogin.ID;
                 this.PO.updateDeliveryStatus();
@@ -667,10 +660,6 @@ namespace POS
             this.textBox1.Text = "";
         }
 
-        private void panel1_SizeChanged(object sender, EventArgs e)
-        {
-        }
-
         private void EmployeeWhoConfirmedLbl_TextChanged(object sender, EventArgs e)
         {
             this.EmployeeWhoConfirmedLbl.Location = new Point((this.EmployeeWhoConfirmedLbl.Parent.Width - this.EmployeeWhoConfirmedLbl.Width) / 2, this.EmployeeWhoConfirmedLbl.Location.Y);
@@ -678,9 +667,15 @@ namespace POS
 
         private void searchBtn_Click(object sender, EventArgs e)
         {
+            searchPO();
+        }
+
+        private void searchPO()
+        {
             if (!(this.BrowserTxt.Text != ""))
                 return;
             this.PopulateLayout(OrdenCompra.SearchByCoincidence(this.BrowserTxt.Text));
+            inASearch = true;
         }
 
         private void TotalLbl_TextChanged(object sender, EventArgs e)
@@ -750,5 +745,15 @@ namespace POS
             }
             //<<<step1>>>--End
         }
+
+
+        private void dataGridView1_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == dataGridView1.Columns["cantidad"].Index && !PO.delivered)
+                dataGridView1.Cursor = Cursors.IBeam;
+            else
+                dataGridView1.Cursor = Cursors.Arrow;
+        }
+
     }
 }

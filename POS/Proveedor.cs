@@ -348,5 +348,10 @@ namespace POS
         {
             return new Capa_de_Negocio().GetProductCostComparison( barcode);
         }
+
+        public DataTable getProductInfo(string barcode)
+        {
+            return negocio.Supplier_getProductInfo(ID,barcode);
+        }
     }
 }

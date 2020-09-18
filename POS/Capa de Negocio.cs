@@ -85,10 +85,10 @@ namespace POS
             datos.Product_addNewWholeSaleCost(amount, discount, isPercentage, barcode);
         }
 
-        public DataSet DepotGetInventory() =>
+        public DataTable DepotGetInventory() =>
             this.datos.DepotGetInventory();
 
-        public DataSet DepotGetInventory(string text) =>
+        public DataTable DepotGetInventory(string text) =>
           this.datos.DepotGetInventory(text);
         public int DepotNewDepot(string name) =>
             this.datos.DepotNewDepot(name);
@@ -98,13 +98,24 @@ namespace POS
             this.datos.depotScrap(depotID, employeeID, barcode, quantity);
         }
 
+        public DataTable Sale_getUnfinishedSalesIDs()
+        {
+            return datos.Sale_getUnfinishedSalesIDs();
+        }
+
         public void Product_UpdateWholesaleCost(string barcode, int costID, double discount, bool isByPercentage)
         {
             datos.Product_UpdateWholesaleCost(barcode, costID, discount, isByPercentage);
         }
 
-        public DataSet DepotSetDepot(int depotID) =>
+        public DataTable DepotSetDepot(int depotID) =>
             this.datos.DepotSetDepot(depotID);
+
+        public DataTable depot_GetWholeInventory(int depotID) =>
+            datos.Depot_GetWholeInventory(depotID);
+
+        public DataTable Depot_GetInventoryForProduct(int depotID, string barcode) =>
+            datos.Depot_GetInventoryForProduct(depotID, barcode);
 
         public void DepotUpdateMinStockQuantity(int depotID, string barcode, double minStock, double maxStock)
         {
@@ -167,6 +178,11 @@ namespace POS
         public void Employee_UpdateHirementDate(DateTime newDate, int employeeID)
         {
             this.datos.Employee_UpdateHirementDate(newDate, employeeID);
+        }
+
+        public DataTable getInfoUnfinishedSell(int savedWindowID, int newWindowID)
+        {
+            return datos.getInfoUnfinishedSell(savedWindowID, newWindowID);
         }
 
         public void Employee_UpdateName(string newName, int employeeID)
@@ -332,6 +348,11 @@ namespace POS
         public DataTable Depot_getMissingProducts(int ID)
         {
             return datos.Depot_getMissingProducts(ID);
+        }
+
+        public DataTable Supplier_getProductInfo(int iD, string barcode)
+        {
+            return datos.Supplier_getProductInfo(iD, barcode);
         }
 
         /// <summary>

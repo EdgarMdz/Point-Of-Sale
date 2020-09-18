@@ -35,8 +35,11 @@ namespace POS
                 this.comboBox1.Items.Add((object)row["Nombre"].ToString());
                 this.depotList.Add(row["Nombre"].ToString(), Convert.ToInt32(row["ID_Bodega"]));
             }
+            textBox1.SelectAll();
+            
             this.comboBox1.SelectedIndex = 0;
             this.depot = new Bodega(1);
+            this.Refresh();
         }
 
         private void bunifuImageButton1_Click(object sender, EventArgs e)
@@ -63,21 +66,7 @@ namespace POS
             this.stockLbl.Text = (this.depot.getProductQuantity(this.product.Barcode) - this.scrapCount).ToString("n2");
         }
 
-        private void MinusOnePieceBtn_Click(object sender, EventArgs e)
-        {
-            this.scrapCount = this.scrapCount - 1.0 >= 0.0 ? this.scrapCount - 1.0 : 0.0;
-            this.scrapLbl.Visible = true;
-            this.displayScrap();
-            this.trackBar1.Value = (int)Math.Truncate(this.scrapCount);
-        }
-
-        private void MinusOneTenthPieceBtn_Click(object sender, EventArgs e)
-        {
-            this.scrapCount = this.scrapCount - 0.1 >= 0.0 ? this.scrapCount - 0.1 : 0.0;
-            this.scrapLbl.Visible = true;
-            this.displayScrap();
-            this.trackBar1.Value = (int)Math.Truncate(this.scrapCount);
-        }
+     
 
         private void NextBtn_Click(object sender, EventArgs e)
         {
@@ -89,12 +78,16 @@ namespace POS
             if (this.scrapCount == 0.0)
                 return;
             this.depot.RegisterScrap(this.product.Barcode, this.scrapCount, this.employeeID);
-            int num = (int)MessageBox.Show("Se ha dado de baja el material");
+            
+            MessageBox.Show("Se ha dado de baja el material");
+
+            textBox1.Text = "0.00";
             this.scrapRegistered = true;
             this.scrapCount = 0.0;
             this.scrapLbl.Hide();
             this.depot = new Bodega(this.depot.ID);
             this.setProduct();
+            
         }
 
         private void PanelProducto_Scrap_Resize(object sender, EventArgs e)
@@ -102,27 +95,6 @@ namespace POS
             this.CenterToScreen();
         }
 
-        private void PlusOnePieceBtn_Click(object sender, EventArgs e)
-        {
-            double productQuantity = this.depot.getProductQuantity(this.product.Barcode);
-            if (productQuantity < 0.0)
-                return;
-            this.scrapCount = this.scrapCount + 1.0 < productQuantity ? this.scrapCount + 1.0 : productQuantity;
-            this.trackBar1.Value = (int)Math.Truncate(this.scrapCount);
-            this.displayScrap();
-            this.scrapLbl.Visible = true;
-        }
-
-        private void PlusOneTenthPieceBtn_Click(object sender, EventArgs e)
-        {
-            double productQuantity = this.depot.getProductQuantity(this.product.Barcode);
-            if (productQuantity < 0.0)
-                return;
-            this.scrapCount = this.scrapCount + 0.1 < productQuantity ? this.scrapCount + 0.1 : productQuantity;
-            this.trackBar1.Value = (int)Math.Truncate(this.scrapCount);
-            this.displayScrap();
-            this.scrapLbl.Visible = true;
-        }
 
         private void searchBtn_Click(object sender, EventArgs e)
         {
@@ -220,26 +192,46 @@ namespace POS
             this.searchBtn.Show();
             this.bunifuCards1.Show();
             this.Size = this.maximized;
+
+            Refresh();
             double productQuantity = this.depot.getProductQuantity(this.product.Barcode);
             this.stockLbl.Text = productQuantity.ToString("n2");
-            if (productQuantity <= 0.0)
-            {
-                this.trackBar1.Enabled = false;
-            }
-            else
-            {
-                this.trackBar1.Enabled = true;
-                this.trackBar1.Maximum = productQuantity < 0.0 ? 0 : (int)Math.Truncate(productQuantity);
-                this.trackBar1.LargeChange = (int)Math.Truncate(productQuantity) / 4;
-            }
-            this.trackBar1.Value = 0;
+
+            textBox1.Text = "0.00";
         }
 
-        private void trackBar1_Scroll(object sender, EventArgs e)
+        
+        private void PanelProducto_Scrap_Paint(object sender, PaintEventArgs e)
         {
-            this.scrapLbl.Visible = true;
-            this.scrapCount = this.trackBar1.Value == this.trackBar1.Maximum ? this.depot.getProductQuantity(this.product.Barcode) : (double)this.trackBar1.Value;
-            this.displayScrap();
+            var pen = new Pen(Color.Tomato) { Width = 2 };
+
+            e.Graphics.DrawRectangle(pen, 1, 1, e.ClipRectangle.Width - 2, e.ClipRectangle.Height - 2);
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                scrapCount = Convert.ToDouble(textBox1.Text);
+                displayScrap();
+                scrapLbl.Visible = true;
+                
+            }
+            catch(Exception)
+            {
+                scrapCount = 0;
+                displayScrap();
+                scrapLbl.Hide();
+            }
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+                e.Handled = true;
+
+            if (e.KeyChar == '.' && textBox1.Text.IndexOf('.') > -1)
+                e.Handled = true;
         }
     }
 }

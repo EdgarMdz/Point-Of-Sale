@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace POS
 {
@@ -16,7 +17,7 @@ namespace POS
         private Producto product;
         private Bodega receiverDepot;
         private Bodega donatingDepot;
-        private int transferCount;
+        private double transferCount;
         private bool altered;
         private List<int> ReceiverDepotIDs;
         private List<int> DonatingComboDepotsIds;
@@ -26,27 +27,38 @@ namespace POS
         {
             this.InitializeComponent();
             this.DialogResult = DialogResult.Cancel;
+            
             this.transferCount = 0;
+            
             this.altered = false;
+            
             this.product = product;
+            
             this.ReceiverDepotIDs = new List<int>();
             this.DonatingComboDepotsIds = new List<int>();
-            foreach (DataRow row in (InternalDataCollectionBase)Bodega.GetDepots().Rows)
+           
+            foreach (DataRow row in Bodega.GetDepots().Rows)
             {
                 this.receiverCombo.Items.Add(row["Nombre"]);
                 this.ReceiverDepotIDs.Add(Convert.ToInt32(row["ID_Bodega"]));
             }
-            this.receiverCombo.SelectedItem = (object)new Bodega(product.defaultDepotID).name;
+            
+            this.receiverCombo.SelectedItem = new Bodega(product.defaultDepotID).name;
             this.receiverDepot = new Bodega(product.defaultDepotID);
+
             this.setReceiverDepotCard();
+            textBox1.Select();
         }
+
+
 
         private void setReceiverDepotCard()
         {
-            this.piecesPerCaseTxt.Text = this.product.PiecesPerCase.ToString("n2");
             this.BarcodeLbl.Text = this.product.Barcode;
             this.descriptionLbl.Text = this.product.Description;
             this.brandLbl.Text = this.product.Brand;
+            costLbl.Text = "$" + product.RetailCost.ToString("n2");
+
             if (this.product.Image != null)
             {
                 Image image = Image.FromStream((Stream)new MemoryStream(this.product.Image, 0, this.product.Image.Length));
@@ -54,15 +66,23 @@ namespace POS
                 this.productPicture.Image = image;
                 this.productPicture.BorderStyle = BorderStyle.None;
                 this.label4.Visible = false;
+                panel4.BackColor = Color.Transparent;
             }
             else
             {
                 this.label4.Visible = true;
                 this.productPicture.Image = (Image)null;
                 this.productPicture.BorderStyle = BorderStyle.FixedSingle;
+                panel4.BackColor = Color.FromArgb(196, 196, 196);
             }
-            this.quantityLbl.Text = this.receiverDepot.getProductQuantity(this.product.Barcode).ToString();
+
+            var stock = Producto.getCasesAndSingleProducts(product, receiverDepot.getProductQuantity(product.Barcode));
+
+            this.quantityLbl.Text = stock.Item1.ToString() +" Cajas";
+            quantityPcsLbl.Text= stock.Item2.ToString() + " Piezas";
+
             this.addedPiecesLbl.Visible = false;
+            addedPiecesLbl.Text = " 0 piezas";
         }
 
         private void ProductTxt_Enter(object sender, EventArgs e)
@@ -133,7 +153,7 @@ namespace POS
                 Producto producto = new Producto(this.ProductTxt.Text);
                 if (producto.Description == null)
                 {
-                    int num = (int)MessageBox.Show("No se encontró el producto", "Sin coincidencias", MessageBoxButtons.OK);
+                    MessageBox.Show("No se encontró el producto", "Sin coincidencias", MessageBoxButtons.OK);
                 }
                 else
                 {
@@ -179,24 +199,6 @@ namespace POS
             this.DonatingCombo.SelectedIndex = 0;
         }
 
-        private void LongLessBtn_Click(object sender, EventArgs e)
-        {
-            int num1 = (int)Convert.ToDouble(this.piecesPerCaseTxt.Text);
-            int num2 = this.transferCount - num1 < 0 ? this.transferCount : num1;
-            if (num2 <= 0)
-                return;
-            this.transferCount -= num2;
-            this.countChanged();
-        }
-
-        private void LongMoreBtn_Click(object sender, EventArgs e)
-        {
-            if (this.transferCount >= this.trackBar1.Maximum)
-                return;
-            double num = Convert.ToDouble(this.piecesPerCaseTxt.Text);
-            this.transferCount += (int)num + this.transferCount > this.trackBar1.Maximum ? this.trackBar1.Maximum - this.transferCount : (int)num;
-            this.countChanged();
-        }
 
         private void ToCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -207,118 +209,62 @@ namespace POS
             this.setDonatingDepotCard();
         }
 
-        private void MoreBtn_Click(object sender, EventArgs e)
-        {
-            if (this.transferCount + 1 > this.trackBar1.Maximum)
-                return;
-            ++this.transferCount;
-            this.countChanged();
-        }
 
-        private void LessBtn_Click(object sender, EventArgs e)
-        {
-            if (this.transferCount - 1 < 0)
-                return;
-            --this.transferCount;
-            this.countChanged();
-        }
 
         public void countChanged()
         {
             this.addedPiecesLbl.Text = "+ " + this.transferCount.ToString() + " piezas";
             double num = this.donatingDepot.getProductQuantity(this.product.Barcode) - (double)this.transferCount;
-            this.boxQuantLbl.Text = Math.Truncate(num / Convert.ToDouble(this.piecesPerCaseTxt.Text)).ToString() + " cajas";
-            this.pieceQuantLbl.Text = (num % Convert.ToDouble(this.piecesPerCaseTxt.Text)).ToString() + " piezas";
-            this.trackBar1.Value = this.transferCount;
+
+
             this.addedPiecesLbl.Visible = true;
         }
 
         private void setDonatingDepotCard()
         {
-            double productQuantity = this.donatingDepot.getProductQuantity(this.product.Barcode);
-            this.boxQuantLbl.Text = Convert.ToDouble(this.piecesPerCaseTxt.Text) == 0.0 ? "0 cajas" : Math.Truncate(productQuantity / Convert.ToDouble(this.piecesPerCaseTxt.Text)).ToString() + " cajas";
-            this.pieceQuantLbl.Text = Convert.ToDouble(this.piecesPerCaseTxt.Text) == 0.0 ? "0 piezas" : (productQuantity % Convert.ToDouble(this.piecesPerCaseTxt.Text)).ToString() + " piezas";
-            this.trackBar1.Maximum = productQuantity < 0.0 ? 0 : (int)productQuantity;
-            this.trackBar1.Value = 0;
-            this.trackBar1.LargeChange = this.trackBar1.Maximum / 4 == 0 ? 1 : this.trackBar1.Maximum / 4;
+            var productQuantity = getCasesAndSingleProducts(product.PiecesPerCase, donatingDepot.getProductQuantity(product.Barcode));
+            boxQuantLbl.Text = productQuantity.Item1.ToString() + " Cajas";
+            pieceQuantLbl.Text = productQuantity.Item2.ToString() + " Piezas";
+            label7.Text = "0 piezas";
+            label7.Visible = false;
         }
-
-        private void trackBar1_Scroll(object sender, EventArgs e)
+        public static Tuple<int, double> getCasesAndSingleProducts(double piecesPerCase, double amount)
         {
-            this.trackbarMoved();
-        }
+            int cases = piecesPerCase > 1.0 ? (int)Math.Truncate(amount / piecesPerCase) : 0;
+            double singlePieces = piecesPerCase > 1.0 ? amount % piecesPerCase : amount;
 
-        private void trackbarMoved()
-        {
-            this.transferCount = this.trackBar1.Value;
-            this.countChanged();
+            return new Tuple<int, double>(cases, singlePieces);
         }
 
         private void switchDepotsBtn_Click(object sender, EventArgs e)
         {
-            this.transferCount = 0;
             string str = this.receiverCombo.SelectedItem.ToString();
             this.receiverCombo.SelectedItem = this.DonatingCombo.SelectedItem;
             this.DonatingCombo.SelectedItem = (object)str;
         }
 
-        private void piecesPerCaseTxt_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar) && e.KeyChar != '.')
-                e.Handled = true;
-            if (e.KeyChar != '.' || this.piecesPerCaseTxt.Text.IndexOf('.') <= -1)
-                return;
-            e.Handled = true;
-        }
+
 
         private void AcceptBtn_Click(object sender, EventArgs e)
         {
-            this.receiverDepot.UpdateProductQuantity(this.receiverDepot.getProductQuantity(this.product.Barcode) + (double)this.transferCount, this.product.Barcode);
-            this.donatingDepot.UpdateProductQuantity(this.donatingDepot.getProductQuantity(this.product.Barcode) - (double)this.transferCount, this.product.Barcode);
-            this.setReceiverDepotCard();
-            this.setDonatingDepotCard();
-            int num = (int)MessageBox.Show("Operación exitosa");
-            this.altered = true;
+            if (transferCount > 0)
+            {
+                this.receiverDepot.UpdateProductQuantity(this.receiverDepot.getProductQuantity(this.product.Barcode) + this.transferCount, this.product.Barcode);
+                this.donatingDepot.UpdateProductQuantity(this.donatingDepot.getProductQuantity(this.product.Barcode) - this.transferCount, this.product.Barcode);
+                this.setReceiverDepotCard();
+                this.setDonatingDepotCard();
+                MessageBox.Show("Operación exitosa");
+                this.altered = true;
+                transferCount = 0;
+                textBox1.Text = "";
+            }
         }
 
-        private void piecesPerCaseTxt_TextChanged(object sender, EventArgs e)
-        {
-            if (this.piecesPerCaseTxt.Text != "" && this.donatingDepot != null)
-            {
-                if (this.receiverDepot != null)
-                {
-                    try
-                    {
-                        Convert.ToInt32(Convert.ToDouble(this.piecesPerCaseTxt.Text));
-                        this.trackbarMoved();
-                    }
-                    catch (OverflowException ex)
-                    {
-                        int num = (int)MessageBox.Show("El número máximo aceptable es " + int.MaxValue.ToString() + ".", "Número demaciado grande");
-                        this.piecesPerCaseTxt.Text = this.product.PiecesPerCase.ToString("n2");
-                        this.piecesPerCaseTxt.SelectAll();
-                    }
-                    catch (FormatException)
-                    {
-                        int num = (int)MessageBox.Show("Sólo se permiten valores numéricos", "Formato no Válido");
-                        this.piecesPerCaseTxt.Text = this.product.PiecesPerCase.ToString("n2");
-                        this.piecesPerCaseTxt.SelectAll();
-                    }
-                }
-            }
-            if (!(this.piecesPerCaseTxt.Text == ""))
-                return;
-            this.piecesPerCaseTxt.Text = this.product.PiecesPerCase.ToString("n2");
-            this.piecesPerCaseTxt.SelectAll();
-        }
 
         private void ProductTxt_KeyPress(object sender, KeyPressEventArgs e)
         {
         }
 
-        private void DonatingDepotCard_Paint(object sender, PaintEventArgs e)
-        {
-        }
 
         private void Panel_productos_Transferir_Inventario_entre_bodegas_Paint(object sender, PaintEventArgs e)
         {
@@ -326,6 +272,48 @@ namespace POS
 
             e.Graphics.DrawRectangle(p, this.ClientRectangle);
             p.Dispose();
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+                e.Handled = true;
+
+            if (e.KeyChar == '.' && textBox1.Text.IndexOf('.') > -1)
+                e.Handled = true;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                transferCount = Convert.ToDouble(textBox1.Text);
+
+                this.addedPiecesLbl.Text = "+ " + this.transferCount.ToString() + " piezas";
+                label7.Text = "- " + transferCount.ToString() + " piezas";
+
+
+                this.addedPiecesLbl.Visible = true;
+                label7.Visible = true;
+            }
+            catch (FormatException)
+            {
+                transferCount = 0;
+                addedPiecesLbl.Visible = false;
+                label7.Visible = false;
+            }
+        }
+
+        private void Panel_productos_Transferir_Inventario_entre_bodegas_Paint_1(object sender, PaintEventArgs e)
+        {
+            var pen = new Pen(Color.Black) { Width=2};
+
+            e.Graphics.DrawRectangle(pen, 1, 1, this.Width - 2, this.Height - 1);
+        }
+
+        private void textBox1_Enter(object sender, EventArgs e)
+        {
+            textBox1.SelectAll();
         }
     }
 }

@@ -1,18 +1,10 @@
-﻿using Bunifu.Framework.UI;
-using BunifuAnimatorNS;
-using LiveCharts;
-using LiveCharts.Definitions.Series;
-using LiveCharts.Wpf;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 using System.Data;
+using Bunifu.Framework.UI;
 
 namespace POS
 {
@@ -20,7 +12,6 @@ namespace POS
     {
         private int selectedrow;
         private bool editingCell;
-        private Producto product;
 
         protected override CreateParams CreateParams
         {
@@ -37,8 +28,7 @@ namespace POS
             this.InitializeComponent();
             this.WindowState = windowState;
             this.dataGridView1.ColumnHeaderMouseClick += new DataGridViewCellMouseEventHandler(this.showDatagridViewMenu);
-          //  this.ProductPanel.Dock = DockStyle.Fill;
-            this.product = (Producto)null;
+            //  this.ProductPanel.Dock = DockStyle.Fill;
             this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
         }
@@ -124,7 +114,7 @@ namespace POS
                         Producto producto2 = new Producto(producto1.Barcode);
                         this.dataGridView1.CurrentCell.OwningRow.DefaultCellStyle.ForeColor = producto2.CurrentStock >= producto2.minStock ? Color.Black : Color.Tomato;
                     }
-                    catch (FormatException ex)
+                    catch (FormatException)
                     {
                         string str = this.dataGridView1.CurrentCell.Value.ToString();
                         if (str.ToLower().IndexOf("caja") == -1 && str.ToLower().IndexOf("pieza") == -1)
@@ -133,7 +123,7 @@ namespace POS
                         }
                         this.dataGridView1.CurrentCell.Value = (object)currentValue;
                     }
-                    catch (InvalidCastException ex)
+                    catch (InvalidCastException)
                     {
                         this.dataGridView1.CurrentCell.Value = (object)currentValue;
                     }
@@ -185,21 +175,19 @@ namespace POS
         private void AddButton_Click(object sender, EventArgs e)
         {
             Form_Agregar formAgregar = new Form_Agregar();
-            //DarkForm darkForm = new DarkForm();
-            //darkForm.Show();
             formAgregar.Show();
         }
 
         private void Panel_Productos_Load(object sender, EventArgs e)
         {
-            SearchTxt.Focus();
             this.loadtable();
+            SearchTxt.Select();
         }
 
         private async void loadtable()
         {
             dataGridView1.DataSource = await Task.Run(() => Bodega.getInventory());
-            
+
             if (this.dataGridView1.RowCount <= 0)
                 return;
             this.dataGridView1.FirstDisplayedCell = this.dataGridView1.Rows[0].Cells[0];
@@ -222,10 +210,18 @@ namespace POS
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
-            if (this.dataGridView1.RowCount <= 0 || MessageBox.Show("¿Desea eliminar el producto seleccionado?", "Borrar", MessageBoxButtons.YesNo) != DialogResult.Yes)
-                return;
-            new Producto(this.dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString()).DeleteProduct();
-            this.loadtable();
+            if (this.dataGridView1.RowCount > 0)
+            {
+                if (MessageBox.Show("¿Desea eliminar el producto seleccionado?", "Borrar", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                    return;
+                new Producto(this.dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString()).DeleteProduct();
+                this.loadtable();
+            }
+            else
+            {
+                var tooltip = new ToolTip();
+                tooltip.Show("Seleccione un producto en la lista para usar esta opción", DeleteButton);
+            }
         }
 
         private void EditProduct_Click(object sender, EventArgs e)
@@ -236,8 +232,11 @@ namespace POS
         private void UpdateProduct()
         {
             if (this.dataGridView1.RowCount <= 0)
+            {
+                var tooltip = new ToolTip();
+                tooltip.Show("Seleccione un producto en la lista para usar esta opción", EditProduct);
                 return;
-
+            }
             Producto product = new Producto();
             this.selectedrow = this.dataGridView1.SelectedCells[0].RowIndex;
             product.Barcode = this.dataGridView1.Rows[this.selectedrow].Cells["Código de Barras"].Value.ToString();
@@ -351,16 +350,24 @@ namespace POS
 
         private void TransferStockBtn_Click(object sender, EventArgs e)
         {
-            Producto product = new Producto(this.dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString());
-
-            new Panel_productos_Transferir_Inventario_entre_bodegas(product).Show();          
+            var barcodeCell = dataGridView1.RowCount > 0 ? dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value : null;
+            if (barcodeCell != null)
+            {
+                Producto product = new Producto(barcodeCell.ToString());
+                new Panel_productos_Transferir_Inventario_entre_bodegas(product).Show();
+            }
+            else
+            {
+                var tooltip = new ToolTip();
+                tooltip.Show("Seleccione un producto en la lista para usar esta opción", TransferStockBtn);
+            }
         }
 
         private void NewDepotBtn_Click(object sender, EventArgs e)
         {
             PanelProductos_NuevaBodega productosNuevaBodega = new PanelProductos_NuevaBodega();
             productosNuevaBodega.Show();
-            this.TransferStockBtn.Enabled = true;
+            TransferStockBtn.Enabled = true;
         }
 
         private void deleteDepot(int columnIndex)
@@ -368,7 +375,7 @@ namespace POS
             if (MessageBox.Show("¿Desea Eliminar la Bodega \"" + this.dataGridView1.Columns[columnIndex].HeaderText + "\"?. \nLos productos almacenados serán transferidos a sus respectivas bodegas por defecto.\n\nNota: En caso de que la bodega por defecto se esté eliminando, los productos se transferiran a la bodega \"" + this.dataGridView1.Columns[3].HeaderText + "\"", "Borrar Bodega", MessageBoxButtons.YesNo) != DialogResult.Yes)
                 return;
             new Bodega(Convert.ToInt32(this.dataGridView1.Columns[columnIndex].Name)).Delete();
-            this.dataGridView1.DataSource = (object)Bodega.getInventory();
+            this.dataGridView1.DataSource = Bodega.getInventory();
             this.FitTableInformation();
             this.dataGridView1.CurrentCell = this.dataGridView1.RowCount > 0 ? this.dataGridView1.Rows[this.selectedrow].Cells[0] : (DataGridViewCell)null;
         }
@@ -414,7 +421,7 @@ namespace POS
 
         private void Panel_Productos_Shown(object sender, EventArgs e)
         {
-         //   this.previousPanelBtn.Hide();
+            SearchTxt.Select();
         }
 
         private void dataGridView1_ColumnHeaderMouseDoubleClick(
@@ -448,7 +455,11 @@ namespace POS
             {
                 form_agregar_venta_surtido SaleAsMixed = new form_agregar_venta_surtido(dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString());
                 SaleAsMixed.Show();
-                
+            }
+            else
+            {
+                var tooltip = new ToolTip();
+                tooltip.Show("Seleccione un producto de la lista para usar esta opción", mixedCaseBtn);
             }
         }
 
@@ -475,11 +486,25 @@ namespace POS
                     loadtable(SearchTxt.Text);
                 }
             }
-            else if(e.KeyCode == Keys.Escape)
+            else if (e.KeyCode == Keys.Escape)
             {
                 SearchTxt.Text = "";
                 loadtable();
-                
+
+            }
+            if (e.KeyCode == Keys.Up && dataGridView1.RowCount > 0 && dataGridView1.CurrentRow.Index > 0)
+            {
+                var cell = dataGridView1.CurrentCell;
+                dataGridView1.CurrentCell = dataGridView1[cell.ColumnIndex, cell.RowIndex - 1];
+
+                e.SuppressKeyPress = true;
+            }
+            if (e.KeyCode == Keys.Down && dataGridView1.RowCount > 0 && dataGridView1.CurrentRow.Index < dataGridView1.Rows.Count - 1)
+            {
+                var cell = dataGridView1.CurrentCell;
+                dataGridView1.CurrentCell = dataGridView1[cell.ColumnIndex, cell.RowIndex + 1];
+
+                e.SuppressKeyPress = true;
             }
         }
 
@@ -487,6 +512,33 @@ namespace POS
         {
             SearchTxt.Focus();
             SearchTxt.Select(0, SearchTxt.Text.Length);
+        }
+
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Add | Keys.Alt ))
+            {
+                AddButton_Click(this, null);
+            }
+
+            if (keyData == (Keys.F2) && dataGridView1.RowCount > 0 && dataGridView1.CurrentRow.Index < dataGridView1.Rows.Count - 1)
+            {
+                UpdateProduct();
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void ActionBtn_MouseHover(object sender, EventArgs e)
+        {
+            var btn = sender as BunifuImageButton;
+            if(dataGridView1!=null&& dataGridView1.RowCount>0)
+            { 
+                var tooltip = new ToolTip();
+                tooltip.GetToolTip(btn);
+                tooltip.RemoveAll();
+            }
         }
     }
 }

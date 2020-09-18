@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Net.Sockets;
 using System.Xml;
 
 namespace POS
@@ -84,6 +85,17 @@ namespace POS
 
         }
 
+        public DataTable Sale_getUnfinishedSalesIDs()
+        {
+            SqlCommand com = new SqlCommand("Sale_GetUnfinishedSellIDs", OpenSqlConnection());
+            com.CommandType = CommandType.StoredProcedure;
+
+            DataTable dt = new DataTable();
+            dt.Load(com.ExecuteReader());
+            CloseSqlConnection();
+            return dt;
+        }
+
         public void Product_UpdateWholesaleCost(string barcode, int costID, double discount, bool isByPercentage)
         {
             SqlCommand command = new SqlCommand("product_updateWholesaleCost", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
@@ -160,6 +172,21 @@ namespace POS
             command.Parameters.AddWithValue("@code", BarCode);
             command.ExecuteNonQuery();
             this.CloseSqlConnection();
+        }
+
+        public DataTable getInfoUnfinishedSell(int savedWindowID, int newWindowID)
+        {
+            SqlCommand com = new SqlCommand("Sale_GetUnfinishedSellInfo", OpenSqlConnection());
+            com.CommandType = CommandType.StoredProcedure;
+            com.Parameters.AddWithValue("@windowID", savedWindowID);
+            com.Parameters.AddWithValue("@newWindowID", newWindowID);
+
+            DataTable dt = new DataTable();
+
+            dt.Load(com.ExecuteReader());
+
+            CloseSqlConnection();
+            return dt;
         }
 
         public void deleteReminder(int reminderID)
@@ -264,31 +291,32 @@ namespace POS
             this.CloseSqlConnection();
         }
 
-        public DataSet DepotGetInventory()
+        public DataTable DepotGetInventory()
         {
-            DataSet dataSet = new DataSet();
+            DataTable data = new DataTable();
             SqlCommand selectCommand = new SqlCommand("Depot_GetInventory", this.OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout= 180
             };
-            SqlDataAdapter ad = new SqlDataAdapter(selectCommand);
-            ad.Fill(dataSet);
-            this.CloseSqlConnection();
-            return dataSet;
+            data.Load(selectCommand.ExecuteReader());
+            CloseSqlConnection();
+            return data;
         }
 
-        public DataSet DepotGetInventory(string text)
+        public DataTable DepotGetInventory(string text)
         {
-            DataSet dataSet = new DataSet();
+            DataTable data = new DataTable();
             SqlCommand selectCommand = new SqlCommand("[Depot_FilterInventory]", this.OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout = 180
             };
 
             selectCommand.Parameters.AddWithValue("@text", text);
-            new SqlDataAdapter(selectCommand).Fill(dataSet);
+            data.Load(selectCommand.ExecuteReader());
             this.CloseSqlConnection();
-            return dataSet;
+            return data;
         }
 
         public int DepotNewDepot(string name)
@@ -318,17 +346,60 @@ namespace POS
             this.CloseSqlConnection();
         }
 
-        public DataSet DepotSetDepot(int depotID)
+        public DataTable Supplier_getProductInfo(int iD, string barcode)
         {
-            DataSet dataSet = new DataSet();
+            SqlCommand command = new SqlCommand("supplier_GetProductInfo", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
+
+            command.Parameters.AddWithValue("@barcode", barcode);
+            command.Parameters.AddWithValue("@supplierID", iD);
+
+            DataTable dt = new DataTable();
+            dt.Load(command.ExecuteReader());
+
+            CloseSqlConnection();
+            return dt;
+        }
+
+        public DataTable DepotSetDepot(int depotID)
+        {
+            DataTable data = new DataTable();
             SqlCommand selectCommand = new SqlCommand("Depot_Initialize", this.OpenSqlConnection())
             {
                 CommandType = CommandType.StoredProcedure
             };
             selectCommand.Parameters.AddWithValue("@depotID", depotID);
-            new SqlDataAdapter(selectCommand).Fill(dataSet);
+            data.Load(selectCommand.ExecuteReader());
             this.CloseSqlConnection();
-            return dataSet;
+            return data;
+        }
+
+        public DataTable Depot_GetWholeInventory(int depotID)
+        {
+            DataTable dt = new DataTable();
+            SqlCommand com = new SqlCommand("Depot_GetWholeInventory", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure, CommandTimeout = 90 };
+
+            com.Parameters.AddWithValue("@depotID", depotID);
+
+            dt.Load(com.ExecuteReader());
+
+            CloseSqlConnection();
+
+            return dt;
+        }
+
+        public DataTable Depot_GetInventoryForProduct(int depotID, string barcode)
+        {
+            DataTable dt = new DataTable();
+            SqlCommand com = new SqlCommand("Depot_getInvoentoryForProduct", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
+
+            com.Parameters.AddWithValue("@depotID", depotID);
+            com.Parameters.AddWithValue("@barcode", barcode);
+
+            dt.Load(com.ExecuteReader());
+
+            CloseSqlConnection();
+
+            return dt;
         }
 
         public void DepotUpdateMinStockQuantity(int depotID, string barcode, double minStock, double maxStock)
@@ -1222,7 +1293,8 @@ namespace POS
             DataTable table = new DataTable();
             SqlCommand command = new SqlCommand("Produt_getStatisticsForProduct", this.OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout = 190
             };
             command.Parameters.AddWithValue("@periodOfTimeValue", periodOfTimeValue);
             command.Parameters.AddWithValue("@barcode", barcode);
@@ -1498,7 +1570,8 @@ namespace POS
             DataTable table = new DataTable();
             SqlCommand command = new SqlCommand("[InvestmentSellsProfit]", this.OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout = 120
             };
             command.Parameters.AddWithValue("@periodOfTimeValue", periodOfTimeValue);
             command.Parameters.AddWithValue("@date", date);

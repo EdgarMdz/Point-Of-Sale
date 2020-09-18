@@ -15,13 +15,12 @@ namespace POS
 
         public int ID { get; set; }
 
-        private DataTable products { get; set; }
 
         public DataTable ProductTable
         {
             get
             {
-                return this.products;
+                return negocio.depot_GetWholeInventory(ID);
             }
         }
 
@@ -46,13 +45,12 @@ namespace POS
 
         private void InitializeDepot(int id)
         {
-            DataSet dataSet = this.negocio.DepotSetDepot(id);
-            if (dataSet.Tables[0].Rows.Count > 0)
+            DataTable data = this.negocio.DepotSetDepot(id);
+            if (data.Rows.Count > 0)
             {
-                this.ID = Convert.ToInt32(dataSet.Tables[0].Rows[0]["ID_Bodega"]);
-                this.name = dataSet.Tables[0].Rows[0]["Nombre"].ToString();
-                this.showInProductSearchingResults = Convert.ToBoolean(dataSet.Tables[0].Rows[0]["Mostrar en Busquedas"]);
-                this.products = dataSet.Tables[1].Copy();
+                this.ID = Convert.ToInt32(data.Rows[0]["ID_Bodega"]);
+                this.name = data.Rows[0]["Nombre"].ToString();
+                this.showInProductSearchingResults = Convert.ToBoolean(data.Rows[0]["Mostrar en Busquedas"]);
             }
             else
                 this.negocio = (Capa_de_Negocio)null;
@@ -65,21 +63,21 @@ namespace POS
 
         public double getProductQuantity(string barcode)
         {
-            foreach (DataRow row in (InternalDataCollectionBase)this.products.Rows)
-            {
-                if (row["Código de Barras"].ToString() == barcode)
-                    return Convert.ToDouble(row["Cantidad"]);
-            }
+            var data = negocio.Depot_GetInventoryForProduct(ID, barcode);
+
+            if (data.Rows.Count == 1)
+                return Convert.ToDouble(data.Rows[0]["Cantidad"]);
+
             return 0.0;
         }
 
         public double getMinStockForProduct(string barcode)
         {
-            foreach (DataRow row in (InternalDataCollectionBase)this.products.Rows)
-            {
-                if (row["Código de Barras"].ToString() == barcode)
-                    return Convert.ToDouble(row["Stock Mínimo"]);
-            }
+            var data = negocio.Depot_GetInventoryForProduct(ID, barcode);
+         
+            if (data.Rows.Count == 1)
+                return Convert.ToDouble(data.Rows[0]["Stock Mínimo"]);
+
             return 0.0;
         }
 
@@ -90,7 +88,7 @@ namespace POS
 
         public static DataTable getInventory()
         {
-            DataSet inventory = new Capa_de_Negocio().DepotGetInventory();
+            /*DataSet inventory = new Capa_de_Negocio().DepotGetInventory();
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("Código de Barras");
             dataTable.Columns.Add("Descripción");
@@ -139,12 +137,14 @@ namespace POS
                 if (++count > 200)
                     break;
             }
-            return dataTable;
+            return dataTable;*/
+
+            return new Capa_de_Negocio().DepotGetInventory();
 
         }
 
         public static DataTable getInventory(string text)
-        {
+        {/*
             DataSet inventory = new Capa_de_Negocio().DepotGetInventory(text);
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("Código de Barras");
@@ -189,7 +189,9 @@ namespace POS
                     dataTable.Rows[index1][index2] = Convert.ToDouble(row1["Cantidad"]).ToString() + " piezas";//Convert.ToDouble(row1["Cantidad"]) == 0.0 ?  "0 piezas" :  (Math.Truncate(Convert.ToDouble(row1["Cantidad"]) / Convert.ToDouble(row1["Piezas por Caja"])).ToString() + " cajas,\r\n" + (Convert.ToDouble(row1["Cantidad"]) % Convert.ToDouble(row1["Piezas por Caja"])).ToString() + " piezas");
                 }
             }
-            return dataTable;
+            return dataTable;*/
+
+            return new Capa_de_Negocio().DepotGetInventory(text);
         }
 
         public static int newDepot(string name)

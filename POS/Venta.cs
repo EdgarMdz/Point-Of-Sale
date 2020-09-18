@@ -148,6 +148,11 @@ namespace POS
             DateTime.TryParse(row["Fecha de Cancelación"].ToString(), out this._cancellationdate);
         }
 
+        public static DataTable getUnfinishedSalesIDs()
+        {
+            return new Capa_de_Negocio().Sale_getUnfinishedSalesIDs();
+        }
+
         public int newSale(
           int EmployeeID,
           int customerID,
@@ -232,6 +237,12 @@ namespace POS
         public DataSet getNextSaleID()
         {
             return negocio.getNextSaleID(ID);
+        }
+
+        public static DataTable getInfoUnfinishedSell(int savedWindowID, int newWindowID)
+        {
+            Capa_de_Negocio n = new Capa_de_Negocio();
+            return n.getInfoUnfinishedSell(savedWindowID, newWindowID);
         }
     }
 }

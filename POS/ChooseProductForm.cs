@@ -44,12 +44,17 @@ namespace POS
 
         private void ChooseProductForm_Load(object sender, EventArgs e)
         {
-            this.dataGridView1.DataSource = products.Rows.Count < 60 ? products : products.Rows.Cast<DataRow>().Take(60).CopyToDataTable();
+            setColumnsInTable();
+            addProductsToTable();
 
 
             this.dataGridView1.Columns["Stock"].Visible = false;
             this.dataGridView1.Columns["Stock Mínimo"].Visible = false;
             this.dataGridView1.Columns["Código de Barras"].Visible = true;
+
+
+            this.resizeGridView();
+            dataGridView1.Select();
 
             if (dataGridView1.RowCount > 0)
             {
@@ -57,7 +62,30 @@ namespace POS
                 tip.GetToolTip(this);
                 tip.Show(dataGridView1.Rows[0].Cells["Código de Barras"].Value.ToString(), this, new Point(this.Width, -tip.Height / 2));
             }
-            this.resizeGridView();
+        }
+    
+
+        private void setColumnsInTable()
+        {
+            dataGridView1.Columns.Clear();
+            foreach (DataColumn column in products.Columns)
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { Name = column.ColumnName });
+        }
+
+        private void addProductsToTable()
+        {
+            int i = 0;
+
+            while(i<20 && dataGridView1.RowCount+1<=products.Rows.Count)
+            {
+                var index = dataGridView1.Rows.Add();
+
+                foreach (DataGridViewColumn column in dataGridView1.Columns)
+                {
+                    dataGridView1[column.Index, index].Value = products.Rows[index][column.Index];
+                }
+                i++;
+            }
         }
 
 
@@ -166,9 +194,12 @@ namespace POS
 
         private void dataGridView1_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            tip.GetToolTip(this);
-            tip.Show(dataGridView1.Rows[e.RowIndex].Cells["Código de Barras"].Value.ToString(), this, new Point(this.Width, -tip.Height / 2));
-
+            var barcode = dataGridView1.Rows[e.RowIndex].Cells["Código de Barras"].Value;
+            if (dataGridView1.RowCount > 0 && barcode!=null)
+            {
+                tip.GetToolTip(this);
+                tip.Show(barcode.ToString(), this, new Point(this.Width, -tip.Height / 2));
+            }
         }
 
 

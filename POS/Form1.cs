@@ -41,6 +41,7 @@ namespace POS
              DateLbl.Visible = true;
              employee = new Empleado(EmployeeID);
              displayHideTabs();
+
             Button control =  VentasButton;
              menu = new ContextMenu();
              menu.MenuItems.Add(new MenuItem("Abrir en nueva ventana"));
@@ -51,18 +52,14 @@ namespace POS
                     new Panel_Inicio(time, employee.ID, ContainerPanel.Size, FormWindowState.Maximized).Show();
                 else if (control.Name == VentasButton.Name)
                 {
-                    Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized);
-                    Thread thread = new Thread(() => panel.ShowDialog());
-                    thread.SetApartmentState(ApartmentState.STA);
-                    thread.IsBackground = true;
-                    thread.Start();
+                    openNewSaleWindow();
                 }
                 else if (control.Name == ProductsButton.Name)
                     new Panel_Productos(FormWindowState.Maximized).Show();
                 else if (control.Name == ClientesBtn.Name)
                     new Panel_Clientes(FormWindowState.Maximized).Show();
                 else if (control.Name == SuppliersBtn.Name)
-                    new Panel_proveedores_Form(time, employee.ID, FormWindowState.Maximized).Show();
+                    new Panel_proveedores_Form( employee.ID, FormWindowState.Maximized).Show();
                 else if (control.Name == PurchasesBtn.Name)
                 {
                     new PanelCompras(employee.ID, FormWindowState.Maximized).Show();
@@ -75,6 +72,26 @@ namespace POS
                 }
             });
 
+            //checking for unfinished sells
+          /*  DataTable unfinishedSells = Venta.getUnfinishedSalesIDs();
+            foreach (DataRow row in unfinishedSells.Rows)
+            {
+                Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized, row);
+                panel.Show();
+            }*/
+
+        }
+
+        private void openNewSaleWindow(DataRow saleInfo = null)
+        {
+            try {
+                Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized, saleInfo);
+                Thread thread = new Thread(() => panel.ShowDialog());
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.IsBackground = true;
+                thread.Start();
+            }
+            catch (Exception) { }
         }
 
         private void displayHideTabs()
@@ -333,7 +350,7 @@ namespace POS
 
             if (con == null)
             {
-                Panel_proveedores_Form panelProveedoresForm = new Panel_proveedores_Form(time, employee.ID, FormWindowState.Normal);
+                Panel_proveedores_Form panelProveedoresForm = new Panel_proveedores_Form(employee.ID, FormWindowState.Normal);
                 panelProveedoresForm.TopLevel = false;
                 con = (Control)panelProveedoresForm;
                 panelProveedoresForm.TopLevel = false;
@@ -493,6 +510,13 @@ namespace POS
         private void Form1_Shown(object sender, EventArgs e)
         {
             homeBtn_Click(this, null);
+        }
+
+        private void ContainerPanel_ControlAdded(object sender, ControlEventArgs e)
+        {
+            if (ContainerPanel.Controls.Count > 1)
+                for (int i = 0; i < ContainerPanel.Controls.Count - 1; i++)
+                    ContainerPanel.Controls.RemoveAt(i);
         }
     }
 }

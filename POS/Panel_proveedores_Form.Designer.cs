@@ -62,6 +62,7 @@ namespace POS
             this.companyAddressTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
             this.companyNameTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
             this.phoneNumberTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
+            this.proccedPurchaseBtn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.bunifuGradientPanel9 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
@@ -144,6 +145,7 @@ namespace POS
             this.barcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.description = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.brand = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.piecesPerCase = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bunifuGradientPanel5 = new Bunifu.Framework.UI.BunifuGradientPanel();
@@ -183,7 +185,7 @@ namespace POS
             this.NextPurchaseButtonElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.AlarmsButtonElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.SelectAllBtnElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
-            this.AutoGenerateButtonElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
+            this.PayPurchaseElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.WindowSizeControlPanel = new System.Windows.Forms.Panel();
             this.minimizeBtn = new Bunifu.Framework.UI.BunifuImageButton();
@@ -244,7 +246,7 @@ namespace POS
             this.grandTotalLbl.BackColor = System.Drawing.Color.Transparent;
             this.grandTotalLbl.Font = new System.Drawing.Font("Century Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.grandTotalLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.grandTotalLbl.Location = new System.Drawing.Point(231, 10);
+            this.grandTotalLbl.Location = new System.Drawing.Point(-279, 10);
             this.grandTotalLbl.Name = "grandTotalLbl";
             this.grandTotalLbl.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.grandTotalLbl.Size = new System.Drawing.Size(756, 39);
@@ -291,7 +293,7 @@ namespace POS
             this.RecomendValueBtn.FlatAppearance.BorderSize = 0;
             this.RecomendValueBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.RecomendValueBtn.ForeColor = System.Drawing.Color.White;
-            this.RecomendValueBtn.Location = new System.Drawing.Point(286, 9);
+            this.RecomendValueBtn.Location = new System.Drawing.Point(550, 10);
             this.RecomendValueBtn.Name = "RecomendValueBtn";
             this.RecomendValueBtn.Size = new System.Drawing.Size(292, 45);
             this.RecomendValueBtn.TabIndex = 1;
@@ -466,7 +468,7 @@ namespace POS
             this.AgendaPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43F));
             this.AgendaPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43F));
             this.AgendaPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43F));
-            this.AgendaPanel.Size = new System.Drawing.Size(1226, 508);
+            this.AgendaPanel.Size = new System.Drawing.Size(992, 120);
             this.AgendaPanel.TabIndex = 2;
             this.AddSupplierToolTip.SetToolTip(this.AgendaPanel, "Agregar nuevo recordatorio");
             this.AgendaPanel.CellPaint += new System.Windows.Forms.TableLayoutCellPaintEventHandler(this.tableLayoutPanel1_CellPaint);
@@ -495,7 +497,7 @@ namespace POS
             this.TodayBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.TodayBtn.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TodayBtn.ForeColor = System.Drawing.Color.White;
-            this.TodayBtn.Location = new System.Drawing.Point(638, 15);
+            this.TodayBtn.Location = new System.Drawing.Point(404, 15);
             this.TodayBtn.Name = "TodayBtn";
             this.TodayBtn.Size = new System.Drawing.Size(75, 37);
             this.TodayBtn.TabIndex = 8;
@@ -527,7 +529,7 @@ namespace POS
             this.AddNewReminderBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.AddNewReminderBtn.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AddNewReminderBtn.ForeColor = System.Drawing.Color.White;
-            this.AddNewReminderBtn.Location = new System.Drawing.Point(270, 16);
+            this.AddNewReminderBtn.Location = new System.Drawing.Point(153, 16);
             this.AddNewReminderBtn.Name = "AddNewReminderBtn";
             this.AddNewReminderBtn.Size = new System.Drawing.Size(255, 37);
             this.AddNewReminderBtn.TabIndex = 9;
@@ -599,6 +601,22 @@ namespace POS
             this.AddSupplierToolTip.SetToolTip(this.phoneNumberTxt, "Número de Teléfono");
             this.phoneNumberTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.phoneNumberTxt_KeyDown);
             this.phoneNumberTxt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.phoneNumberTxt_KeyPress);
+            // 
+            // proccedPurchaseBtn
+            // 
+            this.proccedPurchaseBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.proccedPurchaseBtn.FlatAppearance.BorderSize = 0;
+            this.proccedPurchaseBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.proccedPurchaseBtn.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.proccedPurchaseBtn.ForeColor = System.Drawing.Color.White;
+            this.proccedPurchaseBtn.Location = new System.Drawing.Point(4, 16);
+            this.proccedPurchaseBtn.Name = "proccedPurchaseBtn";
+            this.proccedPurchaseBtn.Size = new System.Drawing.Size(204, 31);
+            this.proccedPurchaseBtn.TabIndex = 3;
+            this.proccedPurchaseBtn.Text = "Realizar Compra";
+            this.AddSupplierToolTip.SetToolTip(this.proccedPurchaseBtn, "Recomendar valor para la siguiente compra del producto seleccionado en la tabla");
+            this.proccedPurchaseBtn.UseVisualStyleBackColor = false;
+            this.proccedPurchaseBtn.Click += new System.EventHandler(this.proccedPurchaseBtn_Click);
             // 
             // panel1
             // 
@@ -1813,14 +1831,16 @@ namespace POS
             this.dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(553, 398);
+            this.dataGridView1.Size = new System.Drawing.Size(1466, 580);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.DataSourceChanged += new System.EventHandler(this.dataGridView1_DataSourceChanged);
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             this.dataGridView1.ColumnDisplayIndexChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.dataGridView1_ColumnDisplayIndexChanged);
             this.dataGridView1.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_RowEnter);
+            this.dataGridView1.RowHeightChanged += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView1_RowHeightChanged);
             this.dataGridView1.RowLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_RowLeave);
+            this.dataGridView1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dataGridView1_Scroll);
             this.dataGridView1.SizeChanged += new System.EventHandler(this.dataGridView1_SizeChanged);
             this.dataGridView1.Leave += new System.EventHandler(this.dataGridView1_Leave);
             // 
@@ -1834,11 +1854,11 @@ namespace POS
             this.NextPurchaseCard.Controls.Add(this.bunifuGradientPanel5);
             this.NextPurchaseCard.Controls.Add(this.bunifuGradientPanel3);
             this.NextPurchaseCard.LeftSahddow = false;
-            this.NextPurchaseCard.Location = new System.Drawing.Point(0, 254);
+            this.NextPurchaseCard.Location = new System.Drawing.Point(0, 243);
             this.NextPurchaseCard.Name = "NextPurchaseCard";
             this.NextPurchaseCard.RightSahddow = true;
             this.NextPurchaseCard.ShadowDepth = 20;
-            this.NextPurchaseCard.Size = new System.Drawing.Size(1018, 379);
+            this.NextPurchaseCard.Size = new System.Drawing.Size(508, 390);
             this.NextPurchaseCard.TabIndex = 48;
             // 
             // bunifuGradientPanel4
@@ -1851,10 +1871,10 @@ namespace POS
             this.bunifuGradientPanel4.GradientBottomRight = System.Drawing.Color.White;
             this.bunifuGradientPanel4.GradientTopLeft = System.Drawing.Color.White;
             this.bunifuGradientPanel4.GradientTopRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel4.Location = new System.Drawing.Point(0, -201);
+            this.bunifuGradientPanel4.Location = new System.Drawing.Point(0, -190);
             this.bunifuGradientPanel4.Name = "bunifuGradientPanel4";
             this.bunifuGradientPanel4.Quality = 10;
-            this.bunifuGradientPanel4.Size = new System.Drawing.Size(1018, 517);
+            this.bunifuGradientPanel4.Size = new System.Drawing.Size(508, 517);
             this.bunifuGradientPanel4.TabIndex = 3;
             // 
             // dataGridView2
@@ -1879,6 +1899,7 @@ namespace POS
             this.barcode,
             this.description,
             this.brand,
+            this.piecesPerCase,
             this.amount,
             this.Total});
             dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
@@ -1898,7 +1919,7 @@ namespace POS
             this.dataGridView2.RowTemplate.Height = 35;
             this.dataGridView2.RowTemplate.ReadOnly = true;
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(1018, 517);
+            this.dataGridView2.Size = new System.Drawing.Size(508, 517);
             this.dataGridView2.TabIndex = 3;
             this.dataGridView2.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellEndEdit);
             this.dataGridView2.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellValueChanged);
@@ -1927,13 +1948,18 @@ namespace POS
             this.brand.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.brand.Width = 107;
             // 
+            // piecesPerCase
+            // 
+            this.piecesPerCase.HeaderText = "Piezas por Caja";
+            this.piecesPerCase.Name = "piecesPerCase";
+            // 
             // amount
             // 
             this.amount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.amount.HeaderText = "Cantidad";
+            this.amount.HeaderText = "Cantidad de Cajas";
             this.amount.Name = "amount";
             this.amount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.amount.Width = 144;
+            this.amount.Width = 176;
             // 
             // Total
             // 
@@ -1956,7 +1982,7 @@ namespace POS
             this.bunifuGradientPanel5.Location = new System.Drawing.Point(0, 0);
             this.bunifuGradientPanel5.Name = "bunifuGradientPanel5";
             this.bunifuGradientPanel5.Quality = 10;
-            this.bunifuGradientPanel5.Size = new System.Drawing.Size(1018, 53);
+            this.bunifuGradientPanel5.Size = new System.Drawing.Size(508, 53);
             this.bunifuGradientPanel5.TabIndex = 50;
             // 
             // ProductTxt
@@ -1968,7 +1994,7 @@ namespace POS
             this.ProductTxt.Location = new System.Drawing.Point(4, 8);
             this.ProductTxt.Multiline = false;
             this.ProductTxt.Name = "ProductTxt";
-            this.ProductTxt.Size = new System.Drawing.Size(1010, 37);
+            this.ProductTxt.Size = new System.Drawing.Size(500, 37);
             this.ProductTxt.TabIndex = 2;
             this.ProductTxt.Text = "";
             this.ProductTxt.TextChanged += new System.EventHandler(this.ProductTxt_TextChanged);
@@ -1981,6 +2007,7 @@ namespace POS
             // 
             this.bunifuGradientPanel3.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel3.BackgroundImage")));
             this.bunifuGradientPanel3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.bunifuGradientPanel3.Controls.Add(this.proccedPurchaseBtn);
             this.bunifuGradientPanel3.Controls.Add(this.grandTotalLbl);
             this.bunifuGradientPanel3.Controls.Add(this.SaveBtn);
             this.bunifuGradientPanel3.Controls.Add(this.RecomendValueBtn);
@@ -1989,10 +2016,10 @@ namespace POS
             this.bunifuGradientPanel3.GradientBottomRight = System.Drawing.Color.LightGray;
             this.bunifuGradientPanel3.GradientTopLeft = System.Drawing.Color.WhiteSmoke;
             this.bunifuGradientPanel3.GradientTopRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel3.Location = new System.Drawing.Point(0, 316);
+            this.bunifuGradientPanel3.Location = new System.Drawing.Point(0, 327);
             this.bunifuGradientPanel3.Name = "bunifuGradientPanel3";
             this.bunifuGradientPanel3.Quality = 10;
-            this.bunifuGradientPanel3.Size = new System.Drawing.Size(1018, 63);
+            this.bunifuGradientPanel3.Size = new System.Drawing.Size(508, 63);
             this.bunifuGradientPanel3.TabIndex = 2;
             // 
             // SaveBtn
@@ -2014,7 +2041,7 @@ namespace POS
             this.SaveBtn.IdleFillColor = System.Drawing.Color.White;
             this.SaveBtn.IdleForecolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
             this.SaveBtn.IdleLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.SaveBtn.Location = new System.Drawing.Point(-541, 11);
+            this.SaveBtn.Location = new System.Drawing.Point(-844, 11);
             this.SaveBtn.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.SaveBtn.Name = "SaveBtn";
             this.SaveBtn.Size = new System.Drawing.Size(265, 41);
@@ -2169,7 +2196,7 @@ namespace POS
             this.bunifuGradientPanel6.Location = new System.Drawing.Point(0, 0);
             this.bunifuGradientPanel6.Name = "bunifuGradientPanel6";
             this.bunifuGradientPanel6.Quality = 10;
-            this.bunifuGradientPanel6.Size = new System.Drawing.Size(341, 631);
+            this.bunifuGradientPanel6.Size = new System.Drawing.Size(341, 243);
             this.bunifuGradientPanel6.TabIndex = 0;
             // 
             // RemindersPanel
@@ -2179,15 +2206,14 @@ namespace POS
             this.RemindersPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.RemindersPanel.Controls.Add(this.AgendaContainerPanel);
             this.RemindersPanel.Controls.Add(this.bunifuGradientPanel6);
-            this.RemindersPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RemindersPanel.GradientBottomLeft = System.Drawing.Color.WhiteSmoke;
             this.RemindersPanel.GradientBottomRight = System.Drawing.Color.White;
             this.RemindersPanel.GradientTopLeft = System.Drawing.Color.WhiteSmoke;
             this.RemindersPanel.GradientTopRight = System.Drawing.Color.White;
-            this.RemindersPanel.Location = new System.Drawing.Point(0, 0);
+            this.RemindersPanel.Location = new System.Drawing.Point(0, 388);
             this.RemindersPanel.Name = "RemindersPanel";
             this.RemindersPanel.Quality = 10;
-            this.RemindersPanel.Size = new System.Drawing.Size(1569, 633);
+            this.RemindersPanel.Size = new System.Drawing.Size(1335, 245);
             this.RemindersPanel.TabIndex = 50;
             // 
             // AgendaContainerPanel
@@ -2205,7 +2231,7 @@ namespace POS
             this.AgendaContainerPanel.Location = new System.Drawing.Point(341, 0);
             this.AgendaContainerPanel.Name = "AgendaContainerPanel";
             this.AgendaContainerPanel.Quality = 10;
-            this.AgendaContainerPanel.Size = new System.Drawing.Size(1226, 631);
+            this.AgendaContainerPanel.Size = new System.Drawing.Size(992, 243);
             this.AgendaContainerPanel.TabIndex = 1;
             // 
             // bunifuGradientPanel7
@@ -2227,7 +2253,7 @@ namespace POS
             this.bunifuGradientPanel7.Location = new System.Drawing.Point(0, 53);
             this.bunifuGradientPanel7.Name = "bunifuGradientPanel7";
             this.bunifuGradientPanel7.Quality = 10;
-            this.bunifuGradientPanel7.Size = new System.Drawing.Size(1226, 70);
+            this.bunifuGradientPanel7.Size = new System.Drawing.Size(992, 70);
             this.bunifuGradientPanel7.TabIndex = 1;
             // 
             // bunifuSeparator1
@@ -2240,7 +2266,7 @@ namespace POS
             this.bunifuSeparator1.Location = new System.Drawing.Point(0, 63);
             this.bunifuSeparator1.Margin = new System.Windows.Forms.Padding(8);
             this.bunifuSeparator1.Name = "bunifuSeparator1";
-            this.bunifuSeparator1.Size = new System.Drawing.Size(1242, 5);
+            this.bunifuSeparator1.Size = new System.Drawing.Size(1008, 5);
             this.bunifuSeparator1.TabIndex = 7;
             this.bunifuSeparator1.Transparency = 255;
             this.bunifuSeparator1.Vertical = false;
@@ -2281,7 +2307,7 @@ namespace POS
             this.bunifuGradientPanel8.Location = new System.Drawing.Point(0, 0);
             this.bunifuGradientPanel8.Name = "bunifuGradientPanel8";
             this.bunifuGradientPanel8.Quality = 10;
-            this.bunifuGradientPanel8.Size = new System.Drawing.Size(1226, 53);
+            this.bunifuGradientPanel8.Size = new System.Drawing.Size(992, 53);
             this.bunifuGradientPanel8.TabIndex = 0;
             // 
             // YearLabel
@@ -2308,7 +2334,7 @@ namespace POS
             this.bunifuGradientPanel2.Location = new System.Drawing.Point(103, 53);
             this.bunifuGradientPanel2.Name = "bunifuGradientPanel2";
             this.bunifuGradientPanel2.Quality = 10;
-            this.bunifuGradientPanel2.Size = new System.Drawing.Size(553, 398);
+            this.bunifuGradientPanel2.Size = new System.Drawing.Size(1466, 580);
             this.bunifuGradientPanel2.TabIndex = 50;
             // 
             // DataGridCardControlPanel
@@ -2327,7 +2353,7 @@ namespace POS
             this.DataGridCardControlPanel.Location = new System.Drawing.Point(0, 0);
             this.DataGridCardControlPanel.Name = "DataGridCardControlPanel";
             this.DataGridCardControlPanel.Quality = 10;
-            this.DataGridCardControlPanel.Size = new System.Drawing.Size(103, 451);
+            this.DataGridCardControlPanel.Size = new System.Drawing.Size(103, 633);
             this.DataGridCardControlPanel.TabIndex = 48;
             // 
             // bunifuGradientPanel1
@@ -2344,7 +2370,7 @@ namespace POS
             this.bunifuGradientPanel1.Location = new System.Drawing.Point(103, 0);
             this.bunifuGradientPanel1.Name = "bunifuGradientPanel1";
             this.bunifuGradientPanel1.Quality = 10;
-            this.bunifuGradientPanel1.Size = new System.Drawing.Size(553, 53);
+            this.bunifuGradientPanel1.Size = new System.Drawing.Size(1466, 53);
             this.bunifuGradientPanel1.TabIndex = 49;
             // 
             // ProductListPanel
@@ -2354,14 +2380,15 @@ namespace POS
             this.ProductListPanel.Controls.Add(this.bunifuGradientPanel2);
             this.ProductListPanel.Controls.Add(this.bunifuGradientPanel1);
             this.ProductListPanel.Controls.Add(this.DataGridCardControlPanel);
+            this.ProductListPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ProductListPanel.GradientBottomLeft = System.Drawing.Color.White;
             this.ProductListPanel.GradientBottomRight = System.Drawing.Color.White;
             this.ProductListPanel.GradientTopLeft = System.Drawing.Color.White;
             this.ProductListPanel.GradientTopRight = System.Drawing.Color.White;
-            this.ProductListPanel.Location = new System.Drawing.Point(0, 184);
+            this.ProductListPanel.Location = new System.Drawing.Point(0, 0);
             this.ProductListPanel.Name = "ProductListPanel";
             this.ProductListPanel.Quality = 10;
-            this.ProductListPanel.Size = new System.Drawing.Size(656, 451);
+            this.ProductListPanel.Size = new System.Drawing.Size(1569, 633);
             this.ProductListPanel.TabIndex = 49;
             this.ProductListPanel.Visible = false;
             // 
@@ -2508,10 +2535,10 @@ namespace POS
             this.SelectAllBtnElipse.ElipseRadius = 35;
             this.SelectAllBtnElipse.TargetControl = this;
             // 
-            // AutoGenerateButtonElipse
+            // PayPurchaseElipse
             // 
-            this.AutoGenerateButtonElipse.ElipseRadius = 35;
-            this.AutoGenerateButtonElipse.TargetControl = this.RecomendValueBtn;
+            this.PayPurchaseElipse.ElipseRadius = 35;
+            this.PayPurchaseElipse.TargetControl = this.proccedPurchaseBtn;
             // 
             // WindowSizeControlPanel
             // 
@@ -2769,17 +2796,19 @@ namespace POS
         private Bunifu.Framework.UI.BunifuElipse NextPurchaseButtonElipse;
         private Bunifu.Framework.UI.BunifuElipse AlarmsButtonElipse;
         private Bunifu.Framework.UI.BunifuElipse SelectAllBtnElipse;
-        private Bunifu.Framework.UI.BunifuElipse AutoGenerateButtonElipse;
+        private Bunifu.Framework.UI.BunifuElipse PayPurchaseElipse;
         private Timer timer;
         private Panel WindowSizeControlPanel;
         private Bunifu.Framework.UI.BunifuImageButton minimizeBtn;
         private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton2;
         private DataGridView dataGridView2;
+        private RichTextBox ProductTxt;
         private DataGridViewTextBoxColumn barcode;
         private DataGridViewTextBoxColumn description;
         private DataGridViewTextBoxColumn brand;
+        private DataGridViewTextBoxColumn piecesPerCase;
         private DataGridViewTextBoxColumn amount;
         private DataGridViewTextBoxColumn Total;
-        private RichTextBox ProductTxt;
+        private Button proccedPurchaseBtn;
     }
 }
