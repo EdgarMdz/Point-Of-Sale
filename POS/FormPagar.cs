@@ -46,9 +46,9 @@ namespace POS
             double res = 0;
             
 
-            if (TotalRest < 0.4)
+            if (TotalRest < 0.25)
                 res = totalNoDecimals;
-            else if (TotalRest >= 0.4 && TotalRest < 0.89)
+            else if (TotalRest >= 0.25 && TotalRest < 0.75)
                 res = (totalNoDecimals + 0.5);
             else
                 res=(totalNoDecimals + 1);
@@ -95,7 +95,7 @@ namespace POS
                 if (this.paymentTxt.Text == "" || Convert.ToDouble(this.paymentTxt.Text) < this.minimumPaymentNeeded)
                 {
                     this.shake(this.paymentTxt);
-                    int num = (int)MessageBox.Show(string.Format("La cantidad mínima a cobrar son ${0}", (object)this.minimumPaymentNeeded));
+                    MessageBox.Show(string.Format("La cantidad mínima a cobrar son ${0}", (object)this.minimumPaymentNeeded));
                     this.paymentTxt.Text = this.minimumPaymentNeeded.ToString("n2");
                 }
                 else

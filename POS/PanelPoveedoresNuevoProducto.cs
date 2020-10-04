@@ -15,10 +15,6 @@ namespace POS
 
         public int SupplierID { get; set; }
 
-        public AutoCompleteStringCollection descriptionCollection { get; set; }
-
-        public AutoCompleteStringCollection barcodeCollection { get; set; }
-
         public string barcode { get; set; }
 
         public double price { get; set; }
@@ -43,16 +39,10 @@ namespace POS
         }
 
         public PanelPoveedoresNuevoProducto(
-          int SupplierID,
-          DataTable products,
-          AutoCompleteStringCollection barCodeCollection,
-          AutoCompleteStringCollection DescriptionCollection)
+          int SupplierID)
         {
             this.InitializeComponent();
             this.SupplierID = SupplierID;
-            this.productsTable = products;
-            this.barcodeCollection = barCodeCollection;
-            this.descriptionCollection = DescriptionCollection;
             this.ShowInTaskbar = false;
             this.editingMode = false;
         }
@@ -74,17 +64,11 @@ namespace POS
 
         private void PanelPoveedoresNuevoProducto_Load(object sender, EventArgs e)
         {
-            if (!this.editingMode)
-            {
-                this.DescriptionTxt.AutoCompleteCustomSource = this.descriptionCollection;
-                this.BarCodeTxt.AutoCompleteCustomSource = this.barcodeCollection;
-            }
-            else
+            if (this.editingMode)
             {
                 this.BarCodeTxt.Enabled = false;
-                this.DescriptionTxt.Enabled = false;
                 this.BarCodeTxt.Text = this.barcode;
-                this.DescriptionTxt.Text = this.description;
+                this.descriptionLbl.Text = this.description;
                 this.MarcaLbl.Text = this.brand;
                 this.StockLbl.Text = this.Stock.ToString("n2");
                 this.MinStockLbl.Text = this.minStok.ToString("n2");
@@ -96,68 +80,16 @@ namespace POS
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode != Keys.Return || !this.barcodeCollection.Contains(this.BarCodeTxt.Text))
-                return;
-            Producto producto = new Producto();
-            producto.Barcode = this.BarCodeTxt.Text;
-            producto.SearchProduct();
-            this.DescriptionTxt.Text = producto.Description;
-            this.MarcaLbl.Text = producto.Brand;
-            this.precioTxt.Text = "0.00";
-            this.MinStockLbl.Text = producto.minStock.ToString("n2") + " piezas";
-            this.StockLbl.Text = producto.CurrentStock.ToString("n2") + " piezas";
-            this.showNextPanel();
-        }
-
-        private void BarCodeTxt_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (char.IsControl(e.KeyChar) || char.IsDigit(e.KeyChar))
-                return;
-            e.Handled = true;
-        }
-
-        private void DescriptionTxt_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode != Keys.Return)
-                return;
-            DataTable table = Producto.SearchValueGetTable(this.DescriptionTxt.Text);
-            foreach (DataRow row in (InternalDataCollectionBase)table.Rows)
+            if(e.KeyCode== Keys.Enter)
             {
-                if (!this.barcodeCollection.Contains(row["Código de Barras"].ToString()))
-                    row.Delete();
+                showNextPanel();
             }
-            table.AcceptChanges();
-            if (table.Rows.Count > 1)
-            {
-                ChooseProductForm chooseProductForm = new ChooseProductForm();
-                chooseProductForm.products = table;
-                if (chooseProductForm.ShowDialog() == DialogResult.OK)
-                {
-                    string[] strArray = new string[5];
-                    string[] selectedItem = chooseProductForm.selectedItem;
-                    this.BarCodeTxt.Text = selectedItem[0];
-                    this.DescriptionTxt.Text = selectedItem[1];
-                    this.MarcaLbl.Text = selectedItem[2];
-                    this.precioTxt.Text = "0.00";
-                    this.MinStockLbl.Text = selectedItem[3] + " piezas";
-                    this.StockLbl.Text = selectedItem[4] + " piezas";
-                    this.showNextPanel();
-                }
-            }
-            if (table.Rows.Count != 1)
-                return;
-            this.BarCodeTxt.Text = table.Rows[0]["Código de Barras"].ToString();
-            this.DescriptionTxt.Text = table.Rows[0]["Descripción"].ToString();
-            this.MarcaLbl.Text = table.Rows[0]["Marca"].ToString();
-            this.precioTxt.Text = "0.00";
-            this.MinStockLbl.Text = Convert.ToDouble(table.Rows[0]["Stock Mínimo"].ToString()).ToString("n2") + " piezas";
-            this.StockLbl.Text = Convert.ToDouble(table.Rows[0]["Stock"].ToString()).ToString("n2") + " piezas";
-            this.showNextPanel();
         }
-
+        
         private void BarCodeTxt_TextChanged(object sender, EventArgs e)
         {
-            this.ResetForm();
+            if (this.Height > 250)
+                this.ResetForm();
         }
 
         private void AcceptBtn_Click(object sender, EventArgs e)
@@ -183,14 +115,13 @@ namespace POS
                         this.Close();
                     }
                     catch (Exception ex)
-                    {
-                        int num2 = (int)MessageBox.Show("Error:\n" + ex.ToString());
+                    {MessageBox.Show("Error:\n" + ex.ToString());
                         this.DialogResult = DialogResult.Cancel;
                     }
                 }
                 else
                 {
-                    int num3 = (int)MessageBox.Show("LLene los campos obligatorios para poder continuar");
+                    MessageBox.Show("LLene los campos obligatorios para poder continuar");
                 }
             }
             else
@@ -207,7 +138,7 @@ namespace POS
                 }
                 catch (Exception ex)
                 {
-                    int num2 = (int)MessageBox.Show("Error:\n" + ex.ToString());
+                    MessageBox.Show("Error:\n" + ex.ToString());
                     this.DialogResult = DialogResult.Cancel;
                 }
             }
@@ -226,27 +157,92 @@ namespace POS
 
         private void showNextPanel()
         {
-            if (!this.editingMode && (!this.barcodeCollection.Contains(this.BarCodeTxt.Text) || !this.descriptionCollection.Contains(this.DescriptionTxt.Text)))
-                //||                !this.editingMode && this.barcodeCollection.IndexOf(this.BarCodeTxt.Text) != this.descriptionCollection.IndexOf(this.DescriptionTxt.Text))
-                return;
-            this.NextButton.Hide();
-            this.Height = 566;
-            this.panel.Show();
-            this.CenterToScreen();
+            if (!isNumber(BarCodeTxt.Text))
+            {
+                var results = Producto.SearchValueGetTable(BarCodeTxt.Text);
+
+                if (results.Rows.Count == 1)
+                {
+                    if (new Proveedor(SupplierID).getProductInfo(BarCodeTxt.Text).Rows.Count == 0 || editingMode)
+                    {
+                        barcode = results.Rows[0]["código de barras"].ToString();
+                        var p = new Producto(barcode);
+                        descriptionLbl.Text = p.Description;
+                        MarcaLbl.Text = p.Brand;
+                        StockLbl.Text = p.CurrentStock.ToString("n2");
+                        MinStockLbl.Text = p.minStock.ToString("n2");
+                        this.NextButton.Hide();
+                        this.Height = 540;
+                        this.panel.Show();
+                        this.CenterToScreen();
+                        precioTxt.Select();
+                    }
+                    else
+                        MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
+                }
+                else if (results.Rows.Count > 1)
+                {
+                    ChooseProductForm form = new ChooseProductForm(results);
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        barcode = form.selectedItem[0];
+
+                        var p = new Producto(barcode);
+                        descriptionLbl.Text = p.Description;
+                        MarcaLbl.Text = p.Brand;
+                        StockLbl.Text = p.CurrentStock.ToString("n2");
+                        MinStockLbl.Text = p.minStock.ToString("n2");
+                        precioTxt.Select();
+                        this.NextButton.Hide();
+                        this.Height = 540;
+                        this.panel.Show();
+                        this.CenterToScreen();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No se encontraron productos");
+                    barcode = "";
+                }
+            }
+            else
+            {
+                if (Producto.SearchProduct(BarCodeTxt.Text)&&  new Proveedor(SupplierID).getProductInfo(BarCodeTxt.Text).Rows.Count == 0 || editingMode)
+                {
+                    barcode = BarCodeTxt.Text;
+                    var p = new Producto(barcode);
+                    descriptionLbl.Text = p.Description;
+                    MarcaLbl.Text = p.Brand;
+                    StockLbl.Text = p.CurrentStock.ToString("n2");
+                    MinStockLbl.Text = p.minStock.ToString("n2");
+                    this.NextButton.Hide();
+                    this.Height = 540;
+                    this.panel.Show();
+                    this.CenterToScreen();
+                    precioTxt.Select();
+                }
+                else
+                    MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
+            }
         }
 
-        private void DescriptionTxt_TextChanged(object sender, EventArgs e)
+        bool isNumber(string text)
         {
-            this.ResetForm();
+            foreach (char c in text)
+            {
+                if (!char.IsNumber(c))
+                    return false;
+            }
+            return true;
         }
-
+     
         private void ResetForm()
         {
             if (!this.panel.Visible)
                 return;
             this.panel.Visible = false;
             this.NextButton.Show();
-            this.Height = 297;
+            this.Height = 250;
             this.CenterToScreen();
         }
 
@@ -264,6 +260,15 @@ namespace POS
             if (!(this.piecesperCaseTxt.Text == ""))
                 return;
             this.piecesperCaseTxt.Text = "1.00";
+        }
+
+        private void precioTxt_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsNumber(e.KeyChar) && e.KeyChar != '.')
+                e.Handled = true;
+
+            if (e.KeyChar == '.' && precioTxt.Text.IndexOf(".") > -1)
+                e.Handled = true;
         }
     }
 }

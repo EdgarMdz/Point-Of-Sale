@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(form_agregar_venta_surtido));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
@@ -39,20 +39,19 @@
             this.barcodeTxt = new System.Windows.Forms.TextBox();
             this.BarcodeLbl = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.okBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.bunifuImageButton1 = new Bunifu.Framework.UI.BunifuImageButton();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.barcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.product = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.addBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.deleteBtn = new Bunifu.Framework.UI.BunifuImageButton();
-            this.okBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.costPerCaseTxt = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.piecesPerCaseTxt = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.bunifuDragControl1 = new Bunifu.Framework.UI.BunifuDragControl(this.components);
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
             this.panel2.SuspendLayout();
@@ -149,11 +148,11 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.okBtn);
             this.panel3.Controls.Add(this.bunifuImageButton1);
             this.panel3.Controls.Add(this.dataGridView1);
             this.panel3.Controls.Add(this.addBtn);
             this.panel3.Controls.Add(this.deleteBtn);
-            this.panel3.Controls.Add(this.okBtn);
             this.panel3.Controls.Add(this.costPerCaseTxt);
             this.panel3.Controls.Add(this.label4);
             this.panel3.Controls.Add(this.piecesPerCaseTxt);
@@ -166,6 +165,32 @@
             this.panel3.TabIndex = 41;
             this.panel3.Visible = false;
             this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
+            // 
+            // okBtn
+            // 
+            this.okBtn.ActiveBorderThickness = 1;
+            this.okBtn.ActiveCornerRadius = 20;
+            this.okBtn.ActiveFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.okBtn.ActiveForecolor = System.Drawing.Color.White;
+            this.okBtn.ActiveLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.okBtn.BackColor = System.Drawing.Color.White;
+            this.okBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("okBtn.BackgroundImage")));
+            this.okBtn.ButtonText = "Guardar";
+            this.okBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.okBtn.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.okBtn.ForeColor = System.Drawing.Color.SeaGreen;
+            this.okBtn.IdleBorderThickness = 1;
+            this.okBtn.IdleCornerRadius = 20;
+            this.okBtn.IdleFillColor = System.Drawing.Color.White;
+            this.okBtn.IdleForecolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.okBtn.IdleLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.okBtn.Location = new System.Drawing.Point(373, 418);
+            this.okBtn.Margin = new System.Windows.Forms.Padding(5);
+            this.okBtn.Name = "okBtn";
+            this.okBtn.Size = new System.Drawing.Size(181, 41);
+            this.okBtn.TabIndex = 11;
+            this.okBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.okBtn.Click += new System.EventHandler(this.okBtn_Click_1);
             // 
             // bunifuImageButton1
             // 
@@ -194,16 +219,16 @@
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.barcode,
             this.product});
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.EnableHeadersVisualStyles = false;
-            this.dataGridView1.GridColor = System.Drawing.Color.White;
+            this.dataGridView1.GridColor = System.Drawing.Color.LightGray;
             this.dataGridView1.Location = new System.Drawing.Point(114, 97);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
@@ -256,32 +281,6 @@
             this.deleteBtn.Zoom = 10;
             this.deleteBtn.Click += new System.EventHandler(this.deleteBtn_Click);
             // 
-            // okBtn
-            // 
-            this.okBtn.ActiveBorderThickness = 1;
-            this.okBtn.ActiveCornerRadius = 20;
-            this.okBtn.ActiveFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.okBtn.ActiveForecolor = System.Drawing.Color.White;
-            this.okBtn.ActiveLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.okBtn.BackColor = System.Drawing.Color.White;
-            this.okBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("okBtn.BackgroundImage")));
-            this.okBtn.ButtonText = "Guardar";
-            this.okBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.okBtn.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.okBtn.ForeColor = System.Drawing.Color.SeaGreen;
-            this.okBtn.IdleBorderThickness = 1;
-            this.okBtn.IdleCornerRadius = 20;
-            this.okBtn.IdleFillColor = System.Drawing.Color.White;
-            this.okBtn.IdleForecolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.okBtn.IdleLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.okBtn.Location = new System.Drawing.Point(358, 422);
-            this.okBtn.Margin = new System.Windows.Forms.Padding(5);
-            this.okBtn.Name = "okBtn";
-            this.okBtn.Size = new System.Drawing.Size(181, 41);
-            this.okBtn.TabIndex = 6;
-            this.okBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.okBtn.Click += new System.EventHandler(this.okBtn_Click);
-            // 
             // costPerCaseTxt
             // 
             this.costPerCaseTxt.Enabled = false;
@@ -327,13 +326,6 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Productos";
             // 
-            // bunifuDragControl1
-            // 
-            this.bunifuDragControl1.Fixed = true;
-            this.bunifuDragControl1.Horizontal = true;
-            this.bunifuDragControl1.TargetControl = this.panel1;
-            this.bunifuDragControl1.Vertical = true;
-            // 
             // form_agregar_venta_surtido
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 32F);
@@ -375,7 +367,6 @@
         private System.Windows.Forms.TextBox barcodeTxt;
         private System.Windows.Forms.Label BarcodeLbl;
         private System.Windows.Forms.Panel panel3;
-        private Bunifu.Framework.UI.BunifuThinButton2 okBtn;
         private System.Windows.Forms.TextBox costPerCaseTxt;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox piecesPerCaseTxt;
@@ -389,6 +380,6 @@
         private Bunifu.Framework.UI.BunifuImageButton closeBtn;
         private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton1;
         private System.Windows.Forms.ToolTip toolTip1;
-        private Bunifu.Framework.UI.BunifuDragControl bunifuDragControl1;
+        private Bunifu.Framework.UI.BunifuThinButton2 okBtn;
     }
 }

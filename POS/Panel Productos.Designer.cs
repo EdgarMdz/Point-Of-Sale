@@ -44,16 +44,16 @@ namespace POS
             this.ProductListPanel = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.bunifuGradientPanel1 = new Bunifu.Framework.UI.BunifuGradientPanel();
-            this.promoBtn = new Bunifu.Framework.UI.BunifuImageButton();
-            this.mixedCaseBtn = new Bunifu.Framework.UI.BunifuImageButton();
-            this.TransferStockBtn = new Bunifu.Framework.UI.BunifuImageButton();
+            this.AddBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.EditProduct = new Bunifu.Framework.UI.BunifuImageButton();
             this.DeleteButton = new Bunifu.Framework.UI.BunifuImageButton();
-            this.AddBtn = new Bunifu.Framework.UI.BunifuImageButton();
+            this.TransferStockBtn = new Bunifu.Framework.UI.BunifuImageButton();
+            this.mixedCaseBtn = new Bunifu.Framework.UI.BunifuImageButton();
+            this.promoBtn = new Bunifu.Framework.UI.BunifuImageButton();
+            this.wholesaleCostsBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.bunifuGradientPanel4 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.SearchTxt = new System.Windows.Forms.TextBox();
-            this.bunifuGradientPanel5 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.scrapBtn = new System.Windows.Forms.Button();
             this.NewDepotBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
@@ -64,14 +64,14 @@ namespace POS
             this.ProductListPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.bunifuGradientPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.promoBtn)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.mixedCaseBtn)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.TransferStockBtn)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AddBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EditProduct)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DeleteButton)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AddBtn)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TransferStockBtn)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mixedCaseBtn)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.promoBtn)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.wholesaleCostsBtn)).BeginInit();
             this.bunifuGradientPanel4.SuspendLayout();
-            this.bunifuGradientPanel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // closeBtn
@@ -134,7 +134,6 @@ namespace POS
             // ProductPanel
             // 
             this.ProductPanel.Controls.Add(this.ProductListPanel);
-            this.ProductPanel.Controls.Add(this.bunifuGradientPanel5);
             this.ProductPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ProductPanel.Location = new System.Drawing.Point(0, 0);
             this.ProductPanel.Name = "ProductPanel";
@@ -154,10 +153,10 @@ namespace POS
             this.ProductListPanel.GradientBottomRight = System.Drawing.Color.WhiteSmoke;
             this.ProductListPanel.GradientTopLeft = System.Drawing.Color.White;
             this.ProductListPanel.GradientTopRight = System.Drawing.Color.White;
-            this.ProductListPanel.Location = new System.Drawing.Point(0, 63);
+            this.ProductListPanel.Location = new System.Drawing.Point(0, 0);
             this.ProductListPanel.Name = "ProductListPanel";
             this.ProductListPanel.Quality = 10;
-            this.ProductListPanel.Size = new System.Drawing.Size(1557, 731);
+            this.ProductListPanel.Size = new System.Drawing.Size(1557, 794);
             this.ProductListPanel.TabIndex = 7;
             // 
             // dataGridView1
@@ -194,12 +193,13 @@ namespace POS
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1479, 664);
+            this.dataGridView1.Size = new System.Drawing.Size(1479, 727);
             this.dataGridView1.TabIndex = 13;
             this.dataGridView1.DataSourceChanged += new System.EventHandler(this.dataGridView1_DataSourceChanged_1);
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             this.dataGridView1.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseClick_1);
             this.dataGridView1.ColumnHeaderMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_ColumnHeaderMouseDoubleClick);
+            this.dataGridView1.RowHeightChanged += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView1_RowHeightChanged);
             this.dataGridView1.Sorted += new System.EventHandler(this.dataGridView1_Sorted);
             this.dataGridView1.SizeChanged += new System.EventHandler(this.dataGridView1_SizeChanged);
             // 
@@ -207,12 +207,13 @@ namespace POS
             // 
             this.bunifuGradientPanel1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel1.BackgroundImage")));
             this.bunifuGradientPanel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.bunifuGradientPanel1.Controls.Add(this.promoBtn);
-            this.bunifuGradientPanel1.Controls.Add(this.mixedCaseBtn);
-            this.bunifuGradientPanel1.Controls.Add(this.TransferStockBtn);
+            this.bunifuGradientPanel1.Controls.Add(this.AddBtn);
             this.bunifuGradientPanel1.Controls.Add(this.EditProduct);
             this.bunifuGradientPanel1.Controls.Add(this.DeleteButton);
-            this.bunifuGradientPanel1.Controls.Add(this.AddBtn);
+            this.bunifuGradientPanel1.Controls.Add(this.TransferStockBtn);
+            this.bunifuGradientPanel1.Controls.Add(this.mixedCaseBtn);
+            this.bunifuGradientPanel1.Controls.Add(this.promoBtn);
+            this.bunifuGradientPanel1.Controls.Add(this.wholesaleCostsBtn);
             this.bunifuGradientPanel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.bunifuGradientPanel1.GradientBottomLeft = System.Drawing.Color.White;
             this.bunifuGradientPanel1.GradientBottomRight = System.Drawing.Color.White;
@@ -221,64 +222,36 @@ namespace POS
             this.bunifuGradientPanel1.Location = new System.Drawing.Point(0, 65);
             this.bunifuGradientPanel1.Name = "bunifuGradientPanel1";
             this.bunifuGradientPanel1.Quality = 10;
-            this.bunifuGradientPanel1.Size = new System.Drawing.Size(76, 664);
+            this.bunifuGradientPanel1.Size = new System.Drawing.Size(76, 727);
             this.bunifuGradientPanel1.TabIndex = 6;
             // 
-            // promoBtn
+            // AddBtn
             // 
-            this.promoBtn.BackColor = System.Drawing.Color.Transparent;
-            this.promoBtn.Image = global::POS.Properties.Resources.discount;
-            this.promoBtn.ImageActive = null;
-            this.promoBtn.Location = new System.Drawing.Point(11, 514);
-            this.promoBtn.Name = "promoBtn";
-            this.promoBtn.Size = new System.Drawing.Size(50, 50);
-            this.promoBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.promoBtn.TabIndex = 5;
-            this.promoBtn.TabStop = false;
-            this.promoBtn.Zoom = 10;
-            this.promoBtn.Click += new System.EventHandler(this.promoBtn_Click);
-            // 
-            // mixedCaseBtn
-            // 
-            this.mixedCaseBtn.BackColor = System.Drawing.Color.Transparent;
-            this.mixedCaseBtn.Image = ((System.Drawing.Image)(resources.GetObject("mixedCaseBtn.Image")));
-            this.mixedCaseBtn.ImageActive = null;
-            this.mixedCaseBtn.Location = new System.Drawing.Point(12, 415);
-            this.mixedCaseBtn.Name = "mixedCaseBtn";
-            this.mixedCaseBtn.Size = new System.Drawing.Size(50, 50);
-            this.mixedCaseBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.mixedCaseBtn.TabIndex = 4;
-            this.mixedCaseBtn.TabStop = false;
-            this.mixedCaseBtn.Zoom = 10;
-            this.mixedCaseBtn.Click += new System.EventHandler(this.mixedCaseBtn_Click);
-            this.mixedCaseBtn.MouseHover += new System.EventHandler(this.ActionBtn_MouseHover);
-            // 
-            // TransferStockBtn
-            // 
-            this.TransferStockBtn.BackColor = System.Drawing.Color.Transparent;
-            this.TransferStockBtn.Image = global::POS.Properties.Resources._switch;
-            this.TransferStockBtn.ImageActive = null;
-            this.TransferStockBtn.Location = new System.Drawing.Point(13, 217);
-            this.TransferStockBtn.Name = "TransferStockBtn";
-            this.TransferStockBtn.Size = new System.Drawing.Size(50, 50);
-            this.TransferStockBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.TransferStockBtn.TabIndex = 3;
-            this.TransferStockBtn.TabStop = false;
-            this.TransferStockBtn.Zoom = 10;
-            this.TransferStockBtn.Click += new System.EventHandler(this.TransferStockBtn_Click);
-            this.TransferStockBtn.MouseHover += new System.EventHandler(this.ActionBtn_MouseHover);
+            this.AddBtn.BackColor = System.Drawing.Color.Transparent;
+            this.AddBtn.Image = global::POS.Properties.Resources.plus;
+            this.AddBtn.ImageActive = null;
+            this.AddBtn.Location = new System.Drawing.Point(13, 16);
+            this.AddBtn.Name = "AddBtn";
+            this.AddBtn.Size = new System.Drawing.Size(50, 50);
+            this.AddBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.AddBtn.TabIndex = 100;
+            this.AddBtn.TabStop = false;
+            this.AddBtn.Zoom = 10;
+            this.AddBtn.Click += new System.EventHandler(this.AddButton_Click);
+            this.AddBtn.MouseHover += new System.EventHandler(this.AddBtn_MouseHover);
             // 
             // EditProduct
             // 
             this.EditProduct.BackColor = System.Drawing.Color.Transparent;
             this.EditProduct.Image = global::POS.Properties.Resources.edit;
             this.EditProduct.ImageActive = null;
-            this.EditProduct.Location = new System.Drawing.Point(13, 118);
+            this.EditProduct.Location = new System.Drawing.Point(13, 132);
             this.EditProduct.Name = "EditProduct";
             this.EditProduct.Size = new System.Drawing.Size(50, 50);
             this.EditProduct.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.EditProduct.TabIndex = 2;
             this.EditProduct.TabStop = false;
+            this.EditProduct.Visible = false;
             this.EditProduct.Zoom = 10;
             this.EditProduct.Click += new System.EventHandler(this.EditProduct_Click);
             this.EditProduct.MouseHover += new System.EventHandler(this.ActionBtn_MouseHover);
@@ -288,34 +261,85 @@ namespace POS
             this.DeleteButton.BackColor = System.Drawing.Color.Transparent;
             this.DeleteButton.Image = global::POS.Properties.Resources.delete;
             this.DeleteButton.ImageActive = null;
-            this.DeleteButton.Location = new System.Drawing.Point(13, 316);
+            this.DeleteButton.Location = new System.Drawing.Point(13, 364);
             this.DeleteButton.Name = "DeleteButton";
             this.DeleteButton.Size = new System.Drawing.Size(50, 50);
             this.DeleteButton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.DeleteButton.TabIndex = 11;
             this.DeleteButton.TabStop = false;
+            this.DeleteButton.Visible = false;
             this.DeleteButton.Zoom = 10;
             this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
             this.DeleteButton.MouseHover += new System.EventHandler(this.ActionBtn_MouseHover);
             // 
-            // AddBtn
+            // TransferStockBtn
             // 
-            this.AddBtn.BackColor = System.Drawing.Color.Transparent;
-            this.AddBtn.Image = global::POS.Properties.Resources.plus;
-            this.AddBtn.ImageActive = null;
-            this.AddBtn.Location = new System.Drawing.Point(13, 19);
-            this.AddBtn.Name = "AddBtn";
-            this.AddBtn.Size = new System.Drawing.Size(50, 50);
-            this.AddBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.AddBtn.TabIndex = 100;
-            this.AddBtn.TabStop = false;
-            this.AddBtn.Zoom = 10;
-            this.AddBtn.Click += new System.EventHandler(this.AddButton_Click);
+            this.TransferStockBtn.BackColor = System.Drawing.Color.Transparent;
+            this.TransferStockBtn.Image = global::POS.Properties.Resources._switch;
+            this.TransferStockBtn.ImageActive = null;
+            this.TransferStockBtn.Location = new System.Drawing.Point(13, 248);
+            this.TransferStockBtn.Name = "TransferStockBtn";
+            this.TransferStockBtn.Size = new System.Drawing.Size(50, 50);
+            this.TransferStockBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.TransferStockBtn.TabIndex = 3;
+            this.TransferStockBtn.TabStop = false;
+            this.TransferStockBtn.Visible = false;
+            this.TransferStockBtn.Zoom = 10;
+            this.TransferStockBtn.Click += new System.EventHandler(this.TransferStockBtn_Click);
+            this.TransferStockBtn.MouseHover += new System.EventHandler(this.ActionBtn_MouseHover);
+            // 
+            // mixedCaseBtn
+            // 
+            this.mixedCaseBtn.BackColor = System.Drawing.Color.Transparent;
+            this.mixedCaseBtn.Image = ((System.Drawing.Image)(resources.GetObject("mixedCaseBtn.Image")));
+            this.mixedCaseBtn.ImageActive = null;
+            this.mixedCaseBtn.Location = new System.Drawing.Point(12, 480);
+            this.mixedCaseBtn.Name = "mixedCaseBtn";
+            this.mixedCaseBtn.Size = new System.Drawing.Size(50, 50);
+            this.mixedCaseBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.mixedCaseBtn.TabIndex = 4;
+            this.mixedCaseBtn.TabStop = false;
+            this.mixedCaseBtn.Visible = false;
+            this.mixedCaseBtn.Zoom = 10;
+            this.mixedCaseBtn.Click += new System.EventHandler(this.mixedCaseBtn_Click);
+            this.mixedCaseBtn.MouseHover += new System.EventHandler(this.ActionBtn_MouseHover);
+            // 
+            // promoBtn
+            // 
+            this.promoBtn.BackColor = System.Drawing.Color.Transparent;
+            this.promoBtn.Image = global::POS.Properties.Resources.discount;
+            this.promoBtn.ImageActive = null;
+            this.promoBtn.Location = new System.Drawing.Point(11, 501);
+            this.promoBtn.Name = "promoBtn";
+            this.promoBtn.Size = new System.Drawing.Size(50, 50);
+            this.promoBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.promoBtn.TabIndex = 5;
+            this.promoBtn.TabStop = false;
+            this.promoBtn.Visible = false;
+            this.promoBtn.Zoom = 10;
+            this.promoBtn.Click += new System.EventHandler(this.promoBtn_Click);
+            // 
+            // wholesaleCostsBtn
+            // 
+            this.wholesaleCostsBtn.BackColor = System.Drawing.Color.Transparent;
+            this.wholesaleCostsBtn.Image = global::POS.Properties.Resources.wholesale1;
+            this.wholesaleCostsBtn.ImageActive = null;
+            this.wholesaleCostsBtn.Location = new System.Drawing.Point(11, 596);
+            this.wholesaleCostsBtn.Name = "wholesaleCostsBtn";
+            this.wholesaleCostsBtn.Size = new System.Drawing.Size(50, 50);
+            this.wholesaleCostsBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.wholesaleCostsBtn.TabIndex = 101;
+            this.wholesaleCostsBtn.TabStop = false;
+            this.wholesaleCostsBtn.Visible = false;
+            this.wholesaleCostsBtn.Zoom = 10;
+            this.wholesaleCostsBtn.Click += new System.EventHandler(this.wholesaleCostsBtn_Click);
             // 
             // bunifuGradientPanel4
             // 
             this.bunifuGradientPanel4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel4.BackgroundImage")));
             this.bunifuGradientPanel4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.bunifuGradientPanel4.Controls.Add(this.NewDepotBtn);
+            this.bunifuGradientPanel4.Controls.Add(this.scrapBtn);
             this.bunifuGradientPanel4.Controls.Add(this.label1);
             this.bunifuGradientPanel4.Controls.Add(this.SearchTxt);
             this.bunifuGradientPanel4.Dock = System.Windows.Forms.DockStyle.Top;
@@ -336,7 +360,7 @@ namespace POS
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Century Gothic", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.label1.Location = new System.Drawing.Point(407, 15);
+            this.label1.Location = new System.Drawing.Point(515, 14);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(103, 32);
@@ -347,7 +371,7 @@ namespace POS
             // 
             this.SearchTxt.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.SearchTxt.Font = new System.Drawing.Font("Century Gothic", 19.8F, System.Drawing.FontStyle.Bold);
-            this.SearchTxt.Location = new System.Drawing.Point(533, 12);
+            this.SearchTxt.Location = new System.Drawing.Point(622, 12);
             this.SearchTxt.Margin = new System.Windows.Forms.Padding(2);
             this.SearchTxt.Name = "SearchTxt";
             this.SearchTxt.Size = new System.Drawing.Size(417, 40);
@@ -356,23 +380,6 @@ namespace POS
             this.SearchTxt.Enter += new System.EventHandler(this.SearchTxt_Enter);
             this.SearchTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTxt_KeyDown);
             // 
-            // bunifuGradientPanel5
-            // 
-            this.bunifuGradientPanel5.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel5.BackgroundImage")));
-            this.bunifuGradientPanel5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.bunifuGradientPanel5.Controls.Add(this.scrapBtn);
-            this.bunifuGradientPanel5.Controls.Add(this.NewDepotBtn);
-            this.bunifuGradientPanel5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.bunifuGradientPanel5.GradientBottomLeft = System.Drawing.Color.White;
-            this.bunifuGradientPanel5.GradientBottomRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel5.GradientTopLeft = System.Drawing.Color.White;
-            this.bunifuGradientPanel5.GradientTopRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel5.Location = new System.Drawing.Point(0, 0);
-            this.bunifuGradientPanel5.Name = "bunifuGradientPanel5";
-            this.bunifuGradientPanel5.Quality = 10;
-            this.bunifuGradientPanel5.Size = new System.Drawing.Size(1557, 63);
-            this.bunifuGradientPanel5.TabIndex = 9;
-            // 
             // scrapBtn
             // 
             this.scrapBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
@@ -380,9 +387,9 @@ namespace POS
             this.scrapBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.scrapBtn.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.scrapBtn.ForeColor = System.Drawing.Color.White;
-            this.scrapBtn.Location = new System.Drawing.Point(33, 5);
+            this.scrapBtn.Location = new System.Drawing.Point(30, 12);
             this.scrapBtn.Name = "scrapBtn";
-            this.scrapBtn.Size = new System.Drawing.Size(193, 52);
+            this.scrapBtn.Size = new System.Drawing.Size(171, 40);
             this.scrapBtn.TabIndex = 2;
             this.scrapBtn.Text = "Scrap";
             this.scrapBtn.UseVisualStyleBackColor = false;
@@ -407,10 +414,10 @@ namespace POS
             this.NewDepotBtn.IdleFillColor = System.Drawing.Color.White;
             this.NewDepotBtn.IdleForecolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.NewDepotBtn.IdleLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.NewDepotBtn.Location = new System.Drawing.Point(1334, 11);
+            this.NewDepotBtn.Location = new System.Drawing.Point(1326, 12);
             this.NewDepotBtn.Margin = new System.Windows.Forms.Padding(5);
             this.NewDepotBtn.Name = "NewDepotBtn";
-            this.NewDepotBtn.Size = new System.Drawing.Size(181, 41);
+            this.NewDepotBtn.Size = new System.Drawing.Size(181, 40);
             this.NewDepotBtn.TabIndex = 110;
             this.NewDepotBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.NewDepotBtn.Click += new System.EventHandler(this.NewDepotBtn_Click);
@@ -440,15 +447,15 @@ namespace POS
             this.ProductListPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.bunifuGradientPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.promoBtn)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.mixedCaseBtn)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.TransferStockBtn)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AddBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.EditProduct)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DeleteButton)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AddBtn)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TransferStockBtn)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mixedCaseBtn)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.promoBtn)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.wholesaleCostsBtn)).EndInit();
             this.bunifuGradientPanel4.ResumeLayout(false);
             this.bunifuGradientPanel4.PerformLayout();
-            this.bunifuGradientPanel5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -469,10 +476,10 @@ namespace POS
         private Bunifu.Framework.UI.BunifuGradientPanel bunifuGradientPanel4;
         private Label label1;
         private TextBox SearchTxt;
-        private Bunifu.Framework.UI.BunifuGradientPanel bunifuGradientPanel5;
         private Button scrapBtn;
         private Bunifu.Framework.UI.BunifuThinButton2 NewDepotBtn;
         private Bunifu.Framework.UI.BunifuImageButton DeleteButton;
         private Bunifu.Framework.UI.BunifuImageButton AddBtn;
+        private Bunifu.Framework.UI.BunifuImageButton wholesaleCostsBtn;
     }
 }

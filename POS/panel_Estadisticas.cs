@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using LiveCharts;
 using LiveCharts.Definitions.Series;
@@ -52,70 +48,65 @@ namespace POS
             this.ProductStatistics();
         }
 
-        private void ScrapCard()
+        private  void ScrapCard()
         {
             DataTable scrap = Producto.getScrap(this.datePicker.Value, this.periodTimeCombo.SelectedIndex);
+
             if (scrap != null && scrap.Rows.Count > 0)
             {
                 this.scrapNoInfoLbl.Visible = false;
                 this.splitContainer1.Enabled = true;
                 this.bunifuCards1.color = Color.Tomato;
-                this.scrapChart.Palette = ChartColorPalette.Pastel;
-                this.scrapChart.Series.Clear();
-                this.scrapChart.Legends.Clear();
-                this.scrapChart.Legends.Add("Shit");
-                this.scrapChart.Legends[0].LegendStyle = LegendStyle.Table;
-                this.scrapChart.Legends[0].Docking = Docking.Top;
-                this.scrapChart.Legends[0].Alignment = StringAlignment.Center;
-                this.scrapChart.Legends[0].Title = "Top 10 Productos más Desechados";
-                this.scrapChart.Legends[0].BorderColor = Color.Black;
-                string name = "Scrap";
-                this.scrapChart.Series.Add(name);
-                this.scrapChart.Series[name].ChartType = SeriesChartType.Pie;
-                int index1;
-                for (index1 = 0; index1 < 10 && index1 < scrap.Rows.Count; ++index1)
+
+
+                pieChart2.Series.Clear();
+
+
+                for (int index = 0; index < 10 && index < scrap.Rows.Count; ++index)
                 {
-                    DataRow row = scrap.Rows[index1];
-                    this.scrapChart.Series[name].Points.AddXY((double)index1, Convert.ToDouble(row["Costo"]));
-                    this.scrapChart.Series[name].Points[index1].LegendText = string.Format("{0} {1}", (object)row["Descripción"].ToString(), (object)row["Marca"].ToString());
-                    this.scrapChart.Series[name].Points[index1].Label = string.Format("{0} piezas (${1} pesos)", row["Cantidad"], row["Costo"]);
-                }
-                if (index1 < scrap.Rows.Count)
-                {
-                    double num = 0.0;
-                    for (int index2 = index1; index2 < scrap.Rows.Count; ++index2)
+                    DataRow row = scrap.Rows[index];
+
+                    var series = new PieSeries
                     {
-                        DataRow row = scrap.Rows[index2];
-                        num += Convert.ToDouble(row["Costo"]);
-                    }
-                    this.scrapChart.Series[name].Points.AddXY((object)"Otros", (object)num);
+                        Title = row["Descripción"].ToString() + ", " + row["marca"],
+                        Values = new ChartValues<double> { Convert.ToDouble(row["cantidad"]) },
+                        DataLabels = true
+                    };
+                    pieChart2.Series.Add(series);
+                    pieChart2.Font = new Font("century gothic", 8f, FontStyle.Regular);
                 }
-                this.scrapGridView.DataSource = (object)scrap;
+
+                pieChart2.LegendLocation = LegendLocation.Bottom;
+
+                this.scrapGridView.DataSource = scrap;
             }
             else
             {
                 this.scrapNoInfoLbl.Visible = true;
                 this.splitContainer1.Enabled = false;
                 this.bunifuCards1.color = Color.DimGray;
-                this.scrapChart.Palette = ChartColorPalette.Grayscale;
                 this.scrapGridView.BackgroundColor = Color.DimGray;
                 this.scrapGridView.DefaultCellStyle.ForeColor = Color.DimGray;
                 this.scrapGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.DimGray;
             }
         }
 
+
         private void scrapGridView_DataSourceChanged(object sender, EventArgs e)
         {
             this.scrapGridView.Columns["Código de Barras"].Visible = false;
             this.resizeScrapDataGrid();
-            foreach (DataGridViewColumn column in (BaseCollection)this.scrapGridView.Columns)
+            foreach (DataGridViewColumn column in this.scrapGridView.Columns)
                 column.SortMode = DataGridViewColumnSortMode.NotSortable;
             this.scrapGridView.BackgroundColor = Color.White;
             this.scrapGridView.DefaultCellStyle.ForeColor = Color.FromArgb(0, 130, 170);
             this.scrapGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 130, 170);
-            this.scrapGridView.RowHeadersDefaultCellStyle.Font = new Font("Century Gothic", 10f, FontStyle.Bold);
             this.scrapGridView.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 10f, FontStyle.Bold);
+            this.scrapGridView.RowHeadersDefaultCellStyle.Font = new Font("Century Gothic", 10f, FontStyle.Bold);
             this.scrapGridView.DefaultCellStyle.Font = new Font("Century Gothic", 10f, FontStyle.Bold);
+
+            scrapGridView.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            scrapGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
         }
 
         private void scrapGridView_SizeChanged(object sender, EventArgs e)
@@ -128,7 +119,7 @@ namespace POS
             if (this.scrapGridView.Rows.Count <= 0)
                 return;
             int num = 0;
-            foreach (DataGridViewColumn column in (BaseCollection)this.scrapGridView.Columns)
+            foreach (DataGridViewColumn column in this.scrapGridView.Columns)
             {
                 if (column.Visible)
                 {
@@ -145,6 +136,7 @@ namespace POS
         {
             if (this.scrapGridView.Rows.Count <= 0)
                 return;
+
             for (int index = 0; index < this.scrapGridView.Rows.Count; ++index)
             {
                 if (index % 2 == 0)
@@ -157,34 +149,35 @@ namespace POS
             }
         }
 
-        private void bestSellCard()
+        private  void bestSellCard()
         {
             DataTable bestSellProducts = Producto.getBestSellProducts(this.datePicker.Value, this.periodTimeCombo.SelectedIndex);
+
             if (bestSellProducts != null && bestSellProducts.Rows.Count > 0)
             {
                 this.bestSellersCard.color = Color.LimeGreen;
                 this.bestSellerNoInfoLbl.Hide();
-                this.bestSellChart.Palette = ChartColorPalette.SeaGreen;
-                this.splitContainer2.Enabled = true;
-                this.bestSellChart.Series.Clear();
-                this.bestSellChart.Legends.Clear();
-                this.bestSellChart.Legends.Add("Shit");
-                this.bestSellChart.Legends[0].LegendStyle = LegendStyle.Table;
-                this.bestSellChart.Legends[0].Docking = Docking.Top;
-                this.bestSellChart.Legends[0].Alignment = StringAlignment.Center;
-                this.bestSellChart.Legends[0].Title = "Top 10 Producto más Vendidos";
-                this.bestSellChart.Legends[0].BorderColor = Color.Black;
-                string name = "Best sellers";
-                this.bestSellChart.Series.Add(name);
-                this.bestSellChart.Series[name].ChartType = SeriesChartType.Pie;
-                this.bestSellChart.Series[name].Font = new Font("Century Gothic", 8f);
+             
+                pieChart1.Series.Clear();
+
+
                 for (int index = 0; index < 10 && index < bestSellProducts.Rows.Count; ++index)
                 {
                     DataRow row = bestSellProducts.Rows[index];
-                    this.bestSellChart.Series[name].Points.AddXY((double)index, Convert.ToDouble(row["Cantidad"]));
-                    this.bestSellChart.Series[name].Points[index].LegendText = string.Format("{0} {1}", (object)row["Descripción"].ToString(), (object)row["Marca"].ToString());
-                    this.bestSellChart.Series[name].Points[index].Label = string.Format("{0} piezas", row["Cantidad"]);
+                  
+                    var series = new PieSeries
+                    {
+                        Title = row["Descripción"].ToString() + ", " + row["marca"],
+                        Values = new ChartValues<double> { Convert.ToDouble(row["cantidad"]) },
+                        DataLabels = true,
+                    };
+                    pieChart1.Series.Add(series);
+                    pieChart1.Font = new Font("century gothic", 8f, FontStyle.Regular);
                 }
+
+                pieChart1.LegendLocation = LegendLocation.Bottom;
+                
+               
                 this.bestSellGridView.DataSource = (object)bestSellProducts;
             }
             else
@@ -192,7 +185,7 @@ namespace POS
                 this.bestSellerNoInfoLbl.Visible = true;
                 this.splitContainer2.Enabled = false;
                 this.bestSellersCard.color = Color.DimGray;
-                this.bestSellChart.Palette = ChartColorPalette.Grayscale;
+              //  this.bestSellChart.Palette = ChartColorPalette.Grayscale;
                 this.bestSellGridView.BackgroundColor = Color.DimGray;
                 this.bestSellGridView.DefaultCellStyle.ForeColor = Color.DimGray;
                 this.bestSellGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.DimGray;
@@ -212,7 +205,12 @@ namespace POS
             this.bestSellGridView.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 10f, FontStyle.Bold);
             this.bestSellGridView.RowHeadersDefaultCellStyle.Font = new Font("Century Gothic", 10f, FontStyle.Bold);
             this.bestSellGridView.DefaultCellStyle.Font = new Font("Century Gothic", 10f, FontStyle.Bold);
+
+            bestSellGridView.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            bestSellGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+
             this.resizeBestSellDataGrid();
+                      
 
             if (this.bestSellGridView.Rows.Count > 0 && product==null)
             {
@@ -262,7 +260,7 @@ namespace POS
             this.bestSellGridView.Columns["Descripción"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
-        private void profitInvestmentCard()
+        private  void profitInvestmentCard()
         {
             DataTable investProfitData = Venta.getSalesInvestProfitData(this.periodTimeCombo.SelectedIndex, this.datePicker.Value);
             this.investmentProfitChart.Series.Clear();

@@ -21,8 +21,8 @@ namespace POS
         private Size customerGroupBoxMinSize = new Size(384, 134);
         private Size pictureBoxMinSize = new Size(242, 213);
         private Size pictureBoxMaxSize = new Size(388, 359);
-        private const int maximumDaysForRefound = 2;
-        private const int maximumDaysForRetourningPackages = 7;
+        private const int maximumDaysForRefound = 10000;
+        private const int maximumDaysForRetourningPackages = 10000;
         private bool isNewSale;
         private int EmployeeID;
         private string defaultTxt;
@@ -33,9 +33,11 @@ namespace POS
         private bool isDiscountbyPercentage;
         private bool editingRow;
         private static int windowCount = 0;
+
         CashDrawer cashDrawer = null;
         PosPrinter printer = null;
-
+        ToolTip[] ShortcutTips = null;
+        Control[] controlsShortcuts = null;
 
         public bool canClose
         {
@@ -94,8 +96,6 @@ namespace POS
             {
                 int index = dataGridView2.Rows.Add();
 
-
-
                 dataGridView2.Rows[index].Cells["barcode"].Value = p.Barcode;
                 dataGridView2.Rows[index].Cells["description"].Value = p.Description;
                 dataGridView2.Rows[index].Cells["brand"].Value = p.Brand;
@@ -109,6 +109,7 @@ namespace POS
             {
                 string cellValue = dataGridView2.Rows[rowIndex].Cells["amount"].Value.ToString();
                 double totalAmountOfPieces;
+
                 if (cellValue.IndexOf(",") > -1)// if cellvalue has the format "X cases, N pieces" then...
                 {
                     double cases = Convert.ToDouble(cellValue.Substring(0, cellValue.IndexOf("c")));
@@ -116,7 +117,7 @@ namespace POS
                     double singlePieces = Convert.ToDouble(cellValue.Substring(0, !p.displayAsKilogram ? cellValue.IndexOf(nameof(p)) : cellValue.ToLower().IndexOf("kg")));
                     totalAmountOfPieces = cases * p.PiecesPerCase + singlePieces;
                 }
-                else// cell value has the format "N pieces"
+                else // cell value has the format "N pieces"
                     totalAmountOfPieces = Convert.ToDouble(cellValue.Substring(0, cellValue.IndexOf(".") + 3));
 
                 dataGridView2.Rows[rowIndex].Cells["amount"].Value = amountFormat(p, totalAmountOfPieces + quantity);
@@ -126,7 +127,6 @@ namespace POS
             totalLbl.Text = string.Format("Total   ${0}", GetTotal().ToString("n2"));
             pictureBox1.Image = p.image;
             countProducts();
-
         }
 
         private async void countProducts()
@@ -151,7 +151,7 @@ namespace POS
                         x++;
                     else
                     {
-                        x += dataGridView2.RowCount > 0 ? (int)getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), p) :
+                        x += dataGridView2.RowCount > 0 ?(int) Math.Ceiling(getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), p)) :
                         0;
                     }
                 }
@@ -192,6 +192,7 @@ namespace POS
                 dataGridView2.Rows[index].Cells["Total"].Value = string.Format("{0}\r\n-{1}",
                     ((unitCost + discount) * quantity).ToString("n2"), (discount * quantity).ToString("n2"));
                 dataGridView2.CurrentCell = dataGridView2.Rows[dataGridView2.RowCount - 1].Cells["description"];
+
                 dataGridView2.Rows[index].Cells["Depot"] = new DataGridViewTextBoxCell();
 
                 addPromoChildsToGridView(promoDetails.Tables[1]);
@@ -413,7 +414,7 @@ namespace POS
                 discount = product.RetailCost * amount - product.PurchaseCost / product.PiecesPerCase * amount;
 
             return discount;
-        }   
+        }
 
         double getDiscountForMixedCase(int rowIndex, Producto product)
         {
@@ -444,14 +445,14 @@ namespace POS
 
                     countOfTotalPices += casesNsingle.Item2;
 
-                  //  values.Add(p.Barcode, new Tuple<int, double, double>(i, casesNsingle.Item2, countOfTotalPices));
+                    //  values.Add(p.Barcode, new Tuple<int, double, double>(i, casesNsingle.Item2, countOfTotalPices));
                     valuesx.Add(i, new Tuple<string, double, double>(p.Barcode, casesNsingle.Item2, countOfTotalPices));
 
                 }
             }
 
-            var wholedisc = getWholeSaleDiscountPerPiece(product,countOfTotalPices);
-            
+            var wholedisc = getWholeSaleDiscountPerPiece(product, countOfTotalPices);
+
             //When there is an applicable wholesale discount
             if (wholedisc > 0)
             {
@@ -461,8 +462,8 @@ namespace POS
 
                 valuesx.Remove(rowIndex);
 
-              // foreach (KeyValuePair<string, Tuple<int, double, double>> item in values)
-              foreach(KeyValuePair<int, Tuple<string, double, double>> item in valuesx )
+                // foreach (KeyValuePair<string, Tuple<int, double, double>> item in values)
+                foreach (KeyValuePair<int, Tuple<string, double, double>> item in valuesx)
                 {
                     var p = new Producto(item.Value.Item1);
 
@@ -527,7 +528,7 @@ namespace POS
 
         private string amountFormat(Producto producto, double amount)
         {
-            Tuple<int, double> tuple =Producto.getCasesAndSingleProducts(producto, amount);
+            Tuple<int, double> tuple = Producto.getCasesAndSingleProducts(producto, amount);
             int cases = tuple.Item1;
             double singlePieces = tuple.Item2;
 
@@ -574,7 +575,7 @@ namespace POS
 
         private void CancelSaleBtn_Click(object sender, EventArgs e)
         {
-            if (this.sale != null && this.sale.Date > DateTime.Now.AddDays(-2.0))
+            if (this.sale != null) //&& this.sale.Date > DateTime.Now.AddDays(-2.0))
             {
                 DialogResult userSelection = new DialogResult();
                 bool cancelWholeSale = false;
@@ -594,7 +595,20 @@ namespace POS
                     else
                         cancelWholeSale = true;
                 }
-                openCashDrawer();
+                try
+                {
+                    openCashDrawer();
+                }
+                catch (Exception)
+                {
+                    if (printer.State != ControlState.Closed)
+                    {
+                        cashDrawer.Release();
+                    }
+
+                    printDefaultPrinter(saleCancelledDocument);
+                }
+            
 
                 double MoneyToBeRefounded = 0;
 
@@ -732,9 +746,6 @@ namespace POS
 
         private void ClearSale()
         {
-            if (dataGridView2.RowCount > 0)
-                if (MessageBox.Show("¡Desea borrar la lista de productos?", "Borrar Lista", MessageBoxButtons.YesNo) == DialogResult.No)
-                    return;
             this.dataGridView2.Rows.Clear();
             this.totalLbl.Text = "Total   $0.00";
             this.ClearCustomer();
@@ -796,15 +807,22 @@ namespace POS
             DarkForm darkForm = new DarkForm();
             FormPagar formPagar = new FormPagar("$" + Total.ToString("n2"), !this.customer.hasCredit, this.getCostOfReturnablePackages());
             darkForm.Show();
+            dataGridView2.EndEdit();
 
 
             if (formPagar.ShowDialog() == DialogResult.OK)
             {
+                //if not shift is initiated and employee is not admin then start a new shift
+                if (!Turno.shiftActive && !(new Empleado(EmployeeID).isAdmin))
+                    Turno.start(DateTime.Now, 0, EmployeeID);
+
+
                 Venta venta = new Venta();
                 double Payment = Convert.ToDouble(formPagar.Pay);
                 List<Tuple<string, double, double, double, int>> list = new List<Tuple<string, double, double, double, int>>();
                 string printingString = "";
                 double discount = 0;
+
 
                 foreach (DataGridViewRow row in dataGridView2.Rows)
                 {
@@ -879,22 +897,20 @@ namespace POS
 
                 if (this.checkBox1.Checked)
                 {
-                    openCashDrawer();
+                    if (Convert.ToDouble(formPagar.Pay) > 0)
+                        openCashDrawer();
                     printTicket(saleID, printingString, discount);
                 }
                 else
                 {
-                    openCashDrawer();
+                    if (Convert.ToDouble(formPagar.Pay) > 0)
+                        openCashDrawer();
                 }
 
                 this.ClearSale();
                 formCambio.Focus();
-                darkForm.Close();
             }
-            else
-            {
-                darkForm.Close();
-            }
+            darkForm.Close();
 
         }
 
@@ -905,8 +921,6 @@ namespace POS
             {
                 if (printer != null)
                 {
-                    //string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
-                    //printer.Open();
                     printer.Claim(1000);
                     printer.DeviceEnabled = true;
                     printer.RecLetterQuality = true;
@@ -994,26 +1008,11 @@ namespace POS
                 if (printer.State != ControlState.Closed)
                 {
                     printer.Release();
-                    // printer.Close();
                 }
 
                 if (MessageBox.Show("Ocurrió un error al imprimir el Ticket.\n ¿Desea intentar imprimirlo nuevamente?", "Error de Impresión", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
                 {
                     printDefaultPrinter(printDocument1);
-                    /*try
-                    {
-                        this.printDocument1.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
-                        this.printDialog1.Document = this.printDocument1;
-                        this.printDocument1.Print();
-                    }
-                    catch (InvalidPrinterException)
-                    {
-                        MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-                    }
-
-                    printDocument1 = new PrintDocument();
-                    printDocument1.PrintController = new StandardPrintController();
-                    printDocument1.PrintPage += new PrintPageEventHandler(reprintTicket_PrintPage);*/
                 }
             }
         }
@@ -1193,7 +1192,7 @@ namespace POS
                 {
 
                     printDefaultPrinter(reprintTicket);
-                    
+
                 }
             }
         }
@@ -1254,9 +1253,13 @@ namespace POS
             }
             catch (PosControlException ex)
             {
-                MessageBox.Show(ex.Message + " " + ex.HelpLink + " " + ex.HResult + "\n stage: " + message);
+               // MessageBox.Show(ex.Message + " " + ex.HelpLink + " " + ex.HResult + "\n stage: " + message);
+                cashDrawer.Release();
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                cashDrawer.Release();
+            }
         }
 
         private double getCostOfReturnablePackages()
@@ -1293,7 +1296,7 @@ namespace POS
         private void setCustomer()
         {
             this.CustomerBtn.ButtonText = this.customer.Name;
-            this.ClearCustomerBtn.Show();
+            this.ClearCustomerBtn.Visible = customer.ID != 0;
             this.debtLbl.Text = "$" + this.customer.Debt.ToString("n2");
             this.setCustomerDebtColor();
             this.groupBox1.Size = this.customerGroupBoxMaxSize;
@@ -1557,8 +1560,10 @@ namespace POS
         private void dataGridView2_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
             dataGridView2.Rows[e.RowIndex].Cells["depot"].Value = 1;
+
             if (this.dataGridView2.RowCount - 1 == this.dataGridView2.FirstDisplayedScrollingRowIndex + this.dataGridView2.DisplayedRowCount(true) - 1)
                 return;
+            
             this.dataGridView2.FirstDisplayedScrollingRowIndex = this.dataGridView2.RowCount - 1;
 
         }
@@ -1583,11 +1588,10 @@ namespace POS
 
                 pictureBox1.Image = product.image;//this.ShowImage(barcode);
 
-                if (product.isReturnable)
+               /* if (product.isReturnable)
                     setToolTip(e.RowIndex);
                 else
-                    ReturnPackagesBtn.Enabled = false;
-
+                    ReturnPackagesBtn.Enabled = false;*/
             }
         }
 
@@ -1978,7 +1982,7 @@ namespace POS
             ProductTxt.Focus();
             this.EmployeeID = employeeID;
             this.defaultTxt = "";// "Producto * Cantidad";
-            
+
             this.customer = SellInfo != null ? new Cliente(Convert.ToInt32(SellInfo["id_cliente"])) : new Cliente(0);
             setCustomer();
 
@@ -1986,18 +1990,21 @@ namespace POS
             this.ticket = new PrinterTicket();
             this.CanceledLbl.Parent = (Control)this.dataGridView2;
             this.CanceledLbl.BackColor = Color.Transparent;
-        
+
             this.dataGridView2.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView2.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
-            
+
             this.discountBtn.Visible = new Empleado(employeeID).isAdmin;
             this.generalDiscount = SellInfo != null ? Convert.ToDouble(SellInfo["descuento"]) : 0.0;
             this.isDiscountbyPercentage = true;
 
             var comboColumn = dataGridView2.Columns["depot"] as DataGridViewComboBoxColumn;
-            comboColumn.DataSource = Bodega.GetDepots();
+            var depotSource= Bodega.GetDepots(); 
+            comboColumn.DataSource = depotSource;
             comboColumn.DisplayMember = "Nombre";
             comboColumn.ValueMember = "ID_Bodega";
+
+            dataGridView2.Columns["depot"].Visible = depotSource.Rows.Count > 1;
 
             Color color = Color.FromArgb(new Random().Next());
             bunifuGradientPanel1.GradientBottomLeft = bunifuGradientPanel1.GradientTopRight = color;
@@ -2008,6 +2015,17 @@ namespace POS
 
             printDocument1.PrintController = new StandardPrintController();
 
+            
+            controlsShortcuts = new Control[] {discountBtn,discountList,newWindowBtn,lessBtn,moreBtn,checkBox1,ClearCustomerBtn,
+            CustomerBtn,LastSaleBtn,ReturnPackagesBtn,refoundBtn,printTicketBtn,CobrarBtn,CancelSaleBtn,cancelBtn};
+
+            ShortcutTips = new ToolTip[15];
+            for (int i=0;i<ShortcutTips.Length;i++)
+            {
+                ShortcutTips[i] = new ToolTip();
+            }
+
+            
             if (SellInfo != null)
             {
                 DataTable saleDetail = Venta.getInfoUnfinishedSell(Convert.ToInt32(SellInfo["id_Ventana"]), windowCount);
@@ -2031,6 +2049,7 @@ namespace POS
             this.CanceledLbl.Font = new Font(this.CanceledLbl.Font.FontFamily, this.CanceledLbl.Font.Size * ((double)num1 > (double)num2 ? num2 : num1), this.CanceledLbl.Font.Style);
             this.ResumeLayout();
             this.CanceledLbl.Location = new Point(-50, (this.CanceledLbl.Parent.Height - this.CanceledLbl.Height) / 2);
+           
             this.printDialog1 = new PrintDialog();
             this.printDialog1.PrinterSettings.PrinterName = this.ticket.printerName;
 
@@ -2042,70 +2061,73 @@ namespace POS
 
         private async void setUpPOSDevices()
         {
-            try
+            if (ticket.useMPOS)
             {
-                //Create PosExplorer
-                PosExplorer posExplorer = new PosExplorer();
-                DeviceInfo deviceInfo = null;
                 try
                 {
-                    deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, "CashDrawer");
-                    cashDrawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
-                    await Task.Run(() => cashDrawer.Open());
-
-                }
-                catch (Exception) {                   /*Nothing can be used.  */       }
-
-                try
-                {
-                    printer = posExplorer.CreateInstance(posExplorer.GetDevice(DeviceType.PosPrinter, "PosPrinter")) as PosPrinter;
-                    printer.Open();
-
-                    string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
-
-                    printer.Claim(1000);
-                    printer.DeviceEnabled = true;
-                    printer.RecLetterQuality = true;
-
-                    if (printer.CapRecBitmap)
+                    //Create PosExplorer
+                    PosExplorer posExplorer = new PosExplorer();
+                    DeviceInfo deviceInfo = null;
+                    try
                     {
-
-                        for (int iRetryCount = 0; iRetryCount < 5; iRetryCount++)
-                        {
-                            try
-                            {
-                                //Register a bitmap
-                                printer.SetBitmap(1, PrinterStation.Receipt,
-                                    logopath, printer.RecLineWidth * ticket.logoHeight / 114,
-                                    PosPrinter.PrinterBitmapCenter);
-                                break;
-                            }
-                            catch (PosControlException pce)
-                            {
-                                if (pce.ErrorCode == ErrorCode.Failure && pce.ErrorCodeExtended == 0 && pce.Message == "It is not initialized.")
-                                {
-                                    System.Threading.Thread.Sleep(1000);
-                                }
-                                else
-                                {
-                                    MessageBox.Show(pce.Message + " " + pce.HelpLink);
-                                }
-                            }
-                        }
+                        deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, "CashDrawer");
+                        cashDrawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
+                        await Task.Run(() => cashDrawer.Open());
 
                     }
+                    catch (Exception) {                   /*Nothing can be used.  */       }
 
-                    printer.DeviceEnabled = false;
-                    printer.Release();
+                    try
+                    {
+                        printer = posExplorer.CreateInstance(posExplorer.GetDevice(DeviceType.PosPrinter, "PosPrinter")) as PosPrinter;
+                        printer.Open();
+
+                        string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
+
+                        printer.Claim(1000);
+                        printer.DeviceEnabled = true;
+                        printer.RecLetterQuality = true;
+
+                        if (printer.CapRecBitmap)
+                        {
+
+                            for (int iRetryCount = 0; iRetryCount < 5; iRetryCount++)
+                            {
+                                try
+                                {
+                                    //Register a bitmap
+                                    printer.SetBitmap(1, PrinterStation.Receipt,
+                                        logopath, printer.RecLineWidth * ticket.logoHeight / 114,
+                                        PosPrinter.PrinterBitmapCenter);
+                                    break;
+                                }
+                                catch (PosControlException pce)
+                                {
+                                    if (pce.ErrorCode == ErrorCode.Failure && pce.ErrorCodeExtended == 0 && pce.Message == "It is not initialized.")
+                                    {
+                                        System.Threading.Thread.Sleep(1000);
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show(pce.Message + " " + pce.HelpLink);
+                                    }
+                                }
+                            }
+
+                        }
+
+                        printer.DeviceEnabled = false;
+                        printer.Release();
+                    }
+                    catch (Exception) { }
+
+
                 }
-                catch (Exception) { }
-
-
-            }
-            catch (PosControlException)
-            {
-                //Nothing can be used.
-                MessageBox.Show("No se tuvo acceso a la impresora o al cajon");
+                catch (PosControlException)
+                {
+                    //Nothing can be used.
+                    MessageBox.Show("No se tuvo acceso a la impresora o al cajon");
+                }
             }
         }
 
@@ -2275,21 +2297,24 @@ namespace POS
         private void ReturnPackagesBtn_Click(object sender, EventArgs e)
         {
             string barcode = this.dataGridView2.SelectedRows[0].Cells["barcode"].Value.ToString();
-            int pendingPackages = this.sale.getAmountOfPendingPackagesToReturn(barcode);
+                       
             if (this.sale.Date.Date < DateTime.Today.Date.AddDays(-7.0))
             {
                 MessageBox.Show(string.Format("No se pueden retornar más envases. La fecha de compra excede los {0} días permitidos para la devolución.\n\nFecha de compra: {1} de {2} del {3}\n", (object)7, (object)this.sale.Date.Day, (object)new CultureInfo("es-MX").DateTimeFormat.GetMonthName(this.sale.Date.Month), (object)this.sale.Date.Year), "Lapso excedido");
             }
-            else if (pendingPackages > 0 && !this.sale.isSaleCanceled)
+            
+            else if (arePendingPackages() && !this.sale.isSaleCanceled)
             {
                 DarkForm darkForm = new DarkForm();
-                PanelVentas_RetornarEnvasesForm returnForm = new PanelVentas_RetornarEnvasesForm(pendingPackages);
+                PanelVentas_RetornarEnvasesForm returnForm = new PanelVentas_RetornarEnvasesForm(sale.ID, EmployeeID);
                 darkForm.Show();
+
                 if (returnForm.ShowDialog() == DialogResult.OK)
                 {
-                    this.sale.returnPackages(barcode, returnForm.AmountOfPackagesToReturn, this.EmployeeID);
-                    double change = (double)(this.sale.getSingleCost(barcode) * (Decimal)returnForm.AmountOfPackagesToReturn);
+                    // this.sale.returnPackages(barcode, returnForm.AmountOfPackagesToReturn, this.EmployeeID);
+                    double change = returnForm.MoneyToRefound; //(double)(this.sale.getSingleCost(barcode) * (Decimal)returnForm.AmountOfPackagesToReturn);
                     FormCambio formCambio = new FormCambio(change);
+                    ReturnPackagesBtn.Enabled = arePendingPackages();
                     /*this.packageReturnedDocument = new PrintDocument();
                     packageReturnedDocument.PrintController = new StandardPrintController();
                     this.packageReturnedDocument.PrintPage += (PrintPageEventHandler)((s, ee) =>
@@ -2400,7 +2425,6 @@ namespace POS
                     openCashDrawer();
 
                     formCambio.ShowDialog();
-                    this.setToolTip(this.dataGridView2.CurrentRow.Index);
                 }
                 darkForm.Close();
             }
@@ -2435,20 +2459,31 @@ namespace POS
             Cliente cliente = new Cliente(sale.CustomerID);
             pictureBox1.SendToBack();
             pictureBox1.Hide();
+
+
             foreach (DataRow row in sale.getSoldProducts.Rows)
             {
                 Producto producto = new Producto(row["id_producto"].ToString());
                 bool refounded = Convert.ToBoolean(row["Devolución"]);
                 int rowindex = dataGridView2.Rows.Add(producto.Barcode, refounded, producto.Description, producto.Brand, row["Cantidad"].ToString(), row["Precio"].ToString(), Convert.ToDouble(row["Descuento"]) != 0.0 ? (row["Importe"].ToString() + "\r\n -" + row["Descuento"].ToString()) : row["Importe"].ToString());
 
-                if (refounded)
+                if (!producto.isReturnable)
                 {
-                    dataGridView2.Rows[rowindex].DefaultCellStyle.ForeColor = Color.DimGray;
-                    dataGridView2.Rows[rowindex].DefaultCellStyle.SelectionBackColor = Color.DimGray;
-                    dataGridView2.Rows[rowindex].Cells["refound"].ReadOnly = true;
+                    
+                    if (refounded)
+                    {
+                        dataGridView2.Rows[rowindex].DefaultCellStyle.ForeColor = Color.DimGray;
+                        dataGridView2.Rows[rowindex].DefaultCellStyle.SelectionBackColor = Color.DimGray;
+                        dataGridView2.Rows[rowindex].Cells["refound"].ReadOnly = true;
+                    }
+                    else
+                        dataGridView2.Rows[rowindex].Cells["refound"].ReadOnly = false;
                 }
                 else
-                    dataGridView2.Rows[rowindex].Cells["refound"].ReadOnly = false;
+                {
+                    //hacer que no se vea el check box cuando un producto es retornable
+                    dataGridView2.Rows[rowindex].Cells["refound"].ReadOnly = true;
+                }
             }
 
 
@@ -2492,6 +2527,9 @@ namespace POS
             previousTicketBtn.Visible = true;
 
 
+            ReturnPackagesBtn.Enabled = arePendingPackages();
+            
+
             //***************************
             var data = sale.getNextSaleID();
 
@@ -2505,6 +2543,16 @@ namespace POS
                 previousTicketBtn.Hide();
             else
                 previousTicketBtn.Show();
+        }
+
+        private bool arePendingPackages()
+        {
+            foreach (DataGridViewRow item in dataGridView2.Rows)
+            {
+                if (sale.getAmountOfPendingPackagesToReturn(item.Cells["barcode"].Value.ToString()) > 0)
+                    return true;
+            }
+            return false;
         }
 
         private void setToolTip(int RowIndex)
@@ -2603,30 +2651,29 @@ namespace POS
             string str1 = "Detalle de Venta";
             Font font1 = PrinterTicket.getFont(str1, width - 10, FontStyle.Regular);
             Size stringSize1 = PrinterTicket.getStringSize(str1, font1);
-            graphics.DrawString(str1, font1, Brushes.Black, (float)((width - stringSize1.Width) / 2), (float)location);
+            graphics.DrawString(str1, font1, Brushes.Black, (float)((width-10 - stringSize1.Width) / 2), (float)location);
             location = location + (15 + stringSize1.Height);
 
-            string str2 = string.Format("Folio: {0}", (object)lastSale.ID.ToString("X"));
-            Font font2 = new Font("Times new Roman", 8f);
-            Size stringSize2 = PrinterTicket.getStringSize(str2, font2);
+            string str2 = string.Format("Folio: {0}", lastSale.ID.ToString("X"));
+            Font mainFont = new Font("Times new Roman", 9.9f);
+            Size stringSize2 = PrinterTicket.getStringSize(str2, mainFont);
 
             if (stringSize2.Width + 10 < width)
             {
-                graphics.DrawString(str2, font2, Brushes.Black, 10f, (float)location);
+                graphics.DrawString(str2, mainFont, Brushes.Black, 10f, (float)location);
                 location = location + (stringSize2.Height + 1);
             }
             else
             {
-                font2 = PrinterTicket.getFont(str2, width - 10, FontStyle.Bold);
-                stringSize2 = PrinterTicket.getStringSize(str2, font2);
-                graphics.DrawString(str2, font2, Brushes.Black, 10f, (float)location);
+                stringSize2 = PrinterTicket.getStringSize(str2, mainFont);
+                graphics.DrawString(str2, mainFont, Brushes.Black, 10f, (float)location);
                 location = location + (stringSize2.Height + 1);
             }
 
             if (customer.ID != 0)
             {
-                Size stringSize3 = PrinterTicket.getStringSize("Cliente: " + customer.Name, font2);
-                graphics.DrawString("Cliente: " + customer.Name, font2, Brushes.Black, 10f, (float)location);
+                Size stringSize3 = PrinterTicket.getStringSize("Cliente: " + customer.Name, mainFont);
+                graphics.DrawString("Cliente: " + customer.Name, mainFont, Brushes.Black, 10f, (float)location);
                 location += stringSize3.Height + 10;
             }
 
@@ -2640,9 +2687,9 @@ namespace POS
             }
             else
             {
-                font2 = PrinterTicket.getFont(lastSale.ID.ToString(), width - 10, FontStyle.Bold);
-                stringSize2 = PrinterTicket.getStringSize(lastSale.ID.ToString(), font2);
-                graphics.DrawString(lastSale.ID.ToString(), font2, Brushes.Black, 10f, (float)location);
+                mainFont = PrinterTicket.getFont(lastSale.ID.ToString(), width - 10, FontStyle.Bold);
+                stringSize2 = PrinterTicket.getStringSize(lastSale.ID.ToString(), mainFont);
+                graphics.DrawString(lastSale.ID.ToString(), mainFont, Brushes.Black, 10f, (float)location);
                 location = location + (stringSize2.Height + 1);
             }
 
@@ -2651,12 +2698,11 @@ namespace POS
             location = location + 1;
 
             string text = "Cantidad\tPrecio\tImporte";
-            Font font4 = font2;
-            Size stringSize4 = PrinterTicket.getStringSize(text, font4);
+            Size stringSize4 = PrinterTicket.getStringSize(text, mainFont);
 
-            graphics.DrawString("Cantidad", font4, Brushes.Black, 10f, (float)location);
-            graphics.DrawString("Precio", font4, Brushes.Black, ((width - PrinterTicket.getStringSize("Precio", font4).Width) / 2), location);
-            graphics.DrawString("Importe", font4, Brushes.Black, (width - PrinterTicket.getStringSize("Importe", font4).Width), location);
+            graphics.DrawString("Cantidad", mainFont, Brushes.Black, 10f, (float)location);
+            graphics.DrawString("Precio", mainFont, Brushes.Black, ((width - PrinterTicket.getStringSize("Precio", mainFont).Width) / 2), location);
+            graphics.DrawString("Importe", mainFont, Brushes.Black, (width - PrinterTicket.getStringSize("Importe", mainFont).Width), location);
 
             location = location + (stringSize4.Height + 1);
             graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
@@ -2689,19 +2735,20 @@ namespace POS
                         str4 = description.Substring(0, description.Length - 2);
                     }
 
-                    Font font5 = new Font(font4, FontStyle.Regular);
-                    Size stringSize3 = PrinterTicket.getStringSize(str4, font5);
+                    Size stringSize3 = PrinterTicket.getStringSize(str4, mainFont);
                     if (stringSize3.Width > width)
                     {
-                        int letterByMeasuring = PrinterTicket.getLastLetterByMeasuring(str4, font5, width);
+                        int letterByMeasuring = PrinterTicket.getLastLetterByMeasuring(str4, mainFont, width);
                         str4 = str4.Insert(letterByMeasuring, str4[letterByMeasuring] == ' ' ? "\n" : "-\n");
-                        stringSize3 = PrinterTicket.getStringSize(str4, font5);
+                        stringSize3 = PrinterTicket.getStringSize(str4, mainFont);
                     }
-                    graphics.DrawString(str4, font5, Brushes.Black, 10f, location);
+                    graphics.DrawString(str4,mainFont, Brushes.Black, 10f, location);
+
+
                     location += stringSize3.Height + 2;
                     getDiscountFromRow(row.Index);
                     string.Format("{0}\t{1}\t{2}", row.Cells["amount"].Value, row.Cells["UnitCost"].Value, getTotalFromRowWithoutDiscount(row.Index).ToString("n2"));
-                    Font font6 = font5;
+                    Font font6 = mainFont;
                     Size stringSize5 = PrinterTicket.getStringSize("$" + row.Cells["Total"].Value.ToString(), font6);
                     graphics.DrawString(row.Cells["amount"].Value.ToString(), font6, Brushes.Black, 10f, (float)location);
                     graphics.DrawString("$" + row.Cells["UnitCost"].Value.ToString(), font6, Brushes.Black, (float)((width - PrinterTicket.getStringSize(row.Cells["UnitCost"].Value.ToString(), font6).Width) / 2), (float)location);
@@ -2713,31 +2760,32 @@ namespace POS
             graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
             int num10 = location + 3;
             string str5 = string.Format("Total: ${0}", GetTotal().ToString("n2"));
-            Font font7 = font2;
-            Size stringSize6 = PrinterTicket.getStringSize(str5, font4);
-            graphics.DrawString(str5, font7, Brushes.Black, (width - stringSize6.Width), num10);
+            
+            Size stringSize6 = PrinterTicket.getStringSize(str5, mainFont);
+            graphics.DrawString(str5, mainFont, Brushes.Black, (width - stringSize6.Width), num10);
             int num11 = num10 + (stringSize6.Height + 3);
             if (!lastSale.isPaid)
             {
                 string str4 = string.Format("Usted pagó: ${0}", lastSale.Payment);
-                Size stringSize3 = PrinterTicket.getStringSize(str4, font7);
-                graphics.DrawString(str4, font7, Brushes.Black, (width - stringSize3.Width), num11);
+                Size stringSize3 = PrinterTicket.getStringSize(str4, mainFont);
+                graphics.DrawString(str4, mainFont, Brushes.Black, (width - stringSize3.Width), num11);
                 num11 += stringSize3.Height + 3;
             }
             string str6 = string.Format("Efectivo: ${0}", lastSale.Cash);
-            Size stringSize7 = PrinterTicket.getStringSize(str6, font7);
-            graphics.DrawString(str6, font7, Brushes.Black, (width - stringSize7.Width), num11);
+            Size stringSize7 = PrinterTicket.getStringSize(str6, mainFont);
+            graphics.DrawString(str6, mainFont, Brushes.Black, (width - stringSize7.Width), num11);
             int num12 = num11 + (stringSize7.Height + 3);
             string str7 = string.Format("Cambio: ${0}", (lastSale.Cash - lastSale.Payment));
-            Size stringSize8 = PrinterTicket.getStringSize(str7, font7);
-            graphics.DrawString(str7, font7, Brushes.Black, (width - stringSize8.Width), num12);
+            Size stringSize8 = PrinterTicket.getStringSize(str7, mainFont);
+            graphics.DrawString(str7, mainFont, Brushes.Black, (width - stringSize8.Width), num12);
             int y5 = num12 + (3 + stringSize8.Height);
+
             if (num9 > 0.0)
             {
                 string str4 = string.Format("Usted ahorró: ${0}", num9.ToString("n2"));
                 PrinterTicket.getFont(str4, width / 2 - 10, FontStyle.Bold);
-                Size stringSize3 = PrinterTicket.getStringSize(str4, font7);
-                graphics.DrawString(str4, font7, Brushes.Black, (width - stringSize3.Width), y5);
+                Size stringSize3 = PrinterTicket.getStringSize(str4, mainFont);
+                graphics.DrawString(str4, mainFont, Brushes.Black, (width - stringSize3.Width), y5);
                 y5 += stringSize3.Height + 20;
             }
             Size size5 = ticket.printFooter(graphics, y5);
@@ -2859,6 +2907,11 @@ namespace POS
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if (keyData.ToString() ==  "Menu, Alt")
+            {
+                timer1.Start();
+            }
+
             if (dataGridView2.RowCount > 1)
             {
                 if (keyData == Keys.Down)
@@ -2884,14 +2937,14 @@ namespace POS
             }
             if (keyData == (Keys.Alt | Keys.Add))
             {
-                if (dataGridView2.RowCount > 0)
+                if (dataGridView2.RowCount > 0 && isNewSale)
                 {
                     addOneMoreProduct();
                     return true;
                 }
             }
 
-            if (keyData == (Keys.Alt | Keys.Subtract))
+            if (keyData == (Keys.Alt | Keys.Subtract) && isNewSale)
             {
                 if (dataGridView2.RowCount > 0)
                 {
@@ -2900,7 +2953,7 @@ namespace POS
                 }
             }
 
-            if (keyData == (Keys.Alt | Keys.Delete))
+            if (keyData == (Keys.Alt | Keys.Delete) && isNewSale)
             {
                 if (dataGridView2.RowCount > 0)
                 {
@@ -2912,12 +2965,17 @@ namespace POS
                 countProducts();
             }
 
-            if (keyData == (Keys.Alt | Keys.C))
+            if (keyData == (Keys.Alt | Keys.C) && CobrarBtn.Visible)
             {
                 if (dataGridView2.RowCount > 0)
                 {
                     CobrarBtn_Click(this, null);
                 }
+            }
+
+            if (keyData == (Keys.Alt | Keys.C) && CancelSaleBtn.Visible && CancelSaleBtn.Enabled)
+            {
+                CancelSaleBtn_Click(this, null);
             }
 
             if (keyData == (Keys.Alt | Keys.I))
@@ -2933,7 +2991,14 @@ namespace POS
                 openCashDrawer();
                 return true;
             }
-            if (keyData == (Keys.Alt |  Keys.L))
+
+            if (keyData == (Keys.Alt | Keys.R) && ClearCustomerBtn.Visible)
+            {
+                ClearCustomer();
+                return true;
+            }
+
+            if (keyData == (Keys.Alt | Keys.L))
             {
                 lookForCustomer();
                 return true;
@@ -2941,13 +3006,55 @@ namespace POS
 
             if (keyData == (Keys.Alt | Keys.Q))
             {
+                if (dataGridView2.RowCount > 0 && isNewSale)
+                    if (MessageBox.Show("¡Desea borrar la lista de productos?", "Borrar Lista", MessageBoxButtons.YesNo) == DialogResult.No)
+                        return true;
                 ClearSale();
+                return true;
+            }
+
+            if (keyData == (Keys.Alt | Keys.D))
+            {
+                discountBtn_Click(this, null);
+                return true;
+            }
+
+            if (keyData == (Keys.Alt | Keys.F) && discountList.Visible)
+            {
+                discountList_Click(this, null);
+                return true;
+            }
+
+            if (keyData == (Keys.Alt | Keys.E) && ReturnPackagesBtn.Visible && ReturnPackagesBtn.Enabled)
+            {
+                ReturnPackagesBtn_Click(this, null);
+                return true;
+            }
+
+            if (keyData == (Keys.Alt | Keys.B))
+            {
+                refoundBtn_Click(this, null);
+                return true;
+            }
+
+            if (keyData == (Keys.Alt | Keys.U))
+            {
+                LastSaleBtn_Click(this, null);
+                return true;
+            }
+
+            if (keyData == (Keys.Alt | Keys.P) && printTicketBtn.Visible)
+            {
+                printTicketBtn_Click(this, null);
                 return true;
             }
 
             if (keyData != (Keys.F4 | Keys.Alt))
                 return base.ProcessCmdKey(ref msg, keyData);
             this.closeWindow();
+
+
+
             return true;
         }
 
@@ -2979,12 +3086,13 @@ namespace POS
             darkForm.Close();
         }
 
-        private void packageReturnedDocument_PrintPage_1(object sender, PrintPageEventArgs e)
-        {
-        }
+
 
         private void cancelBtn_Click_1(object sender, EventArgs e)
         {
+            if (dataGridView2.RowCount > 0 && isNewSale)
+                if (MessageBox.Show("¡Desea borrar la lista de productos?", "Borrar Lista", MessageBoxButtons.YesNo) == DialogResult.No)
+                    return;
             ClearSale();
         }
 
@@ -3069,6 +3177,11 @@ namespace POS
                     dataGridView2.Columns.Remove(dataGridView2.Columns["Depot"]);
                     dataGridView2.Dispose();
                     pictureBox1.Dispose();
+
+                    foreach (var item in ShortcutTips)
+                    {
+                        item.Dispose();
+                    }
                 });
             }
             catch (Exception) { }
@@ -3260,29 +3373,22 @@ namespace POS
             Image image = BarcodeDrawFactory.Code128WithChecksum.Draw(lastSale.ID.ToString("X8"), 50);
             graphics.DrawImage(image, (width - ((int)(width * 0.75))) / 2, y6, (int)(width * 0.75), 40);
 
-            y6 += 30 + 30;
+            
             graphics.DrawLine(Pens.White, new Point(0, y6), new Point(width, y6));
 
-        }
+            if(e.PageSettings.PaperSize.Height< y6)
+            {
+                e.PageSettings.PaperSize = new PaperSize("new", e.PageSettings.PaperSize.Width, y6 + 15);
+            }
 
-        private void EmployeeNameLbl_Click(object sender, EventArgs e)
-        {
-
         }
+        
 
         private void saleCancelledDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
+            e.PageSettings.PaperSize = new PaperSize("No Size", 0, 0);
         }
 
-        private void panel6_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void groupBox3_Enter(object sender, EventArgs e)
-        {
-
-        }
 
         private void previousTicketBtn_MouseHover(object sender, EventArgs e)
         {
@@ -3322,6 +3428,56 @@ namespace POS
 
             if (data.Tables[0].Rows.Count > 0)
                 setSale(Convert.ToInt32(data.Tables[0].Rows[0][0]));
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (!System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.LeftAlt))
+            {
+                for (int i = 0; i < ShortcutTips.Length; i++)
+                {
+                    ShortcutTips[i].Hide(controlsShortcuts[i]);
+                }
+                timer1.Interval = 1500;
+                timer1.Stop();
+            }
+
+            else
+            {
+                for (int i = 0; i < ShortcutTips.Length; i++)
+                {
+                    var tip = ShortcutTips[i];
+                    if (controlsShortcuts[i].Visible && controlsShortcuts[i].Enabled && string.IsNullOrEmpty(tip.GetToolTip(controlsShortcuts[i])))
+                    {
+                        var text = toolTip1.GetToolTip(controlsShortcuts[i]);
+                        tip.Show(text.Substring(text.IndexOf("\r\n") + 2), controlsShortcuts[i]);
+                    }
+                }
+
+                timer1.Interval = 500;
+            }
+        }
+
+        private void packageReturnedDocument_PrintPage_1(object sender, PrintPageEventArgs e)
+        {
+
+        }
+
+        private void dataGridView2_RowHeightChanged(object sender, DataGridViewRowEventArgs e)
+        {
+
+            int height = 0;
+            foreach (DataGridViewRow item in dataGridView2.Rows)
+            {
+                if (height < item.Height)
+                    height = item.Height;
+            }
+            dataGridView2.RowTemplate.MinimumHeight = height;
+        }
+
+        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

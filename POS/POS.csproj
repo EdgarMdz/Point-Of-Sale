@@ -732,6 +732,8 @@
     <None Include="Resources\forth.png" />
     <None Include="Resources\close Red.png" />
     <None Include="Resources\edit green.png" />
+    <None Include="Resources\wholesale.png" />
+    <None Include="Resources\wholesale1.png" />
     <Content Include="z29 %281%29.ico" />
     <None Include="Resources\new Window.png" />
     <None Include="Resources\Lock White.png" />

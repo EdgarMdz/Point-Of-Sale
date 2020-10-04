@@ -39,6 +39,7 @@ namespace POS
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.AddSupplierToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.grandTotalLbl = new System.Windows.Forms.Label();
@@ -62,7 +63,7 @@ namespace POS
             this.companyAddressTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
             this.companyNameTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
             this.phoneNumberTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
-            this.proccedPurchaseBtn = new System.Windows.Forms.Button();
+            this.bunifuImageButton3 = new Bunifu.Framework.UI.BunifuImageButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.bunifuGradientPanel9 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
@@ -141,16 +142,19 @@ namespace POS
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.NextPurchaseCard = new Bunifu.Framework.UI.BunifuCards();
             this.bunifuGradientPanel4 = new Bunifu.Framework.UI.BunifuGradientPanel();
+            this.casescountLbl = new System.Windows.Forms.Label();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.barcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.description = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.brand = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.piecesPerCase = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.depot = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bunifuGradientPanel5 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.ProductTxt = new System.Windows.Forms.RichTextBox();
             this.bunifuGradientPanel3 = new Bunifu.Framework.UI.BunifuGradientPanel();
+            this.proccedPurchaseBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.SaveBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.BasicInformationCard = new Bunifu.Framework.UI.BunifuCards();
             this.VisitingDaysPanel = new Bunifu.Framework.UI.BunifuGradientPanel();
@@ -185,7 +189,6 @@ namespace POS
             this.NextPurchaseButtonElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.AlarmsButtonElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.SelectAllBtnElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
-            this.PayPurchaseElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.WindowSizeControlPanel = new System.Windows.Forms.Panel();
             this.minimizeBtn = new Bunifu.Framework.UI.BunifuImageButton();
@@ -200,6 +203,7 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.DeleteRowBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NextDayButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PreviousDayButton)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton3)).BeginInit();
             this.panel1.SuspendLayout();
             this.bunifuGradientPanel9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
@@ -246,7 +250,7 @@ namespace POS
             this.grandTotalLbl.BackColor = System.Drawing.Color.Transparent;
             this.grandTotalLbl.Font = new System.Drawing.Font("Century Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.grandTotalLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.grandTotalLbl.Location = new System.Drawing.Point(-279, 10);
+            this.grandTotalLbl.Location = new System.Drawing.Point(782, 10);
             this.grandTotalLbl.Name = "grandTotalLbl";
             this.grandTotalLbl.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.grandTotalLbl.Size = new System.Drawing.Size(756, 39);
@@ -378,13 +382,14 @@ namespace POS
             this.PromoBtn.BackColor = System.Drawing.Color.Transparent;
             this.PromoBtn.Image = ((System.Drawing.Image)(resources.GetObject("PromoBtn.Image")));
             this.PromoBtn.ImageActive = null;
-            this.PromoBtn.Location = new System.Drawing.Point(25, 502);
+            this.PromoBtn.Location = new System.Drawing.Point(25, 607);
             this.PromoBtn.Name = "PromoBtn";
             this.PromoBtn.Size = new System.Drawing.Size(50, 50);
             this.PromoBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.PromoBtn.TabIndex = 4;
             this.PromoBtn.TabStop = false;
             this.AddSupplierToolTip.SetToolTip(this.PromoBtn, "Promociones");
+            this.PromoBtn.Visible = false;
             this.PromoBtn.Zoom = 10;
             this.PromoBtn.Click += new System.EventHandler(this.PromoBtn_Click);
             // 
@@ -393,7 +398,7 @@ namespace POS
             this.AddRowBtn.BackColor = System.Drawing.Color.Transparent;
             this.AddRowBtn.Image = global::POS.Properties.Resources.plus;
             this.AddRowBtn.ImageActive = null;
-            this.AddRowBtn.Location = new System.Drawing.Point(27, 82);
+            this.AddRowBtn.Location = new System.Drawing.Point(27, 118);
             this.AddRowBtn.Name = "AddRowBtn";
             this.AddRowBtn.Size = new System.Drawing.Size(50, 50);
             this.AddRowBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -408,7 +413,7 @@ namespace POS
             this.EditRowBtn.BackColor = System.Drawing.Color.Transparent;
             this.EditRowBtn.Image = global::POS.Properties.Resources.edit;
             this.EditRowBtn.ImageActive = null;
-            this.EditRowBtn.Location = new System.Drawing.Point(25, 222);
+            this.EditRowBtn.Location = new System.Drawing.Point(25, 320);
             this.EditRowBtn.Name = "EditRowBtn";
             this.EditRowBtn.Size = new System.Drawing.Size(50, 50);
             this.EditRowBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -423,7 +428,7 @@ namespace POS
             this.DeleteRowBtn.BackColor = System.Drawing.Color.Transparent;
             this.DeleteRowBtn.Image = global::POS.Properties.Resources.delete;
             this.DeleteRowBtn.ImageActive = null;
-            this.DeleteRowBtn.Location = new System.Drawing.Point(25, 362);
+            this.DeleteRowBtn.Location = new System.Drawing.Point(25, 522);
             this.DeleteRowBtn.Name = "DeleteRowBtn";
             this.DeleteRowBtn.Size = new System.Drawing.Size(50, 50);
             this.DeleteRowBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -602,21 +607,20 @@ namespace POS
             this.phoneNumberTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.phoneNumberTxt_KeyDown);
             this.phoneNumberTxt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.phoneNumberTxt_KeyPress);
             // 
-            // proccedPurchaseBtn
+            // bunifuImageButton3
             // 
-            this.proccedPurchaseBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.proccedPurchaseBtn.FlatAppearance.BorderSize = 0;
-            this.proccedPurchaseBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.proccedPurchaseBtn.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.proccedPurchaseBtn.ForeColor = System.Drawing.Color.White;
-            this.proccedPurchaseBtn.Location = new System.Drawing.Point(4, 16);
-            this.proccedPurchaseBtn.Name = "proccedPurchaseBtn";
-            this.proccedPurchaseBtn.Size = new System.Drawing.Size(204, 31);
-            this.proccedPurchaseBtn.TabIndex = 3;
-            this.proccedPurchaseBtn.Text = "Realizar Compra";
-            this.AddSupplierToolTip.SetToolTip(this.proccedPurchaseBtn, "Recomendar valor para la siguiente compra del producto seleccionado en la tabla");
-            this.proccedPurchaseBtn.UseVisualStyleBackColor = false;
-            this.proccedPurchaseBtn.Click += new System.EventHandler(this.proccedPurchaseBtn_Click);
+            this.bunifuImageButton3.BackColor = System.Drawing.Color.Transparent;
+            this.bunifuImageButton3.Image = global::POS.Properties.Resources.delete;
+            this.bunifuImageButton3.ImageActive = null;
+            this.bunifuImageButton3.Location = new System.Drawing.Point(1583, 199);
+            this.bunifuImageButton3.Name = "bunifuImageButton3";
+            this.bunifuImageButton3.Size = new System.Drawing.Size(64, 69);
+            this.bunifuImageButton3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.bunifuImageButton3.TabIndex = 20;
+            this.bunifuImageButton3.TabStop = false;
+            this.AddSupplierToolTip.SetToolTip(this.bunifuImageButton3, "Eliminar Proveedor");
+            this.bunifuImageButton3.Zoom = 10;
+            this.bunifuImageButton3.Click += new System.EventHandler(this.bunifuImageButton3_Click);
             // 
             // panel1
             // 
@@ -867,6 +871,8 @@ namespace POS
             this.SearchSupplierTxt.Size = new System.Drawing.Size(430, 41);
             this.SearchSupplierTxt.TabIndex = 0;
             this.SearchSupplierTxt.TextChanged += new System.EventHandler(this.SearchProvider_TextChanged);
+            this.SearchSupplierTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchSupplierTxt_KeyDown);
+            this.SearchSupplierTxt.Leave += new System.EventHandler(this.SearchSupplierTxt_Leave);
             // 
             // panel2
             // 
@@ -1831,7 +1837,7 @@ namespace POS
             this.dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1466, 580);
+            this.dataGridView1.Size = new System.Drawing.Size(346, 230);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.DataSourceChanged += new System.EventHandler(this.dataGridView1_DataSourceChanged);
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
@@ -1840,7 +1846,6 @@ namespace POS
             this.dataGridView1.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_RowEnter);
             this.dataGridView1.RowHeightChanged += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView1_RowHeightChanged);
             this.dataGridView1.RowLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_RowLeave);
-            this.dataGridView1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dataGridView1_Scroll);
             this.dataGridView1.SizeChanged += new System.EventHandler(this.dataGridView1_SizeChanged);
             this.dataGridView1.Leave += new System.EventHandler(this.dataGridView1_Leave);
             // 
@@ -1853,29 +1858,44 @@ namespace POS
             this.NextPurchaseCard.Controls.Add(this.bunifuGradientPanel4);
             this.NextPurchaseCard.Controls.Add(this.bunifuGradientPanel5);
             this.NextPurchaseCard.Controls.Add(this.bunifuGradientPanel3);
+            this.NextPurchaseCard.Dock = System.Windows.Forms.DockStyle.Fill;
             this.NextPurchaseCard.LeftSahddow = false;
-            this.NextPurchaseCard.Location = new System.Drawing.Point(0, 243);
+            this.NextPurchaseCard.Location = new System.Drawing.Point(0, 0);
             this.NextPurchaseCard.Name = "NextPurchaseCard";
             this.NextPurchaseCard.RightSahddow = true;
             this.NextPurchaseCard.ShadowDepth = 20;
-            this.NextPurchaseCard.Size = new System.Drawing.Size(508, 390);
+            this.NextPurchaseCard.Size = new System.Drawing.Size(1569, 691);
             this.NextPurchaseCard.TabIndex = 48;
             // 
             // bunifuGradientPanel4
             // 
+            this.bunifuGradientPanel4.BackColor = System.Drawing.Color.White;
             this.bunifuGradientPanel4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel4.BackgroundImage")));
             this.bunifuGradientPanel4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.bunifuGradientPanel4.Controls.Add(this.dataGridView2);
-            this.bunifuGradientPanel4.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.bunifuGradientPanel4.Controls.Add(this.casescountLbl);
+            this.bunifuGradientPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bunifuGradientPanel4.ForeColor = System.Drawing.Color.LimeGreen;
             this.bunifuGradientPanel4.GradientBottomLeft = System.Drawing.Color.White;
             this.bunifuGradientPanel4.GradientBottomRight = System.Drawing.Color.White;
             this.bunifuGradientPanel4.GradientTopLeft = System.Drawing.Color.White;
             this.bunifuGradientPanel4.GradientTopRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel4.Location = new System.Drawing.Point(0, -190);
+            this.bunifuGradientPanel4.Location = new System.Drawing.Point(0, 53);
             this.bunifuGradientPanel4.Name = "bunifuGradientPanel4";
             this.bunifuGradientPanel4.Quality = 10;
-            this.bunifuGradientPanel4.Size = new System.Drawing.Size(508, 517);
+            this.bunifuGradientPanel4.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.bunifuGradientPanel4.Size = new System.Drawing.Size(1569, 575);
             this.bunifuGradientPanel4.TabIndex = 3;
+            // 
+            // casescountLbl
+            // 
+            this.casescountLbl.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.casescountLbl.Location = new System.Drawing.Point(0, 532);
+            this.casescountLbl.Name = "casescountLbl";
+            this.casescountLbl.Padding = new System.Windows.Forms.Padding(0, 0, 30, 0);
+            this.casescountLbl.Size = new System.Drawing.Size(1569, 43);
+            this.casescountLbl.TabIndex = 4;
+            this.casescountLbl.Text = "Total de productos: 0.00";
             // 
             // dataGridView2
             // 
@@ -1901,28 +1921,31 @@ namespace POS
             this.brand,
             this.piecesPerCase,
             this.amount,
+            this.depot,
             this.Total});
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(171)))));
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView2.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.LimeGreen;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView2.DefaultCellStyle = dataGridViewCellStyle7;
             this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView2.EnableHeadersVisualStyles = false;
             this.dataGridView2.Location = new System.Drawing.Point(0, 0);
             this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.dataGridView2.RowHeadersVisible = false;
             this.dataGridView2.RowTemplate.Height = 35;
             this.dataGridView2.RowTemplate.ReadOnly = true;
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(508, 517);
+            this.dataGridView2.Size = new System.Drawing.Size(1569, 532);
             this.dataGridView2.TabIndex = 3;
             this.dataGridView2.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellEndEdit);
             this.dataGridView2.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellValueChanged);
+            this.dataGridView2.RowHeightChanged += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView2_RowHeightChanged);
             this.dataGridView2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView2_KeyDown);
             // 
             // barcode
@@ -1961,6 +1984,18 @@ namespace POS
             this.amount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.amount.Width = 176;
             // 
+            // depot
+            // 
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.depot.DefaultCellStyle = dataGridViewCellStyle6;
+            this.depot.HeaderText = "Bodega Destino";
+            this.depot.Name = "depot";
+            // 
             // Total
             // 
             this.Total.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
@@ -1982,7 +2017,7 @@ namespace POS
             this.bunifuGradientPanel5.Location = new System.Drawing.Point(0, 0);
             this.bunifuGradientPanel5.Name = "bunifuGradientPanel5";
             this.bunifuGradientPanel5.Quality = 10;
-            this.bunifuGradientPanel5.Size = new System.Drawing.Size(508, 53);
+            this.bunifuGradientPanel5.Size = new System.Drawing.Size(1569, 53);
             this.bunifuGradientPanel5.TabIndex = 50;
             // 
             // ProductTxt
@@ -1994,7 +2029,7 @@ namespace POS
             this.ProductTxt.Location = new System.Drawing.Point(4, 8);
             this.ProductTxt.Multiline = false;
             this.ProductTxt.Name = "ProductTxt";
-            this.ProductTxt.Size = new System.Drawing.Size(500, 37);
+            this.ProductTxt.Size = new System.Drawing.Size(1561, 37);
             this.ProductTxt.TabIndex = 2;
             this.ProductTxt.Text = "";
             this.ProductTxt.TextChanged += new System.EventHandler(this.ProductTxt_TextChanged);
@@ -2016,11 +2051,37 @@ namespace POS
             this.bunifuGradientPanel3.GradientBottomRight = System.Drawing.Color.LightGray;
             this.bunifuGradientPanel3.GradientTopLeft = System.Drawing.Color.WhiteSmoke;
             this.bunifuGradientPanel3.GradientTopRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel3.Location = new System.Drawing.Point(0, 327);
+            this.bunifuGradientPanel3.Location = new System.Drawing.Point(0, 628);
             this.bunifuGradientPanel3.Name = "bunifuGradientPanel3";
             this.bunifuGradientPanel3.Quality = 10;
-            this.bunifuGradientPanel3.Size = new System.Drawing.Size(508, 63);
+            this.bunifuGradientPanel3.Size = new System.Drawing.Size(1569, 63);
             this.bunifuGradientPanel3.TabIndex = 2;
+            // 
+            // proccedPurchaseBtn
+            // 
+            this.proccedPurchaseBtn.ActiveBorderThickness = 1;
+            this.proccedPurchaseBtn.ActiveCornerRadius = 20;
+            this.proccedPurchaseBtn.ActiveFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.proccedPurchaseBtn.ActiveForecolor = System.Drawing.Color.White;
+            this.proccedPurchaseBtn.ActiveLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.proccedPurchaseBtn.BackColor = System.Drawing.Color.White;
+            this.proccedPurchaseBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("proccedPurchaseBtn.BackgroundImage")));
+            this.proccedPurchaseBtn.ButtonText = "Realizar Compra";
+            this.proccedPurchaseBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.proccedPurchaseBtn.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.proccedPurchaseBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.proccedPurchaseBtn.IdleBorderThickness = 1;
+            this.proccedPurchaseBtn.IdleCornerRadius = 20;
+            this.proccedPurchaseBtn.IdleFillColor = System.Drawing.Color.White;
+            this.proccedPurchaseBtn.IdleForecolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.proccedPurchaseBtn.IdleLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.proccedPurchaseBtn.Location = new System.Drawing.Point(7, 11);
+            this.proccedPurchaseBtn.Margin = new System.Windows.Forms.Padding(5);
+            this.proccedPurchaseBtn.Name = "proccedPurchaseBtn";
+            this.proccedPurchaseBtn.Size = new System.Drawing.Size(181, 41);
+            this.proccedPurchaseBtn.TabIndex = 4;
+            this.proccedPurchaseBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.proccedPurchaseBtn.Click += new System.EventHandler(this.proccedPurchaseBtn_Click);
             // 
             // SaveBtn
             // 
@@ -2041,7 +2102,7 @@ namespace POS
             this.SaveBtn.IdleFillColor = System.Drawing.Color.White;
             this.SaveBtn.IdleForecolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
             this.SaveBtn.IdleLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.SaveBtn.Location = new System.Drawing.Point(-844, 11);
+            this.SaveBtn.Location = new System.Drawing.Point(217, 11);
             this.SaveBtn.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.SaveBtn.Name = "SaveBtn";
             this.SaveBtn.Size = new System.Drawing.Size(265, 41);
@@ -2334,7 +2395,7 @@ namespace POS
             this.bunifuGradientPanel2.Location = new System.Drawing.Point(103, 53);
             this.bunifuGradientPanel2.Name = "bunifuGradientPanel2";
             this.bunifuGradientPanel2.Quality = 10;
-            this.bunifuGradientPanel2.Size = new System.Drawing.Size(1466, 580);
+            this.bunifuGradientPanel2.Size = new System.Drawing.Size(346, 230);
             this.bunifuGradientPanel2.TabIndex = 50;
             // 
             // DataGridCardControlPanel
@@ -2353,7 +2414,7 @@ namespace POS
             this.DataGridCardControlPanel.Location = new System.Drawing.Point(0, 0);
             this.DataGridCardControlPanel.Name = "DataGridCardControlPanel";
             this.DataGridCardControlPanel.Quality = 10;
-            this.DataGridCardControlPanel.Size = new System.Drawing.Size(103, 633);
+            this.DataGridCardControlPanel.Size = new System.Drawing.Size(103, 283);
             this.DataGridCardControlPanel.TabIndex = 48;
             // 
             // bunifuGradientPanel1
@@ -2370,7 +2431,7 @@ namespace POS
             this.bunifuGradientPanel1.Location = new System.Drawing.Point(103, 0);
             this.bunifuGradientPanel1.Name = "bunifuGradientPanel1";
             this.bunifuGradientPanel1.Quality = 10;
-            this.bunifuGradientPanel1.Size = new System.Drawing.Size(1466, 53);
+            this.bunifuGradientPanel1.Size = new System.Drawing.Size(346, 53);
             this.bunifuGradientPanel1.TabIndex = 49;
             // 
             // ProductListPanel
@@ -2380,15 +2441,14 @@ namespace POS
             this.ProductListPanel.Controls.Add(this.bunifuGradientPanel2);
             this.ProductListPanel.Controls.Add(this.bunifuGradientPanel1);
             this.ProductListPanel.Controls.Add(this.DataGridCardControlPanel);
-            this.ProductListPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ProductListPanel.GradientBottomLeft = System.Drawing.Color.White;
             this.ProductListPanel.GradientBottomRight = System.Drawing.Color.White;
             this.ProductListPanel.GradientTopLeft = System.Drawing.Color.White;
             this.ProductListPanel.GradientTopRight = System.Drawing.Color.White;
-            this.ProductListPanel.Location = new System.Drawing.Point(0, 0);
+            this.ProductListPanel.Location = new System.Drawing.Point(0, 408);
             this.ProductListPanel.Name = "ProductListPanel";
             this.ProductListPanel.Quality = 10;
-            this.ProductListPanel.Size = new System.Drawing.Size(1569, 633);
+            this.ProductListPanel.Size = new System.Drawing.Size(449, 283);
             this.ProductListPanel.TabIndex = 49;
             this.ProductListPanel.Visible = false;
             // 
@@ -2399,17 +2459,17 @@ namespace POS
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel.BackgroundImage")));
             this.panel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel.Controls.Add(this.ProductListPanel);
             this.panel.Controls.Add(this.NextPurchaseCard);
+            this.panel.Controls.Add(this.ProductListPanel);
             this.panel.Controls.Add(this.RemindersPanel);
             this.panel.GradientBottomLeft = System.Drawing.Color.White;
             this.panel.GradientBottomRight = System.Drawing.Color.White;
             this.panel.GradientTopLeft = System.Drawing.Color.White;
             this.panel.GradientTopRight = System.Drawing.Color.White;
-            this.panel.Location = new System.Drawing.Point(78, 368);
+            this.panel.Location = new System.Drawing.Point(78, 310);
             this.panel.Name = "panel";
             this.panel.Quality = 10;
-            this.panel.Size = new System.Drawing.Size(1569, 633);
+            this.panel.Size = new System.Drawing.Size(1569, 691);
             this.panel.TabIndex = 17;
             // 
             // ControlsContainerPanel
@@ -2437,6 +2497,7 @@ namespace POS
             // 
             this.SupplierInfromationPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("SupplierInfromationPanel.BackgroundImage")));
             this.SupplierInfromationPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.SupplierInfromationPanel.Controls.Add(this.bunifuImageButton3);
             this.SupplierInfromationPanel.Controls.Add(this.BasicInformationCard);
             this.SupplierInfromationPanel.Controls.Add(this.POBtn);
             this.SupplierInfromationPanel.Controls.Add(this.bunifuImageButton1);
@@ -2535,11 +2596,6 @@ namespace POS
             this.SelectAllBtnElipse.ElipseRadius = 35;
             this.SelectAllBtnElipse.TargetControl = this;
             // 
-            // PayPurchaseElipse
-            // 
-            this.PayPurchaseElipse.ElipseRadius = 35;
-            this.PayPurchaseElipse.TargetControl = this.proccedPurchaseBtn;
-            // 
             // WindowSizeControlPanel
             // 
             this.WindowSizeControlPanel.BackColor = System.Drawing.Color.White;
@@ -2610,6 +2666,7 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.DeleteRowBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NextDayButton)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PreviousDayButton)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton3)).EndInit();
             this.panel1.ResumeLayout(false);
             this.bunifuGradientPanel9.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).EndInit();
@@ -2796,19 +2853,21 @@ namespace POS
         private Bunifu.Framework.UI.BunifuElipse NextPurchaseButtonElipse;
         private Bunifu.Framework.UI.BunifuElipse AlarmsButtonElipse;
         private Bunifu.Framework.UI.BunifuElipse SelectAllBtnElipse;
-        private Bunifu.Framework.UI.BunifuElipse PayPurchaseElipse;
         private Timer timer;
         private Panel WindowSizeControlPanel;
         private Bunifu.Framework.UI.BunifuImageButton minimizeBtn;
         private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton2;
         private DataGridView dataGridView2;
         private RichTextBox ProductTxt;
+        private Bunifu.Framework.UI.BunifuThinButton2 proccedPurchaseBtn;
         private DataGridViewTextBoxColumn barcode;
         private DataGridViewTextBoxColumn description;
         private DataGridViewTextBoxColumn brand;
         private DataGridViewTextBoxColumn piecesPerCase;
         private DataGridViewTextBoxColumn amount;
+        private DataGridViewComboBoxColumn depot;
         private DataGridViewTextBoxColumn Total;
-        private Button proccedPurchaseBtn;
+        private Label casescountLbl;
+        private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton3;
     }
 }

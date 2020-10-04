@@ -41,6 +41,7 @@ namespace POS
             this.SearchTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
             this.bunifuCards1 = new Bunifu.Framework.UI.BunifuCards();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.brandLbl = new System.Windows.Forms.Label();
@@ -51,7 +52,6 @@ namespace POS
             this.searchBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.OkBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.bunifuImageButton1 = new Bunifu.Framework.UI.BunifuImageButton();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.bunifuCards1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -63,7 +63,7 @@ namespace POS
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(19, 57);
+            this.label1.Location = new System.Drawing.Point(13, 48);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(86, 25);
             this.label1.TabIndex = 0;
@@ -161,6 +161,18 @@ namespace POS
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(605, 393);
             this.panel2.TabIndex = 15;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.Location = new System.Drawing.Point(208, 332);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(189, 33);
+            this.textBox1.TabIndex = 16;
+            this.textBox1.Text = "0.00";
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // comboBox1
             // 
@@ -295,18 +307,6 @@ namespace POS
             this.bunifuImageButton1.TabStop = false;
             this.bunifuImageButton1.Zoom = 10;
             this.bunifuImageButton1.Click += new System.EventHandler(this.bunifuImageButton1_Click);
-            // 
-            // textBox1
-            // 
-            this.textBox1.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(208, 332);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(189, 33);
-            this.textBox1.TabIndex = 16;
-            this.textBox1.Text = "0.00";
-            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // PanelProducto_Scrap
             // 

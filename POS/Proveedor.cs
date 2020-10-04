@@ -76,6 +76,11 @@ namespace POS
             return this.negocio.GetSupplierList();
         }
 
+        public static DataTable GetSupplierList(string text)
+        {
+            return new Capa_de_Negocio().GetSupplierList(text);
+        }
+
         public void GetSupplierData()
         {
             DataTable supplierData = this.negocio.GetSupplierData(this.ID);
@@ -132,7 +137,12 @@ namespace POS
 
         public DataTable GetSupplierProductList()
         {
-            return negocio.GetSupplierProductList(ID);
+            DataTable dt= negocio.GetSupplierProductList(ID);
+            
+            foreach (DataColumn item in dt.Columns)
+                item.ReadOnly = false;
+            
+            return dt;
         }
 
         public DataTable SupplierGetQuantitiesAndDates()
@@ -282,7 +292,13 @@ namespace POS
 
         public DataTable SupplierFilterProducts(string search)
         {
-            return this.negocio.SupplierFilterProducts(search,ID);
+            var dt = negocio.SupplierFilterProducts(search,ID);
+
+            foreach (DataColumn item in dt.Columns)
+            {
+                item.ReadOnly = false;
+            }
+            return dt;
         }
 
         public List<string> SupplierFilterProductsForNextPurchase(string search)
@@ -327,9 +343,10 @@ namespace POS
           double quantity,
           double PiecesPerCase,
           double UnitaryCost,
-          double Total)
+          double Total,
+          int destinyDepotID)
         {
-            this.negocio.SupplierAddPODetails(PO_ID, product.Barcode, quantity, PiecesPerCase, UnitaryCost, Total);
+            this.negocio.SupplierAddPODetails(PO_ID, product.Barcode, quantity, PiecesPerCase, UnitaryCost, Total,destinyDepotID);
         }
 
         public void UpdateDebt()
@@ -352,6 +369,11 @@ namespace POS
         public DataTable getProductInfo(string barcode)
         {
             return negocio.Supplier_getProductInfo(ID,barcode);
+        }
+
+        public void Delete()
+        {
+            negocio.Supplier_delete(ID);
         }
     }
 }

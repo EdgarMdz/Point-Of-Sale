@@ -44,6 +44,8 @@ namespace POS
             }
         }
 
+       
+
         public int EmployeeID
         {
             get
@@ -182,7 +184,7 @@ namespace POS
         {
             foreach (DataRow row in (InternalDataCollectionBase)this._saleDetail.Rows)
             {
-                if (barcode == row["id_producto"].ToString() && !this._isCanceled)
+                if (barcode == row["id_producto"].ToString() && !this._isCanceled && new Producto(barcode).isReturnable)
                     return Convert.ToInt32(row["Cantidad"]) - Convert.ToInt32(row["Envases Retornados"]);
             }
             return 0;
@@ -243,6 +245,11 @@ namespace POS
         {
             Capa_de_Negocio n = new Capa_de_Negocio();
             return n.getInfoUnfinishedSell(savedWindowID, newWindowID);
+        }
+
+        public static DataTable getReturnableProducts(int saleID)
+        {
+            return new Capa_de_Negocio().Sale_getReurnableProducts(saleID);
         }
     }
 }

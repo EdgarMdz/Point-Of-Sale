@@ -28,25 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(panel_Estadisticas));
             this.StatisticsPanel = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.bunifuCards1 = new Bunifu.Framework.UI.BunifuCards();
             this.scrapNoInfoLbl = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.scrapChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.scrapGridView = new System.Windows.Forms.DataGridView();
             this.ProductStatisticsCard = new Bunifu.Framework.UI.BunifuCards();
             this.statisticsProductsProductLbl = new System.Windows.Forms.Label();
@@ -62,19 +55,19 @@
             this.bestSellersCard = new Bunifu.Framework.UI.BunifuCards();
             this.bestSellerNoInfoLbl = new System.Windows.Forms.Label();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.bestSellChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.bestSellGridView = new System.Windows.Forms.DataGridView();
             this.periodTimeCombo = new System.Windows.Forms.ComboBox();
             this.bunifuGradientPanel3 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.MimimizeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
+            this.pieChart2 = new LiveCharts.WinForms.PieChart();
+            this.pieChart1 = new LiveCharts.WinForms.PieChart();
             this.StatisticsPanel.SuspendLayout();
             this.bunifuCards1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.scrapChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.scrapGridView)).BeginInit();
             this.ProductStatisticsCard.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -85,7 +78,6 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bestSellChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bestSellGridView)).BeginInit();
             this.bunifuGradientPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).BeginInit();
@@ -160,7 +152,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.scrapChart);
+            this.splitContainer1.Panel1.Controls.Add(this.pieChart2);
             // 
             // splitContainer1.Panel2
             // 
@@ -168,26 +160,6 @@
             this.splitContainer1.Size = new System.Drawing.Size(389, 655);
             this.splitContainer1.SplitterDistance = 400;
             this.splitContainer1.TabIndex = 4;
-            // 
-            // scrapChart
-            // 
-            chartArea1.Name = "ChartArea1";
-            this.scrapChart.ChartAreas.Add(chartArea1);
-            this.scrapChart.Dock = System.Windows.Forms.DockStyle.Top;
-            legend1.Name = "Legend1";
-            this.scrapChart.Legends.Add(legend1);
-            this.scrapChart.Location = new System.Drawing.Point(0, 0);
-            this.scrapChart.Name = "scrapChart";
-            this.scrapChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Pastel;
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series1.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.scrapChart.Series.Add(series1);
-            this.scrapChart.Size = new System.Drawing.Size(389, 460);
-            this.scrapChart.TabIndex = 1;
-            this.scrapChart.TextAntiAliasingQuality = System.Windows.Forms.DataVisualization.Charting.TextAntiAliasingQuality.SystemDefault;
             // 
             // scrapGridView
             // 
@@ -198,23 +170,23 @@
             this.scrapGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.scrapGridView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.scrapGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.scrapGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.scrapGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
             this.scrapGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.scrapGridView.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle11.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.scrapGridView.DefaultCellStyle = dataGridViewCellStyle11;
             this.scrapGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.scrapGridView.EnableHeadersVisualStyles = false;
             this.scrapGridView.GridColor = System.Drawing.Color.White;
@@ -222,18 +194,19 @@
             this.scrapGridView.MultiSelect = false;
             this.scrapGridView.Name = "scrapGridView";
             this.scrapGridView.ReadOnly = true;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.scrapGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle12.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.scrapGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle12;
             this.scrapGridView.RowHeadersVisible = false;
             this.scrapGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.scrapGridView.Size = new System.Drawing.Size(389, 251);
             this.scrapGridView.TabIndex = 14;
+            this.scrapGridView.DataSourceChanged += new System.EventHandler(this.scrapGridView_DataSourceChanged);
             // 
             // ProductStatisticsCard
             // 
@@ -409,7 +382,7 @@
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.bestSellChart);
+            this.splitContainer2.Panel1.Controls.Add(this.pieChart1);
             // 
             // splitContainer2.Panel2
             // 
@@ -417,24 +390,6 @@
             this.splitContainer2.Size = new System.Drawing.Size(392, 655);
             this.splitContainer2.SplitterDistance = 400;
             this.splitContainer2.TabIndex = 5;
-            // 
-            // bestSellChart
-            // 
-            chartArea2.Name = "ChartArea1";
-            this.bestSellChart.ChartAreas.Add(chartArea2);
-            this.bestSellChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend2.Name = "Legend1";
-            this.bestSellChart.Legends.Add(legend2);
-            this.bestSellChart.Location = new System.Drawing.Point(0, 0);
-            this.bestSellChart.Name = "bestSellChart";
-            this.bestSellChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SeaGreen;
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.bestSellChart.Series.Add(series2);
-            this.bestSellChart.Size = new System.Drawing.Size(392, 400);
-            this.bestSellChart.TabIndex = 1;
             // 
             // bestSellGridView
             // 
@@ -445,23 +400,23 @@
             this.bestSellGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.bestSellGridView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.bestSellGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.bestSellGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.bestSellGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
             this.bestSellGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.bestSellGridView.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.bestSellGridView.DefaultCellStyle = dataGridViewCellStyle8;
             this.bestSellGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bestSellGridView.EnableHeadersVisualStyles = false;
             this.bestSellGridView.GridColor = System.Drawing.Color.White;
@@ -469,14 +424,14 @@
             this.bestSellGridView.MultiSelect = false;
             this.bestSellGridView.Name = "bestSellGridView";
             this.bestSellGridView.ReadOnly = true;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.bestSellGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.bestSellGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.bestSellGridView.RowHeadersVisible = false;
             this.bestSellGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.bestSellGridView.Size = new System.Drawing.Size(392, 251);
@@ -548,6 +503,24 @@
             this.closeBtn.TabStop = false;
             this.closeBtn.Zoom = 10;
             // 
+            // pieChart2
+            // 
+            this.pieChart2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pieChart2.Location = new System.Drawing.Point(0, 0);
+            this.pieChart2.Name = "pieChart2";
+            this.pieChart2.Size = new System.Drawing.Size(389, 400);
+            this.pieChart2.TabIndex = 0;
+            this.pieChart2.Text = "pieChart2";
+            // 
+            // pieChart1
+            // 
+            this.pieChart1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pieChart1.Location = new System.Drawing.Point(0, 0);
+            this.pieChart1.Name = "pieChart1";
+            this.pieChart1.Size = new System.Drawing.Size(392, 400);
+            this.pieChart1.TabIndex = 0;
+            this.pieChart1.Text = "pieChart1";
+            // 
             // panel_Estadisticas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -567,7 +540,6 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.scrapChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.scrapGridView)).EndInit();
             this.ProductStatisticsCard.ResumeLayout(false);
             this.ProductStatisticsCard.PerformLayout();
@@ -581,7 +553,6 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.bestSellChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bestSellGridView)).EndInit();
             this.bunifuGradientPanel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).EndInit();
@@ -597,7 +568,6 @@
         private Bunifu.Framework.UI.BunifuCards bunifuCards1;
         private System.Windows.Forms.Label scrapNoInfoLbl;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.DataVisualization.Charting.Chart scrapChart;
         private System.Windows.Forms.DataGridView scrapGridView;
         private Bunifu.Framework.UI.BunifuCards ProductStatisticsCard;
         private System.Windows.Forms.Panel panel2;
@@ -613,11 +583,12 @@
         private Bunifu.Framework.UI.BunifuCards bestSellersCard;
         private System.Windows.Forms.Label bestSellerNoInfoLbl;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.DataVisualization.Charting.Chart bestSellChart;
         private System.Windows.Forms.DataGridView bestSellGridView;
         private System.Windows.Forms.ComboBox periodTimeCombo;
         private Bunifu.Framework.UI.BunifuGradientPanel bunifuGradientPanel3;
         private Bunifu.Framework.UI.BunifuImageButton MimimizeBtn;
         private Bunifu.Framework.UI.BunifuImageButton closeBtn;
+        private LiveCharts.WinForms.PieChart pieChart2;
+        private LiveCharts.WinForms.PieChart pieChart1;
     }
 }

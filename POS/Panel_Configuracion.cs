@@ -72,7 +72,7 @@ namespace POS
         private void Panel_Configuracion_Load(object sender, EventArgs e)
         {
             this.printer = new PrinterTicket();
-            if (!(this.printer.printerName != ""))
+            if (printer.printerName == "")
                 return;
             this.pd = new PrintDialog();
             this.pd.PrinterSettings.PrinterName = this.printer.printerName;

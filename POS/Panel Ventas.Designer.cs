@@ -84,8 +84,8 @@ namespace POS
             this.dateOfSaleLbl = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.ReturnPackagesBtn = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.ReturnPackagesBtn = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.CancelSaleBtn = new System.Windows.Forms.Button();
@@ -101,13 +101,13 @@ namespace POS
             this.bunifuGradientPanel1 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.MimimizeBtn = new Bunifu.Framework.UI.BunifuImageButton();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.bunifuElipse1 = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.printDocument2 = new System.Drawing.Printing.PrintDocument();
             this.reprintTicket = new System.Drawing.Printing.PrintDocument();
             this.reprintElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.panel7 = new System.Windows.Forms.Panel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.panel4.SuspendLayout();
@@ -148,6 +148,7 @@ namespace POS
             this.LastSaleBtn.Size = new System.Drawing.Size(297, 46);
             this.LastSaleBtn.TabIndex = 6;
             this.LastSaleBtn.Text = "Última Venta";
+            this.toolTip1.SetToolTip(this.LastSaleBtn, "Mostrar Última Venta\r\nAlt + U");
             this.LastSaleBtn.UseVisualStyleBackColor = false;
             this.LastSaleBtn.Click += new System.EventHandler(this.LastSaleBtn_Click);
             // 
@@ -171,6 +172,7 @@ namespace POS
             this.refoundBtn.Size = new System.Drawing.Size(297, 46);
             this.refoundBtn.TabIndex = 8;
             this.refoundBtn.Text = "Buscar Ticket";
+            this.toolTip1.SetToolTip(this.refoundBtn, "Buscar Ticket\r\nAlt + B");
             this.refoundBtn.UseVisualStyleBackColor = false;
             this.refoundBtn.Click += new System.EventHandler(this.refoundBtn_Click);
             // 
@@ -252,11 +254,12 @@ namespace POS
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView2.Size = new System.Drawing.Size(889, 855);
             this.dataGridView2.TabIndex = 2;
-            this.toolTip1.SetToolTip(this.dataGridView2, "bullshit");
+            this.dataGridView2.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellContentClick);
             this.dataGridView2.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView2_CellFormatting);
             this.dataGridView2.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView2_CellMouseClick);
             this.dataGridView2.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellValueChanged);
             this.dataGridView2.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_RowEnter);
+            this.dataGridView2.RowHeightChanged += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView2_RowHeightChanged);
             this.dataGridView2.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView2_RowsAdded);
             this.dataGridView2.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView2_RowsRemoved);
             this.dataGridView2.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dataGridView2_Scroll);
@@ -476,6 +479,7 @@ namespace POS
             this.cancelBtn.TabIndex = 9;
             this.cancelBtn.TabStop = false;
             this.cancelBtn.Text = "Limpiar";
+            this.toolTip1.SetToolTip(this.cancelBtn, "Limpiar Lista de Productos\r\nAlt + Q");
             this.cancelBtn.UseVisualStyleBackColor = false;
             this.cancelBtn.Click += new System.EventHandler(this.cancelBtn_Click_1);
             // 
@@ -486,6 +490,10 @@ namespace POS
             // saleCancelledDocument
             // 
             this.saleCancelledDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.saleCancelledDocument_PrintPage);
+            // 
+            // packageReturnedDocument
+            // 
+            this.packageReturnedDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.packageReturnedDocument_PrintPage_1);
             // 
             // groupBox1
             // 
@@ -498,6 +506,7 @@ namespace POS
             this.groupBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.groupBox1.Location = new System.Drawing.Point(47, 252);
             this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(10);
             this.groupBox1.Size = new System.Drawing.Size(384, 273);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
@@ -541,6 +550,7 @@ namespace POS
             this.ClearCustomerBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.ClearCustomerBtn.TabIndex = 1;
             this.ClearCustomerBtn.TabStop = false;
+            this.toolTip1.SetToolTip(this.ClearCustomerBtn, "Remover Cliente\r\nAlt + R");
             this.ClearCustomerBtn.Visible = false;
             this.ClearCustomerBtn.Zoom = 10;
             this.ClearCustomerBtn.Click += new System.EventHandler(this.ClearCustomerBtn_Click);
@@ -552,7 +562,7 @@ namespace POS
             this.debtLbl.AutoEllipsis = true;
             this.debtLbl.AutoSize = true;
             this.debtLbl.ForeColor = System.Drawing.Color.Tomato;
-            this.debtLbl.Location = new System.Drawing.Point(203, 155);
+            this.debtLbl.Location = new System.Drawing.Point(210, 162);
             this.debtLbl.Name = "debtLbl";
             this.debtLbl.Size = new System.Drawing.Size(83, 32);
             this.debtLbl.TabIndex = 8;
@@ -564,7 +574,7 @@ namespace POS
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.Tomato;
-            this.label1.Location = new System.Drawing.Point(95, 155);
+            this.label1.Location = new System.Drawing.Point(102, 162);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(96, 32);
             this.label1.TabIndex = 7;
@@ -594,10 +604,12 @@ namespace POS
             this.CustomerBtn.Size = new System.Drawing.Size(384, 92);
             this.CustomerBtn.TabIndex = 0;
             this.CustomerBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.toolTip1.SetToolTip(this.CustomerBtn, "Seleccionar Cliente\r\nAlt + L");
             this.CustomerBtn.Click += new System.EventHandler(this.CustomerBtn_Click);
             // 
             // panel6
             // 
+            this.panel6.Controls.Add(this.refoundBtn);
             this.panel6.Controls.Add(this.printTicketBtn);
             this.panel6.Controls.Add(this.EmployeeCanceldSaleLbl);
             this.panel6.Controls.Add(this.label8);
@@ -607,15 +619,13 @@ namespace POS
             this.panel6.Controls.Add(this.dateOfSaleLbl);
             this.panel6.Controls.Add(this.label4);
             this.panel6.Controls.Add(this.label2);
-            this.panel6.Controls.Add(this.ReturnPackagesBtn);
             this.panel6.Controls.Add(this.pictureBox1);
+            this.panel6.Controls.Add(this.ReturnPackagesBtn);
             this.panel6.Controls.Add(this.LastSaleBtn);
-            this.panel6.Controls.Add(this.refoundBtn);
             this.panel6.Location = new System.Drawing.Point(0, 382);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(478, 575);
             this.panel6.TabIndex = 44;
-            this.panel6.Paint += new System.Windows.Forms.PaintEventHandler(this.panel6_Paint);
             // 
             // printTicketBtn
             // 
@@ -631,7 +641,8 @@ namespace POS
             this.printTicketBtn.Name = "printTicketBtn";
             this.printTicketBtn.Size = new System.Drawing.Size(297, 46);
             this.printTicketBtn.TabIndex = 18;
-            this.printTicketBtn.Text = "Reimprimir";
+            this.printTicketBtn.Text = "Reimpirmir Ticket";
+            this.toolTip1.SetToolTip(this.printTicketBtn, "Reimprimir Ticket\r\nAlt + P");
             this.printTicketBtn.UseVisualStyleBackColor = false;
             this.printTicketBtn.Visible = false;
             this.printTicketBtn.Click += new System.EventHandler(this.printTicketBtn_Click);
@@ -695,7 +706,6 @@ namespace POS
             this.EmployeeNameLbl.TabIndex = 12;
             this.EmployeeNameLbl.Text = "Eduardo Uriel Méndez Arvizu";
             this.EmployeeNameLbl.Visible = false;
-            this.EmployeeNameLbl.Click += new System.EventHandler(this.EmployeeNameLbl_Click);
             // 
             // dateOfSaleLbl
             // 
@@ -733,6 +743,17 @@ namespace POS
             this.label2.Text = "Fecha de venta:";
             this.label2.Visible = false;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBox1.Location = new System.Drawing.Point(43, 195);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(388, 359);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 46;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            // 
             // ReturnPackagesBtn
             // 
             this.ReturnPackagesBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -749,20 +770,10 @@ namespace POS
             this.ReturnPackagesBtn.Size = new System.Drawing.Size(297, 46);
             this.ReturnPackagesBtn.TabIndex = 17;
             this.ReturnPackagesBtn.Text = "Retornar Envases";
+            this.toolTip1.SetToolTip(this.ReturnPackagesBtn, "Retornar Envases\r\nAlt + E");
             this.ReturnPackagesBtn.UseVisualStyleBackColor = false;
             this.ReturnPackagesBtn.Visible = false;
             this.ReturnPackagesBtn.Click += new System.EventHandler(this.ReturnPackagesBtn_Click);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBox1.Location = new System.Drawing.Point(43, 195);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(388, 359);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 46;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // groupBox3
             // 
@@ -775,7 +786,6 @@ namespace POS
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Ticket";
-            this.groupBox3.Enter += new System.EventHandler(this.groupBox3_Enter);
             // 
             // checkBox1
             // 
@@ -789,6 +799,7 @@ namespace POS
             this.checkBox1.Size = new System.Drawing.Size(150, 40);
             this.checkBox1.TabIndex = 0;
             this.checkBox1.Text = "Imprimir";
+            this.toolTip1.SetToolTip(this.checkBox1, "Imprimir Ticket\r\nAlt + I");
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // CancelSaleBtn
@@ -806,6 +817,7 @@ namespace POS
             this.CancelSaleBtn.Size = new System.Drawing.Size(440, 68);
             this.CancelSaleBtn.TabIndex = 7;
             this.CancelSaleBtn.Text = "Cancelar Venta ";
+            this.toolTip1.SetToolTip(this.CancelSaleBtn, "Cancelar Compra\r\nAlt + C");
             this.CancelSaleBtn.UseVisualStyleBackColor = false;
             this.CancelSaleBtn.Visible = false;
             this.CancelSaleBtn.Click += new System.EventHandler(this.CancelSaleBtn_Click);
@@ -838,6 +850,7 @@ namespace POS
             this.lessBtn.Size = new System.Drawing.Size(64, 68);
             this.lessBtn.TabIndex = 3;
             this.lessBtn.Text = "-";
+            this.toolTip1.SetToolTip(this.lessBtn, "Quitar una pieza\r\nAlt + \"-\"");
             this.lessBtn.UseVisualStyleBackColor = false;
             this.lessBtn.Click += new System.EventHandler(this.lessBtn_Click);
             // 
@@ -856,6 +869,7 @@ namespace POS
             this.moreBtn.Size = new System.Drawing.Size(65, 68);
             this.moreBtn.TabIndex = 4;
             this.moreBtn.Text = "+";
+            this.toolTip1.SetToolTip(this.moreBtn, "Agregar una pieza\r\nAlt + \"+\"");
             this.moreBtn.UseVisualStyleBackColor = false;
             this.moreBtn.Click += new System.EventHandler(this.moreBtn_Click);
             // 
@@ -874,6 +888,7 @@ namespace POS
             this.CobrarBtn.Size = new System.Drawing.Size(297, 102);
             this.CobrarBtn.TabIndex = 0;
             this.CobrarBtn.Text = "Cobrar";
+            this.toolTip1.SetToolTip(this.CobrarBtn, "Realizar Cobro\r\nAlt + C");
             this.CobrarBtn.UseVisualStyleBackColor = false;
             this.CobrarBtn.Click += new System.EventHandler(this.CobrarBtn_Click);
             // 
@@ -918,12 +933,14 @@ namespace POS
             this.discountList.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
             this.discountList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.discountList.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.discountList.Location = new System.Drawing.Point(326, 6);
+            this.discountList.Location = new System.Drawing.Point(221, 6);
             this.discountList.Name = "discountList";
             this.discountList.Size = new System.Drawing.Size(61, 30);
             this.discountList.TabIndex = 49;
             this.discountList.Text = "Ofertas";
+            this.toolTip1.SetToolTip(this.discountList, "Ofertas\r\nAlt + F");
             this.discountList.UseVisualStyleBackColor = false;
+            this.discountList.Visible = false;
             this.discountList.Click += new System.EventHandler(this.discountList_Click);
             this.discountList.MouseLeave += new System.EventHandler(this.discountList_MouseLeave);
             this.discountList.MouseHover += new System.EventHandler(this.discountList_MouseHover);
@@ -940,6 +957,7 @@ namespace POS
             this.newWindowBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.newWindowBtn.TabIndex = 47;
             this.newWindowBtn.TabStop = false;
+            this.toolTip1.SetToolTip(this.newWindowBtn, "Nueva Ventana\r\nAlt + N");
             this.newWindowBtn.Zoom = 10;
             this.newWindowBtn.Click += new System.EventHandler(this.bunifuImageButton1_Click);
             // 
@@ -949,12 +967,13 @@ namespace POS
             this.discountBtn.BackColor = System.Drawing.Color.Transparent;
             this.discountBtn.Image = global::POS.Properties.Resources.discount;
             this.discountBtn.ImageActive = null;
-            this.discountBtn.Location = new System.Drawing.Point(288, 6);
+            this.discountBtn.Location = new System.Drawing.Point(337, 6);
             this.discountBtn.Name = "discountBtn";
             this.discountBtn.Size = new System.Drawing.Size(30, 30);
             this.discountBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.discountBtn.TabIndex = 48;
             this.discountBtn.TabStop = false;
+            this.toolTip1.SetToolTip(this.discountBtn, "Añadir Descuento\r\nAlt + D");
             this.discountBtn.Visible = false;
             this.discountBtn.Zoom = 10;
             this.discountBtn.Click += new System.EventHandler(this.discountBtn_Click);
@@ -1030,6 +1049,15 @@ namespace POS
             this.panel7.Size = new System.Drawing.Size(1367, 1075);
             this.panel7.TabIndex = 46;
             // 
+            // toolTip1
+            // 
+            this.toolTip1.ShowAlways = true;
+            // 
+            // timer1
+            // 
+            this.timer1.Interval = 1500;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // Panel_Ventas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1042,7 +1070,6 @@ namespace POS
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Panel_Ventas";
-            this.ShowInTaskbar = false;
             this.Text = "Venta | Point of Sale";
             this.TransparencyKey = System.Drawing.Color.Olive;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Panel_Ventas_FormClosing);
@@ -1130,7 +1157,6 @@ namespace POS
         private Panel panel2;
         private Bunifu.Framework.UI.BunifuImageButton closeBtn;
         private Button discountList;
-        private Timer timer1;
         private Bunifu.Framework.UI.BunifuElipse bunifuElipse1;
         private Button printTicketBtn;
         private PrintDocument printDocument2;
@@ -1150,5 +1176,6 @@ namespace POS
         private DataGridViewTextBoxColumn Total;
         private DataGridViewComboBoxColumn depot;
         private DataGridViewCheckBoxColumn WholesaleDiscountApplied;
+        private Timer timer1;
     }
 }

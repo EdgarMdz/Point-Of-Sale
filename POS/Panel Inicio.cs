@@ -84,9 +84,8 @@ namespace POS
 
             if (Turno.shiftActive)
                 this.setGroupBoxInfo();
-            if (Turno.shiftActive || new Empleado(this.employeeID).isAdmin)
-                return;
-            this.startNewShift();
+            
+           
 
 
             //<<<step1>>>--Start
@@ -322,10 +321,14 @@ namespace POS
         {
             if (MessageBox.Show("¿Desea hacer el corte de caja?", "Corte de caja", MessageBoxButtons.YesNo) != DialogResult.Yes)
                 return;
+          
             DataTable dt = Turno.endShift(this.employeeID);
+            
             this.printDocument1 = new PrintDocument();
+            
             printDocument1.PrintController = new StandardPrintController();
-            this.printDocument1.PrintPage += (PrintPageEventHandler)((ss, ee) =>
+
+            this.printDocument1.PrintPage += (ss, ee) =>
             {
                 DataRow row = dt.Rows[0];
                 PrinterTicket printerTicket = new PrinterTicket();
@@ -343,7 +346,7 @@ namespace POS
                 }
                 if (printerTicket.headderDisplay)
                 {
-                    Size stringSize =PrinterTicket.getStringSize(printerTicket.header, printerTicket.headerFont);
+                    Size stringSize = PrinterTicket.getStringSize(printerTicket.header, printerTicket.headerFont);
                     graphics.DrawString(printerTicket.header, printerTicket.headerFont, Brushes.Black, (float)((width - stringSize.Width) / 2), (float)y);
                     y += stringSize.Height + 10;
                 }
@@ -369,7 +372,7 @@ namespace POS
                     graphics.DrawString(str4, font3, Brushes.Black, 0.0f, (float)num3);
                     num3 += stringSize4.Height + 2;
                 }
-            });
+            };
             this.endShiftBtn.Hide();
             this.button2.Show();
             DarkForm darkForm = new DarkForm();
@@ -411,52 +414,55 @@ namespace POS
             DarkForm darkForm = new DarkForm();
             Form_Login formLogin = new Form_Login(string.Format("Verificación De\nUsuario"));
             FormShiftAddMoney formShiftAddMoney = new FormShiftAddMoney();
+          
             darkForm.Show();
-            int num1 = (int)formLogin.ShowDialog();
+            formLogin.ShowDialog();
+            
             Empleado empleado = new Empleado(formLogin.ID);
+            
+            
             if (formLogin.DialogResult == DialogResult.OK && empleado.isAdmin)
             {
                 if (formShiftAddMoney.ShowDialog() == DialogResult.OK)
                 {
-                   /* try
-                    {
-                        PrintDocument printDocument = new PrintDocument();
-                        printDocument.PrintController = new StandardPrintController();
-                        printDocument.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
-                        this.printDialog1.Document = printDocument;
-                        printDocument.Print();
-                    }
-                    catch (InvalidPrinterException)
-                    {
-                        int num2 = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-                    }*/
                     //<<< step1 >>> --Start
                     //When outputting to a printer,a mouse cursor becomes like a hourglass.
-            
+
 
                     try
                     {
-                        //Open the device
-                        //Use a Logical Device Name which has been set on the SetupPOS.
-                        m_Drawer.Open();
+                        if (m_Drawer != null)
+                        {
+                            //Open the device
+                            //Use a Logical Device Name which has been set on the SetupPOS.
+                            m_Drawer.Open();
 
-                        //Get the exclusive control right for the opened device.
-                        //Then the device is disable from other application.
-                        m_Drawer.Claim(1000);
+                            //Get the exclusive control right for the opened device.
+                            //Then the device is disable from other application.
+                            m_Drawer.Claim(1000);
 
-                        //Enable the device.
-                        m_Drawer.DeviceEnabled = true;
-                        //Open the drawer by using the "OpenDrawer" method.
-                        m_Drawer.OpenDrawer();
+                            //Enable the device.
+                            m_Drawer.DeviceEnabled = true;
+                            //Open the drawer by using the "OpenDrawer" method.
+                            m_Drawer.OpenDrawer();
 
 
-                        m_Drawer.DeviceEnabled = false;
-                        m_Drawer.Release();
-                        m_Drawer.Close();
+                            m_Drawer.DeviceEnabled = false;
+                            m_Drawer.Release();
+                            m_Drawer.Close();
 
+                        }
+
+                        useDefaultPrinter();
                     }
-                    catch (PosControlException)
+                    catch (Exception)
                     {
+                        if (m_Drawer != null)
+                        {
+                            m_Drawer.Release();
+                            m_Drawer.Close();
+                        }
+                        useDefaultPrinter();
                     }
                     //<<<step1>>>--End
 
@@ -467,9 +473,25 @@ namespace POS
             }
             else if (formLogin.DialogResult == DialogResult.OK && !empleado.isAdmin && formLogin.ID > -1)
             {
-                int num4 = (int)MessageBox.Show("No tiene los permisos necesarios para realizar esta acción");
+                MessageBox.Show("No tiene los permisos necesarios para realizar esta acción");
             }
             darkForm.Close();
+        }
+
+        private void useDefaultPrinter()
+        {
+            try
+            {
+                PrintDocument printDocument = new PrintDocument();
+                printDocument.PrintController = new StandardPrintController();
+                printDocument.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
+                this.printDialog1.Document = printDocument;
+                printDocument.Print();
+            }
+            catch (InvalidPrinterException)
+            {
+                MessageBox.Show("Registre una impresora para poder abrir el cajón automaticamente", "No se ha registrado impresora");
+            }
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)

@@ -44,13 +44,10 @@ namespace POS
             this.addedPiecesLbl = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.quantityLbl = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.productPicture = new System.Windows.Forms.PictureBox();
             this.descriptionLbl = new System.Windows.Forms.Label();
             this.brandLbl = new System.Windows.Forms.Label();
             this.BarcodeLbl = new System.Windows.Forms.Label();
             this.ProductLbl = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.panel2 = new System.Windows.Forms.Panel();
             this.ProductTxt = new Bunifu.Framework.UI.BunifuMaterialTextbox();
@@ -59,23 +56,26 @@ namespace POS
             this.switchDepotsBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.bunifuDragControl1 = new Bunifu.Framework.UI.BunifuDragControl(this.components);
             this.panel3 = new System.Windows.Forms.Panel();
+            this.piecesPerCaseLbl = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.productPicture = new System.Windows.Forms.PictureBox();
             this.costLbl = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.bunifuDragControl2 = new Bunifu.Framework.UI.BunifuDragControl(this.components);
             this.bunifuThinButton21 = new Bunifu.Framework.UI.BunifuThinButton2();
+            this.panel1 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.DonatingDepotCard.SuspendLayout();
             this.ReceiverDepotCard.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.productPicture)).BeginInit();
-            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.switchDepotsBtn)).BeginInit();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.productPicture)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // DonatingDepotCard
@@ -139,6 +139,7 @@ namespace POS
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Century Gothic", 30.25F, System.Drawing.FontStyle.Bold);
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.label2.Location = new System.Drawing.Point(238, 18);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(129, 47);
@@ -192,6 +193,7 @@ namespace POS
             // label1
             // 
             this.label1.Font = new System.Drawing.Font("Century Gothic", 30.25F, System.Drawing.FontStyle.Bold);
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.label1.Location = new System.Drawing.Point(116, 18);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(342, 45);
@@ -210,34 +212,14 @@ namespace POS
             this.quantityLbl.Text = "Cantidad";
             this.quantityLbl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label4
-            // 
-            this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(12, 54);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(148, 74);
-            this.label4.TabIndex = 40;
-            this.label4.Text = "Sin\r\nImagen";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // productPicture
-            // 
-            this.productPicture.BackColor = System.Drawing.Color.Transparent;
-            this.productPicture.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.productPicture.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.productPicture.Location = new System.Drawing.Point(0, 0);
-            this.productPicture.Name = "productPicture";
-            this.productPicture.Size = new System.Drawing.Size(173, 183);
-            this.productPicture.TabIndex = 6;
-            this.productPicture.TabStop = false;
-            // 
             // descriptionLbl
             // 
             this.descriptionLbl.AutoEllipsis = true;
-            this.descriptionLbl.Location = new System.Drawing.Point(3, 21);
+            this.descriptionLbl.Font = new System.Drawing.Font("Century Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.descriptionLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.descriptionLbl.Location = new System.Drawing.Point(219, 9);
             this.descriptionLbl.Name = "descriptionLbl";
-            this.descriptionLbl.Size = new System.Drawing.Size(341, 30);
+            this.descriptionLbl.Size = new System.Drawing.Size(543, 43);
             this.descriptionLbl.TabIndex = 2;
             this.descriptionLbl.Text = "Nombre del Producto";
             // 
@@ -245,9 +227,10 @@ namespace POS
             // 
             this.brandLbl.AutoEllipsis = true;
             this.brandLbl.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.brandLbl.Location = new System.Drawing.Point(3, 64);
+            this.brandLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.brandLbl.Location = new System.Drawing.Point(221, 57);
             this.brandLbl.Name = "brandLbl";
-            this.brandLbl.Size = new System.Drawing.Size(341, 30);
+            this.brandLbl.Size = new System.Drawing.Size(543, 30);
             this.brandLbl.TabIndex = 4;
             this.brandLbl.Text = "Marca";
             // 
@@ -255,9 +238,10 @@ namespace POS
             // 
             this.BarcodeLbl.AutoEllipsis = true;
             this.BarcodeLbl.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BarcodeLbl.Location = new System.Drawing.Point(3, 107);
+            this.BarcodeLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.BarcodeLbl.Location = new System.Drawing.Point(221, 92);
             this.BarcodeLbl.Name = "BarcodeLbl";
-            this.BarcodeLbl.Size = new System.Drawing.Size(341, 30);
+            this.BarcodeLbl.Size = new System.Drawing.Size(543, 30);
             this.BarcodeLbl.TabIndex = 3;
             this.BarcodeLbl.Text = "Código de Barras";
             // 
@@ -275,25 +259,15 @@ namespace POS
             this.ProductLbl.Text = "Buscar:";
             this.ProductLbl.Visible = false;
             // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(237)))), ((int)(((byte)(237)))));
-            this.panel1.Controls.Add(this.closeBtn);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(3, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1434, 30);
-            this.panel1.TabIndex = 1;
-            // 
             // closeBtn
             // 
             this.closeBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.closeBtn.BackColor = System.Drawing.Color.Transparent;
             this.closeBtn.Image = global::POS.Properties.Resources.close;
             this.closeBtn.ImageActive = null;
-            this.closeBtn.Location = new System.Drawing.Point(1396, 3);
+            this.closeBtn.Location = new System.Drawing.Point(1408, 5);
             this.closeBtn.Name = "closeBtn";
-            this.closeBtn.Size = new System.Drawing.Size(25, 25);
+            this.closeBtn.Size = new System.Drawing.Size(20, 20);
             this.closeBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.closeBtn.TabIndex = 2;
             this.closeBtn.TabStop = false;
@@ -317,7 +291,7 @@ namespace POS
             this.ProductTxt.Font = new System.Drawing.Font("Century Gothic", 16.2F);
             this.ProductTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.ProductTxt.HintForeColor = System.Drawing.Color.Empty;
-            this.ProductTxt.HintText = "Buscar productó o código de barras";
+            this.ProductTxt.HintText = "Buscar producto o código de barras";
             this.ProductTxt.isPassword = false;
             this.ProductTxt.LineFocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.ProductTxt.LineIdleColor = System.Drawing.Color.Gray;
@@ -348,7 +322,7 @@ namespace POS
             // 
             // DonatingCombo
             // 
-            this.DonatingCombo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.DonatingCombo.BackColor = System.Drawing.SystemColors.Control;
             this.DonatingCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.DonatingCombo.FormattingEnabled = true;
             this.DonatingCombo.Location = new System.Drawing.Point(782, 442);
@@ -375,12 +349,13 @@ namespace POS
             // 
             this.bunifuDragControl1.Fixed = true;
             this.bunifuDragControl1.Horizontal = true;
-            this.bunifuDragControl1.TargetControl = this;
+            this.bunifuDragControl1.TargetControl = this.panel1;
             this.bunifuDragControl1.Vertical = true;
             // 
             // panel3
             // 
-            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(234)))), ((int)(((byte)(234)))));
+            this.panel3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panel3.Controls.Add(this.piecesPerCaseLbl);
             this.panel3.Controls.Add(this.panel4);
             this.panel3.Controls.Add(this.costLbl);
             this.panel3.Controls.Add(this.BarcodeLbl);
@@ -391,24 +366,58 @@ namespace POS
             this.panel3.Size = new System.Drawing.Size(767, 201);
             this.panel3.TabIndex = 46;
             // 
+            // piecesPerCaseLbl
+            // 
+            this.piecesPerCaseLbl.AutoEllipsis = true;
+            this.piecesPerCaseLbl.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.piecesPerCaseLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.piecesPerCaseLbl.Location = new System.Drawing.Point(221, 162);
+            this.piecesPerCaseLbl.Name = "piecesPerCaseLbl";
+            this.piecesPerCaseLbl.Size = new System.Drawing.Size(543, 30);
+            this.piecesPerCaseLbl.TabIndex = 43;
+            this.piecesPerCaseLbl.Text = "Piezas por caja";
+            // 
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
             this.panel4.Controls.Add(this.label4);
             this.panel4.Controls.Add(this.productPicture);
             this.panel4.ForeColor = System.Drawing.Color.Black;
-            this.panel4.Location = new System.Drawing.Point(584, 9);
+            this.panel4.Location = new System.Drawing.Point(21, 9);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(173, 183);
             this.panel4.TabIndex = 42;
+            // 
+            // label4
+            // 
+            this.label4.BackColor = System.Drawing.Color.Transparent;
+            this.label4.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(12, 54);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(148, 74);
+            this.label4.TabIndex = 40;
+            this.label4.Text = "Sin\r\nImagen";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // productPicture
+            // 
+            this.productPicture.BackColor = System.Drawing.Color.Transparent;
+            this.productPicture.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.productPicture.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.productPicture.Location = new System.Drawing.Point(0, 0);
+            this.productPicture.Name = "productPicture";
+            this.productPicture.Size = new System.Drawing.Size(173, 183);
+            this.productPicture.TabIndex = 6;
+            this.productPicture.TabStop = false;
             // 
             // costLbl
             // 
             this.costLbl.AutoEllipsis = true;
             this.costLbl.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.costLbl.Location = new System.Drawing.Point(3, 150);
+            this.costLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.costLbl.Location = new System.Drawing.Point(221, 127);
             this.costLbl.Name = "costLbl";
-            this.costLbl.Size = new System.Drawing.Size(341, 30);
+            this.costLbl.Size = new System.Drawing.Size(543, 30);
             this.costLbl.TabIndex = 41;
             this.costLbl.Text = "Precio";
             // 
@@ -417,7 +426,7 @@ namespace POS
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.Black;
-            this.label5.Location = new System.Drawing.Point(959, 403);
+            this.label5.Location = new System.Drawing.Point(958, 402);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(234, 30);
             this.label5.TabIndex = 47;
@@ -428,7 +437,7 @@ namespace POS
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.Color.Black;
-            this.label6.Location = new System.Drawing.Point(254, 403);
+            this.label6.Location = new System.Drawing.Point(253, 402);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(203, 30);
             this.label6.TabIndex = 48;
@@ -439,7 +448,7 @@ namespace POS
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.ForeColor = System.Drawing.Color.Black;
-            this.label8.Location = new System.Drawing.Point(602, 765);
+            this.label8.Location = new System.Drawing.Point(601, 764);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(237, 33);
             this.label8.TabIndex = 49;
@@ -457,13 +466,6 @@ namespace POS
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.Enter += new System.EventHandler(this.textBox1_Enter);
             this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
-            // 
-            // bunifuDragControl2
-            // 
-            this.bunifuDragControl2.Fixed = true;
-            this.bunifuDragControl2.Horizontal = true;
-            this.bunifuDragControl2.TargetControl = this.panel1;
-            this.bunifuDragControl2.Vertical = true;
             // 
             // bunifuThinButton21
             // 
@@ -491,12 +493,29 @@ namespace POS
             this.bunifuThinButton21.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bunifuThinButton21.Click += new System.EventHandler(this.AcceptBtn_Click);
             // 
+            // panel1
+            // 
+            this.panel1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel1.BackgroundImage")));
+            this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel1.Controls.Add(this.closeBtn);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.GradientBottomLeft = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.panel1.GradientBottomRight = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.panel1.GradientTopLeft = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.panel1.GradientTopRight = System.Drawing.Color.LightGray;
+            this.panel1.Location = new System.Drawing.Point(2, 2);
+            this.panel1.Name = "panel1";
+            this.panel1.Quality = 10;
+            this.panel1.Size = new System.Drawing.Size(1436, 30);
+            this.panel1.TabIndex = 50;
+            // 
             // Panel_productos_Transferir_Inventario_entre_bodegas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 28F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1440, 970);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.bunifuThinButton21);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label8);
@@ -507,7 +526,6 @@ namespace POS
             this.Controls.Add(this.DonatingCombo);
             this.Controls.Add(this.receiverCombo);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.ReceiverDepotCard);
             this.Controls.Add(this.DonatingDepotCard);
             this.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -516,7 +534,7 @@ namespace POS
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.Name = "Panel_productos_Transferir_Inventario_entre_bodegas";
-            this.Padding = new System.Windows.Forms.Padding(3);
+            this.Padding = new System.Windows.Forms.Padding(2);
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Transferir Productos entre Bodegas | Point of Sale";
@@ -524,14 +542,14 @@ namespace POS
             this.DonatingDepotCard.ResumeLayout(false);
             this.DonatingDepotCard.PerformLayout();
             this.ReceiverDepotCard.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.productPicture)).EndInit();
-            this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.switchDepotsBtn)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.productPicture)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -541,10 +559,8 @@ namespace POS
 
         private Bunifu.Framework.UI.BunifuCards DonatingDepotCard;
         private Bunifu.Framework.UI.BunifuCards ReceiverDepotCard;
-        private System.Windows.Forms.PictureBox productPicture;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label quantityLbl;
         private System.Windows.Forms.Label brandLbl;
         private System.Windows.Forms.Label BarcodeLbl;
@@ -553,7 +569,6 @@ namespace POS
         private System.Windows.Forms.Label boxQuantLbl;
         private System.Windows.Forms.Label pieceQuantLbl;
         private System.Windows.Forms.Label addedPiecesLbl;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private Bunifu.Framework.UI.BunifuMaterialTextbox ProductTxt;
         private System.Windows.Forms.ComboBox receiverCombo;
@@ -569,8 +584,11 @@ namespace POS
         private Label label8;
         private Label label6;
         private Label label5;
-        private Panel panel4;
-        private Bunifu.Framework.UI.BunifuDragControl bunifuDragControl2;
         private Bunifu.Framework.UI.BunifuThinButton2 bunifuThinButton21;
+        private Panel panel4;
+        private Label label4;
+        private PictureBox productPicture;
+        private Label piecesPerCaseLbl;
+        private Bunifu.Framework.UI.BunifuGradientPanel panel1;
     }
 }

@@ -55,11 +55,11 @@ namespace POS
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Century Gothic", 22F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(60, 240);
+            this.label1.Location = new System.Drawing.Point(92, 240);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(274, 37);
+            this.label1.Size = new System.Drawing.Size(109, 37);
             this.label1.TabIndex = 7;
-            this.label1.Text = "Monto a Agregar:";
+            this.label1.Text = "Monto";
             // 
             // bunifuImageButton1
             // 
@@ -78,7 +78,7 @@ namespace POS
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Century Gothic", 22F, System.Drawing.FontStyle.Bold);
-            this.textBox1.Location = new System.Drawing.Point(384, 237);
+            this.textBox1.Location = new System.Drawing.Point(322, 237);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(481, 43);
             this.textBox1.TabIndex = 0;

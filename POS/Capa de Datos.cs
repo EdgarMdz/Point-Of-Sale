@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
-using System.Net.Sockets;
-using System.Xml;
-
 namespace POS
 {
     class Capa_de_Datos
@@ -52,6 +48,24 @@ namespace POS
 
             return dt;
             
+        }
+
+        public DataTable GetSupplierList(string text)
+        {
+            SqlCommand com = new SqlCommand("Supplier_FindSupplierByCoincidence", OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            DataTable dt = new DataTable();
+
+            com.Parameters.AddWithValue("@text", text);
+
+            dt.Load(com.ExecuteReader());
+
+            CloseSqlConnection();
+
+            return dt;
         }
 
         public void addReminder(int SupplierID, DateTime startTime, DateTime endTime, bool[] repetitionDays, string message, bool canDelete)
@@ -174,6 +188,23 @@ namespace POS
             this.CloseSqlConnection();
         }
 
+        public DataTable Sale_getReurnableProducts(int saleID)
+        {
+            DataTable dt = new DataTable();
+            SqlCommand com = new SqlCommand("Sale_getPendingReturnablePackagesfromSale", OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            com.Parameters.AddWithValue("@saleID", saleID);
+
+            dt.Load(com.ExecuteReader());
+
+                CloseSqlConnection();
+
+            return dt;            
+        }
+
         public DataTable getInfoUnfinishedSell(int savedWindowID, int newWindowID)
         {
             SqlCommand com = new SqlCommand("Sale_GetUnfinishedSellInfo", OpenSqlConnection());
@@ -284,7 +315,8 @@ namespace POS
         {
             SqlCommand command = new SqlCommand("[depot_delete]", this.OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout = 180
             };
             command.Parameters.AddWithValue("@depotID", DepotID);
             command.ExecuteNonQuery();
@@ -323,13 +355,26 @@ namespace POS
         {
             SqlCommand command = new SqlCommand("Product_NewDepot", this.OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout =   180
             };
             command.Parameters.AddWithValue("@name", name);
             object obj2 = command.ExecuteScalar();
             int num = Convert.ToInt32((obj2 == DBNull.Value) ? null : obj2);
             this.CloseSqlConnection();
             return num;
+        }
+
+        public void Supplier_delete(int supplierID)
+        {
+            SqlCommand com = new SqlCommand("Supplier_delete", OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            com.Parameters.AddWithValue("@supplierID", supplierID);
+            com.ExecuteNonQuery();
+            CloseSqlConnection();
         }
 
         public void depotScrap(int depotID, int employeeID, string barcode, double quantity)
@@ -731,10 +776,21 @@ namespace POS
             return flag;
         }
 
-        public DataTable fillTable()
+        public DataTable fillTable(int offset, int fetchRows)
         {
             DataTable table = new DataTable();
-            table.Load(new SqlCommand("FillTable", this.OpenSqlConnection()) { CommandType = CommandType.StoredProcedure }.ExecuteReader());
+
+            SqlCommand com = new SqlCommand("FillTable", this.OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
+
+
+            com.Parameters.AddWithValue("@offset", offset);
+            com.Parameters.AddWithValue("@fetch", fetchRows);
+
+            table.Load(com.ExecuteReader());
+
             this.CloseSqlConnection();
             return table;
         }
@@ -1245,7 +1301,8 @@ namespace POS
             DataTable table = new DataTable();
             SqlCommand command = new SqlCommand("Product_BestSellProducts", this.OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout = 180
             };
             command.Parameters.AddWithValue("@date", date);
             command.Parameters.AddWithValue("@timePeriodValue", periodOfTime);
@@ -1645,7 +1702,8 @@ namespace POS
             DataTable table = new DataTable();
             SqlCommand command = new SqlCommand("SearchProductByCoincidence", this.OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout=120
             };
             command.Parameters.AddWithValue("@text", text);
             table.Load(command.ExecuteReader());
@@ -1740,7 +1798,7 @@ namespace POS
             return num;
         }
 
-        public void SupplierAddPODetails(int PO_ID, string barcode, double quantity, double PiecesperCase, double UnitaryCost, double Total)
+        public void SupplierAddPODetails(int PO_ID, string barcode, double quantity, double PiecesperCase, double UnitaryCost, double Total,int destinyDepotID)
         {
             SqlCommand command = new SqlCommand("SupplierGeneratePODetails", this.OpenSqlConnection())
             {
@@ -1752,6 +1810,7 @@ namespace POS
             command.Parameters.AddWithValue("@Pieces", PiecesperCase);
             command.Parameters.AddWithValue("@cost", UnitaryCost);
             command.Parameters.AddWithValue("@total", Total);
+            command.Parameters.AddWithValue("@depotID", destinyDepotID);
             command.ExecuteNonQuery();
             this.CloseSqlConnection();
         }

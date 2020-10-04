@@ -139,8 +139,18 @@ namespace POS
             }
             return dataTable;*/
 
-            return new Capa_de_Negocio().DepotGetInventory();
 
+            var data = new Capa_de_Negocio().DepotGetInventory();
+            var depots = getEveryDepotID();
+
+            for (int i = 4; i < data.Columns.Count; i++)
+            {
+                data.Columns[i].Caption = depots.Dequeue().ToString();
+                data.Columns[i].ReadOnly = false;
+            }
+
+            data.Columns.Remove("stock");
+            return data;
         }
 
         public static DataTable getInventory(string text)
@@ -190,19 +200,26 @@ namespace POS
                 }
             }
             return dataTable;*/
+            var data = new Capa_de_Negocio().DepotGetInventory(text);
+            var depots = getEveryDepotID();
 
-            return new Capa_de_Negocio().DepotGetInventory(text);
+            for (int i = 3; i < data.Columns.Count; i++)
+            {
+                data.Columns[i].Caption = depots.Dequeue().ToString();
+                data.Columns[i].ReadOnly = false;
+            }
+            return data;
         }
 
         public static int newDepot(string name)
         {
             if (!(name != ""))
                 return -1;
-            foreach (DataRow row in (InternalDataCollectionBase)Bodega.GetDepots().Rows)
+            foreach (DataRow row in Bodega.GetDepots().Rows)
             {
                 if (row["Nombre"].ToString().ToLower() == name.ToLower())
                 {
-                    int num = (int)MessageBox.Show("No se creó la bodega.");
+                    MessageBox.Show("No se creó la bodega.");
                     return -1;
                 }
             }

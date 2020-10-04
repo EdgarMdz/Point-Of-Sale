@@ -37,26 +37,38 @@ namespace POS
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (Convert.ToDouble(this.textBox1.Text) <= 0.0)
-                return;
-            this.saveData();
+            try
+            {
+                if (Convert.ToDouble(this.textBox1.Text) == 0.0)
+                    return;
+                this.saveData();
+            }
+            catch(FormatException)
+            {
+                MessageBox.Show("Ingrese un número válido", "Error de Formato");
+            }
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsNumber(e.KeyChar) && !char.IsControl(e.KeyChar) && e.KeyChar != '.')
+            if (!char.IsNumber(e.KeyChar) && !char.IsControl(e.KeyChar) && e.KeyChar != '.' && e.KeyChar != '-')
                 e.Handled = true;
-            if (e.KeyChar != '.' || this.textBox1.Text.IndexOf('.') <= -1)
-                return;
-            e.Handled = true;
+
+            if (e.KeyChar == '.' && this.textBox1.Text.IndexOf('.') > -1)
+                e.Handled = true;
+
+            if (e.KeyChar == '-' && textBox1.Text.IndexOf('-') > -1)
+                e.Handled = true;
         }
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Return)
-                this.saveData();
+                button1_Click(this, null);
+
             if (e.KeyCode != Keys.Escape)
                 return;
+
             if (this.textBox1.Text != "0.00")
             {
                 this.textBox1.Text = "0.00";

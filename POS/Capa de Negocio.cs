@@ -51,6 +51,9 @@ namespace POS
             return queue;
         }
 
+        public DataTable GetSupplierList(string text) => datos.GetSupplierList(text);
+        
+
         public void Depot_Rename(int depotID, string name)
         {
             this.datos.Depot_Rename(depotID, name);
@@ -180,6 +183,8 @@ namespace POS
             this.datos.Employee_UpdateHirementDate(newDate, employeeID);
         }
 
+        public DataTable Sale_getReurnableProducts(int saleID) => datos.Sale_getReurnableProducts(saleID);
+
         public DataTable getInfoUnfinishedSell(int savedWindowID, int newWindowID)
         {
             return datos.getInfoUnfinishedSell(savedWindowID, newWindowID);
@@ -227,9 +232,15 @@ namespace POS
 
         public bool Employee_userNameExist(string user) =>
             this.datos.Employee_userNameExist(user);
-
-        public DataTable fillTable() =>
-            this.datos.fillTable();
+       
+        /// <summary>
+        /// Get list of products
+        /// </summary>
+        /// <param name="offset">amount of rows to offset</param>
+        /// <param name="fetchNext">rows to be fetched after offset</param>
+        /// <returns></returns>
+        public DataTable fillTable(int offset, int fetchNext) =>
+            this.datos.fillTable(offset,fetchNext);
 
         public DataTable FilterSuppliers(string search) =>
             this.datos.filterSuppliers(search);
@@ -353,6 +364,11 @@ namespace POS
         public DataTable Supplier_getProductInfo(int iD, string barcode)
         {
             return datos.Supplier_getProductInfo(iD, barcode);
+        }
+
+        public void Supplier_delete(int supplierID)
+        {
+            datos.Supplier_delete(supplierID);
         }
 
         /// <summary>
@@ -638,9 +654,9 @@ namespace POS
         public int SupplierAdd(string Name, double debt) =>
             this.datos.SupplierAdd(Name, debt);
 
-        public void SupplierAddPODetails(int PO_ID, string barcode, double quantity, double PiecesperCase, double UnitaryCost, double Total)
+        public void SupplierAddPODetails(int PO_ID, string barcode, double quantity, double PiecesperCase, double UnitaryCost, double Total, int destinyDepotID)
         {
-            this.datos.SupplierAddPODetails(PO_ID, barcode, quantity, PiecesperCase, UnitaryCost, Total);
+            this.datos.SupplierAddPODetails(PO_ID, barcode, quantity, PiecesperCase, UnitaryCost, Total,destinyDepotID);
         }
 
         public void SupplierAddProduct(int SupplierID, string Barcode, double PurchasePrice, double pieces)

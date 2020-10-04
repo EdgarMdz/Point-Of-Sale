@@ -31,6 +31,7 @@ namespace POS
         bool settingCurrentRow;
         CashDrawer m_Drawer;
         supplierProductsToolTip tip = new supplierProductsToolTip();
+        private int currentSupplierButon = 0;
 
         private enum Direction
         {
@@ -68,11 +69,19 @@ namespace POS
             this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
 
             SearchSupplierTxt.Focus();
+
+            var comboColumn = dataGridView2.Columns["depot"] as DataGridViewComboBoxColumn;
+
+            comboColumn.DataSource = Bodega.GetDepots();
+            comboColumn.DisplayMember = "Nombre";
+            comboColumn.ValueMember = "ID_Bodega";
+
+            dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 15.75f, FontStyle.Bold);
         }
 
         private void Panel_proveedores_Form_Load(object sender, EventArgs e)
         {
-            this.LoadingSupplierListBar.Location = new System.Drawing.Point(this.SuppliersPanel.Width / 2 - this.LoadingSupplierListBar.Width / 2, this.SuppliersPanel.Height / 2 - this.LoadingSupplierListBar.Height / 2);
+            this.LoadingSupplierListBar.Location = new Point(this.SuppliersPanel.Width / 2 - this.LoadingSupplierListBar.Width / 2, this.SuppliersPanel.Height / 2 - this.LoadingSupplierListBar.Height / 2);
             this.loadSupplierList();
 
             dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 15.75f, FontStyle.Bold);
@@ -106,6 +115,8 @@ namespace POS
                 //Nothing can be used.
             }
             //<<<step1>>>--End
+
+            SearchSupplierTxt.Select();
         }
 
         private void dataGridView1_MouseDown(object sender, MouseEventArgs e)
@@ -129,8 +140,7 @@ namespace POS
             this.LoadingSupplierListBar.Visible = true;
             this.LoadingSupplierListBar.Style = ProgressBarStyle.Marquee;
 
-            this.flow1.Controls.AddRange(await System.Threading.Tasks.Task.Run<Control[]>
-                ((Func<Control[]>)(() => this.PopulateContainer())));
+            this.flow1.Controls.AddRange(await Task.Run(() => this.PopulateContainer()));
 
             await Task.Run(() =>
             {
@@ -176,14 +186,41 @@ namespace POS
         {
             DataTable supplierList = new Proveedor().GetSupplierList();
             Control[] controlArray = new Control[supplierList.Rows.Count];
+
             int index = 0;
+            
             foreach (DataRow row in supplierList.Rows)
             {
                 BunifuImageButton bunifuImageButton = new BunifuImageButton();
                 bunifuImageButton.Name = row[1].ToString() + "," + row[0].ToString();
                 bunifuImageButton.Click += new EventHandler(this.SupplierbuttonClick);
                 bunifuImageButton.Size = new Size(500, 300);
+                bunifuImageButton.Zoom = 0;
 
+                bunifuImageButton.GotFocus += (s, e) =>
+                {
+                    var button = s as BunifuImageButton;
+                    button.Size = new Size(275,165);
+                }; 
+
+                bunifuImageButton.LostFocus += (s, e) =>
+                  {
+                      var button = s as BunifuImageButton;
+                      button.Size = new Size(250, 150);
+                  };
+
+                bunifuImageButton.MouseEnter += (s, e) =>
+                {
+                    var button = s as BunifuImageButton;
+                    button.Size = new Size(275,165);
+                };
+
+
+                bunifuImageButton.MouseLeave += (s, e) =>
+                {
+                    var button = s as BunifuImageButton;
+                    button.Size = new Size(250, 150);
+                };
 
                 bunifuImageButton.Size = new Size(250, 150);
                 bunifuImageButton.Margin = new Padding(this.SuppliersPanel.Width / 6 - bunifuImageButton.Width);
@@ -196,14 +233,78 @@ namespace POS
                 }
                 else
                 {
-                    Image image = (Image)this.createCard(row[0].ToString());
+                    Image image = this.createCard(row[0].ToString());
                     bunifuImageButton.Image = image;
                     image.Save(Directory.GetCurrentDirectory() + @"\Suppliers\" + row[1].ToString() + row[0].ToString() + ".bmp");
                 }
 
 
-                this.AddSupplierToolTip.SetToolTip((Control)bunifuImageButton, row[0].ToString());
-                controlArray[index] = (Control)bunifuImageButton;
+                this.AddSupplierToolTip.SetToolTip(bunifuImageButton, row[0].ToString());
+                controlArray[index] = bunifuImageButton;
+                ++index;
+            }
+            return controlArray;
+        }
+
+        private Control[] PopulateContainer(string search)
+        {
+            DataTable supplierList = Proveedor.GetSupplierList(search);
+            Control[] controlArray = new Control[supplierList.Rows.Count];
+
+            int index = 0;
+
+            foreach (DataRow row in supplierList.Rows)
+            {
+                BunifuImageButton bunifuImageButton = new BunifuImageButton();
+                bunifuImageButton.Name = row[1].ToString() + "," + row[0].ToString();
+                bunifuImageButton.Click += new EventHandler(this.SupplierbuttonClick);
+                bunifuImageButton.Size = new Size(500, 300);
+                bunifuImageButton.Zoom = 0;
+
+                bunifuImageButton.GotFocus += (s, e) =>
+                {
+                    var button = s as BunifuImageButton;
+                    button.Size = new Size(275, 165);
+                };
+
+                bunifuImageButton.LostFocus += (s, e) =>
+                {
+                    var button = s as BunifuImageButton;
+                    button.Size = new Size(250, 150);
+                };
+
+                bunifuImageButton.MouseEnter += (s, e) =>
+                {
+                    var button = s as BunifuImageButton;
+                    button.Size = new Size(275, 165);
+                };
+
+
+                bunifuImageButton.MouseLeave += (s, e) =>
+                {
+                    var button = s as BunifuImageButton;
+                    button.Size = new Size(250, 150);
+                };
+
+                bunifuImageButton.Size = new Size(250, 150);
+                bunifuImageButton.Margin = new Padding(this.SuppliersPanel.Width / 6 - bunifuImageButton.Width);
+                bunifuGradientPanel1.Padding = new Padding(50);
+
+                if (File.Exists(Directory.GetCurrentDirectory() + @"\Suppliers\" + row[1].ToString() + row[0].ToString() + ".bmp"))
+                {
+                    Image image = new Bitmap(Directory.GetCurrentDirectory() + @"\Suppliers\" + row[1].ToString() + row[0].ToString() + ".bmp");
+                    bunifuImageButton.Image = image;
+                }
+                else
+                {
+                    Image image = this.createCard(row[0].ToString());
+                    bunifuImageButton.Image = image;
+                    image.Save(Directory.GetCurrentDirectory() + @"\Suppliers\" + row[1].ToString() + row[0].ToString() + ".bmp");
+                }
+
+
+                this.AddSupplierToolTip.SetToolTip(bunifuImageButton, row[0].ToString());
+                controlArray[index] = bunifuImageButton;
                 ++index;
             }
             return controlArray;
@@ -1401,19 +1502,21 @@ namespace POS
                 AdeudoLbl.Font = PrinterTicket.getFont(AdeudoLbl.Text, AdeudoLbl.Parent.Width - 20,
                 FontStyle.Regular, AdeudoLbl.Font.FontFamily.ToString());
             
-
-
             this.dataGridView1.DataSource = this.proveedor.GetSupplierProductList();
-
+                       
 
             for (int index = 0; index < this.dataGridView1.Columns.Count; ++index)
                 this.OriginalColumnHeaderIndexes.Add(this.dataGridView1.Columns[index].Name.ToString());
             this.ProductTableBtn_Click((object)this, (EventArgs)null);
+            
+            
+            
             this.FilteringTextbox.Text = "";
-
             FilteringTextbox.Select();
+
             //------------------- this.FilterNextPurchaseTxt.Text = "";----------------------------
             this.PrepareNextPurhcase();
+
             this.currentTimeinCalendar = DateTime.Today;
             this.setCalendar(this.currentTimeinCalendar);
             this.selectedDayinCalendar = DateTime.Today;
@@ -1467,34 +1570,8 @@ namespace POS
 
         private void SearchProvider_TextChanged(object sender, EventArgs e)
         {
-            if (this.SearchSupplierTxt.Text != "")
-            {
-                List<string> stringList = new Proveedor().filterSuppliers(this.SearchSupplierTxt.Text);
-                foreach (Control control in this.flow1.Controls)
-                {
-                    if (stringList.Count == 0)
-                    {
-                        control.Visible = false;
-                    }
-                    else
-                    {
-                        foreach (string str in stringList)
-                        {
-                            if (control.Name.ToUpper().IndexOf(str.ToUpper()) >= 1)
-                            {
-                                control.Visible = true;
-                                break;
-                            }
-                            control.Visible = false;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                foreach (Control control in this.flow1.Controls)
-                    control.Visible = true;
-            }
+            if (SearchSupplierTxt.Text.Trim() == "")
+                SearchSupplier();
         }
 
         private void ProductTableBtn_Click(object sender, EventArgs e)
@@ -1527,14 +1604,17 @@ namespace POS
         }
 
         private void showProductInformation()
-        {
-            var table = dataGridView1;
-            Producto product = new Producto(table.SelectedRows[0].Cells["Código de Barras"].Value.ToString());
+        {           
+            Producto product = new Producto(dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString());
+            
             if (!(product.Barcode != ""))
                 return;
+            
             Form_Agregar formAgregar = new Form_Agregar(product);
             DarkForm darkForm = new DarkForm();
+            
             darkForm.Show();
+            
             if (formAgregar.ShowDialog() == DialogResult.OK)
             {
                 product = new Producto(product.Barcode);
@@ -1549,7 +1629,9 @@ namespace POS
 
                 dataGridView1.CurrentRow.Cells["Descripción"].Value = product.Description;
                 dataGridView1.CurrentRow.Cells["Marca"].Value = product.Brand;
-                dataGridView1.CurrentRow.Cells["Precio de Compra"].Value = (product.PurchaseCost / product.PiecesPerCase * Convert.ToDouble(dataGridView1.CurrentRow.Cells["Piezas Por Caja"].Value)).ToString("n2");
+                dataGridView1.CurrentRow.Cells["Precio de Compra"].Value =
+                    (product.PurchaseCost / product.PiecesPerCase * Convert.ToDouble(dataGridView1.CurrentRow.Cells["Piezas Por Caja"].Value)).ToString("n2").Replace(",", "");
+
 
             }
             darkForm.Close();
@@ -1558,26 +1640,8 @@ namespace POS
         private void AddRowBtn_Click(object sender, EventArgs e)
         {
             DarkForm darkForm = new DarkForm();
-            DataTable products = Producto.fillTable();
-            List<string> stringList = new List<string>();
 
-            foreach (DataRow row in ((DataTable)dataGridView1.DataSource).Rows)
-                stringList.Add(row["Código de Barras"].ToString());
-
-            AutoCompleteStringCollection DescriptionCollection = new AutoCompleteStringCollection();
-            AutoCompleteStringCollection barCodeCollection = new AutoCompleteStringCollection();
-
-            foreach (DataRow row in products.Rows)
-            {
-                if (!stringList.Contains(row["Código de Barras"].ToString()))
-                {
-                    DescriptionCollection.Add(row[0].ToString());
-                    barCodeCollection.Add(row[1].ToString());
-                }
-            }
-
-
-            PanelPoveedoresNuevoProducto poveedoresNuevoProducto = new PanelPoveedoresNuevoProducto(this.proveedor.ID, products, barCodeCollection, DescriptionCollection);
+           PanelPoveedoresNuevoProducto poveedoresNuevoProducto = new PanelPoveedoresNuevoProducto(this.proveedor.ID);
             darkForm.Show();
 
             if (poveedoresNuevoProducto.ShowDialog() == DialogResult.OK)
@@ -1621,9 +1685,10 @@ namespace POS
         {
             if (this.dataGridView1.SelectedRows.Count <= 0)
                 return;
+
             DarkForm darkForm = new DarkForm();
             Producto product = new Producto();
-            product.Barcode = this.dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString();
+            product.Barcode = dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString();
             product.SearchProduct();
             product.PurchaseCost = Convert.ToDouble(this.dataGridView1.SelectedRows[0].Cells["Precio de Proveedor"].Value.ToString());
             PanelPoveedoresNuevoProducto poveedoresNuevoProducto = new PanelPoveedoresNuevoProducto(this.proveedor.ID, product, Convert.ToDouble(this.dataGridView1.SelectedRows[0].Cells["Piezas por Caja"].Value));
@@ -1664,16 +1729,18 @@ namespace POS
                 return;
             try
             {
-                this.proveedor.DeleteProduct(this.proveedor.ID, this.dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString());
+                var barcode = dataGridView1.CurrentRow.Cells["Código de Barras"].Value.ToString();
+                var rowIndex = findMatchingProductinNextPurchase(barcode);
 
-                var rowIndex = findMatchingProductinNextPurchase(dataGridView1.CurrentRow.Cells["Código de Barras"].Value.ToString());
+                dataGridView1.Rows.RemoveAt(dataGridView1.CurrentRow.Index);
+                proveedor.DeleteProduct(this.proveedor.ID, barcode);
+
                 if (rowIndex > -1)
                 {
                     dataGridView2.Rows.RemoveAt(rowIndex);
                     this.grandTotalLbl.Text = "Total = $" + calculateNextPurchaseTotal().ToString("n2");
                 }
 
-                dataGridView1.Rows.RemoveAt(dataGridView1.CurrentRow.Index);
 
 
                 //this.dataGridView1.DataSource = this.proveedor.GetSupplierProductList();
@@ -1755,7 +1822,7 @@ namespace POS
                 foreach (DataRow row in proveedor.SupplierGetQuantitiesAndDates().Rows)
                 {
                     double amount = Convert.ToDouble(row["Cantidad"]);
-                    if (amount > 0)
+                    if (amount != 0)
                     {
                         addProductToGridView(new Producto(row["id_producto"].ToString()), amount);
                         total += amount * getcost(row["id_producto"].ToString());
@@ -1821,7 +1888,7 @@ namespace POS
             foreach (DataGridViewRow row in this.dataGridView2.Rows)
             {
 
-                if (Convert.ToDouble(row.Cells["amount"].Value) > 0)
+                if (Convert.ToDouble(row.Cells["amount"].Value) != 0)
                 {
                     num1 = true;
                     break;
@@ -1860,35 +1927,36 @@ namespace POS
                 }
 
 
-                if (newPO.Payment > 0.0)
+                if (newPO.Payment != 0.0)
                 {
                     printAndOpenCashDrawer(newPO.Payment);
-
-                    load.Show();
-                    Recordatorio reminder = new Recordatorio();
-                    reminder.Message = "Llegada de Mercancia. Orden de Compra #" + (object)newPO.PO_ID;
-                    reminder.ID_Supplier = this.proveedor.ID;
-                    DateTime date = new DateTime(newPO.ArrivalDate.Year, newPO.ArrivalDate.Month, newPO.ArrivalDate.Day, 8, 0, 0);
-                    reminder.StartTime = date;
-                    date = date.AddHours(8.0);
-                    reminder.EndTime = date;
-                    reminder.Erasable = true;
-                    reminder.addReminder();
-                    reminder.Message = "Último día de pago para la orden de compra #" + (object)newPO.PO_ID + ". Total = $" + (object)newPO.Total;
-                    date = new DateTime(newPO.PaymentDueDate.Year, newPO.PaymentDueDate.Month, newPO.PaymentDueDate.Day, 8, 0, 0);
-                    reminder.StartTime = date;
-                    reminder.EndTime = date.AddHours(8.0);
-                    reminder.addReminder();
-                    // Action action = (Action)(() => this.createPO_PDFFile(this.proveedor.NombreEmpresa, newPO.PO_ID, newPO.ArrivalDate, newPO.PaymentDueDate, newPO.Total, this.proveedor.promos));
-                    //await Task.Run(action);
-
-                    resetPurchase();
-
-                    this.grandTotalLbl.Text = "Total = $" + calculateNextPurchaseTotal().ToString("n2");
-
-                    this.setReminders(this.selectedDayinCalendar);
-                    this.AdeudoLbl.Text = this.proveedor.Adeudo.ToString("n2");
                 }
+
+                load.Show();
+                Recordatorio reminder = new Recordatorio();
+                reminder.Message = "Llegada de Mercancia. Orden de Compra #" + (object)newPO.PO_ID;
+                reminder.ID_Supplier = this.proveedor.ID;
+                DateTime date = new DateTime(newPO.ArrivalDate.Year, newPO.ArrivalDate.Month, newPO.ArrivalDate.Day, 8, 0, 0);
+                reminder.StartTime = date;
+                date = date.AddHours(8.0);
+                reminder.EndTime = date;
+                reminder.Erasable = true;
+                reminder.addReminder();
+                reminder.Message = "Último día de pago para la orden de compra #" + (object)newPO.PO_ID + ". Total = $" + (object)newPO.Total;
+                date = new DateTime(newPO.PaymentDueDate.Year, newPO.PaymentDueDate.Month, newPO.PaymentDueDate.Day, 8, 0, 0);
+                reminder.StartTime = date;
+                reminder.EndTime = date.AddHours(8.0);
+                reminder.addReminder();
+                // Action action = (Action)(() => this.createPO_PDFFile(this.proveedor.NombreEmpresa, newPO.PO_ID, newPO.ArrivalDate, newPO.PaymentDueDate, newPO.Total, this.proveedor.promos));
+                //await Task.Run(action);
+
+                resetPurchase();
+
+                this.grandTotalLbl.Text = "Total = $" + calculateNextPurchaseTotal().ToString("n2");
+
+                this.setReminders(this.selectedDayinCalendar);
+                this.AdeudoLbl.Text = "$" + this.proveedor.Adeudo.ToString("n2");
+
             }
             load.Close();
             dk.Close();
@@ -1974,7 +2042,7 @@ namespace POS
         {
             foreach (DataGridViewRow row1 in this.dataGridView2.Rows)
             {
-                if (Convert.ToDouble(row1.Cells["amount"].Value) > 0.0)
+                if (Convert.ToDouble(row1.Cells["amount"].Value) != 0.0)
                 {
                     Producto product = new Producto(row1.Cells["barcode"].Value.ToString());
                     DataTable productSupplierInfo = proveedor.getProductInfo(product.Barcode);
@@ -1985,7 +2053,8 @@ namespace POS
                     product.PurchaseCost = UnitaryCost / PiecesPerCase * product.PiecesPerCase;
                     product.UpdateProduct(product.Barcode);
 
-                    this.proveedor.addProductToPO(poID, product, Convert.ToDouble(row1.Cells["amount"].Value.ToString()), PiecesPerCase, UnitaryCost, Convert.ToDouble(row1.Cells["Total"].Value));
+                    this.proveedor.addProductToPO(poID, product, Convert.ToDouble(row1.Cells["amount"].Value.ToString()),
+                        PiecesPerCase, UnitaryCost, Convert.ToDouble(row1.Cells["Total"].Value), Convert.ToInt32(row1.Cells["depot"].Value));
                 }
             }
         }
@@ -2618,20 +2687,28 @@ namespace POS
             {
                 if (this.ProductTxt.Text.IndexOf("*") > -1)
                 {
-                    if (this.ProductTxt.Text.Substring(this.ProductTxt.Text.IndexOf("*") + 1) == ".")
+                    if (this.ProductTxt.Text.Substring(this.ProductTxt.Text.IndexOf("*") + 1) == "."
+                        || ProductTxt.Text.Substring(this.ProductTxt.Text.IndexOf("*") + 1) == "-")
                     {
                         MessageBox.Show("Debe indicar la cantidad a agregar");
                         return;
                     }
+
+
                     if (this.ProductTxt.Text[this.ProductTxt.Text.Length - 1] == '*')
                         this.ProductTxt.Text = this.ProductTxt.Text.Substring(0, this.ProductTxt.Text.LastIndexOf("*") + 1) + "1";
+
                     string text = this.ProductTxt.Text.Substring(this.ProductTxt.Text.IndexOf("*") + 1);
+
                     if (text.IndexOf('.') > -1)
                     {
                         int startIndex = text.IndexOf('.');
                         text = text.Remove(startIndex, 1);
                     }
-                    if (!this.isNumber(text))
+
+
+                    try { Convert.ToDouble(text); }
+                    catch (FormatException)
                     {
                         MessageBox.Show("Sólo se aceptan números decimales después del \"*\"", "Formato no válido");
                         return;
@@ -2816,7 +2893,6 @@ namespace POS
             //if there is not a product like the given one in the table then add a new row
             if (rowIndex == -1)
             {
-                DataGridViewRow dataGridViewRow = new DataGridViewRow();
                 int index = dataGridView2.Rows.Add();
 
                 dataGridView2.Rows[index].Cells["barcode"].Value = p.Barcode;
@@ -2826,6 +2902,8 @@ namespace POS
                 dataGridView2.Rows[index].Cells["Total"].Value = (getcost(p.Barcode) * quantity).ToString("n2");
                 dataGridView2.Rows[index].Cells["piecesPerCase"].Value = proveedor.getProductInfo(p.Barcode).Rows[0]["Piezas Por Caja"];
                 dataGridView2.Rows[index].Cells["amount"].ReadOnly = false;
+                dataGridView2.Rows[index].Cells["Depot"].ReadOnly = false;
+                dataGridView2.Rows[index].Cells["Depot"].Value = p.defaultDepotID;
                 dataGridView2.CurrentCell = dataGridView2.Rows[dataGridView2.RowCount - 1].Cells["description"];
 
 
@@ -2839,6 +2917,24 @@ namespace POS
                 dataGridView2.CurrentCell = dataGridView2.Rows[rowIndex].Cells["description"];
             }
 
+            countTotalofProducts();
+
+        }
+
+        private async void countTotalofProducts()
+        {
+            double total = await Task.Run(() => getnumber(dataGridView2));
+            casescountLbl.Text = "Total de productos: " + total.ToString("n2");
+        }
+        private double getnumber(DataGridView dataGridView)
+        {
+            double x = 0;
+            foreach (DataGridViewRow row in dataGridView.Rows)
+            {
+                x += Convert.ToDouble(row.Cells["amount"].Value);
+                
+            }
+            return x;
         }
 
         private double getcost(string barcode)
@@ -2854,14 +2950,24 @@ namespace POS
         private void ProductTxt_KeyPress(object sender, KeyPressEventArgs e)
         {
             int startIndex = this.ProductTxt.Text.IndexOf('*');
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.' && startIndex > -1) && this.ProductTxt.SelectionStart > startIndex)
+
+            if (!char.IsControl(e.KeyChar) &&
+                !char.IsDigit(e.KeyChar) &&
+                (e.KeyChar != '.' && startIndex > -1) &&
+                (e.KeyChar != '-' && startIndex > -1) &&
+                this.ProductTxt.SelectionStart > startIndex)
                 e.Handled = true;
+
             if (startIndex <= -1)
                 return;
+
             string str = this.ProductTxt.Text.Substring(startIndex);
-            if (e.KeyChar != '.' || str.IndexOf(".") <= -1)
-                return;
-            e.Handled = true;
+
+            if (e.KeyChar == '-' && str.IndexOf("-") > -1)
+                e.Handled = true;
+
+            if (e.KeyChar == '.' && str.IndexOf(".") > -1)
+                e.Handled = true;
         }
 
         private void ProductTxt_KeyUp(object sender, KeyEventArgs e)
@@ -2898,7 +3004,7 @@ namespace POS
                     this.grandTotalLbl.Text = "Total = $" + total.ToString("n2");
                 }
             }
-
+            countTotalofProducts();
             ProductTxt.Focus();
         }
 
@@ -2993,6 +3099,60 @@ namespace POS
             if (keyData == (Keys.Alt | Keys.Left) && SupplierInfromationPanel.Visible)
                 bunifuImageButton1_Click(this, null);
 
+            if (dataGridView2.Visible && dataGridView2.RowCount > 0 && dataGridView2.CurrentRow != null)
+            {
+                if (keyData == (Keys.F3))
+                {
+                    dataGridView2.CurrentCell = dataGridView2.CurrentRow.Cells["depot"];
+                    dataGridView2.BeginEdit(true);
+                }
+
+                if (keyData == (Keys.Delete | Keys.Alt))
+                {
+                    proveedor.SupplierUpdateQuantities(dataGridView2.CurrentRow.Cells["barcode"].Value.ToString(), 0);
+                    dataGridView2.Rows.Remove(dataGridView2.CurrentRow);
+                    countTotalofProducts();
+                    this.grandTotalLbl.Text = "Total = $" + calculateNextPurchaseTotal().ToString("n2");
+                }
+            }
+
+            if (!dataGridView1.Visible && !dataGridView2.Visible)
+            {
+                if (keyData == Keys.Right)
+                {
+                    try
+                    {
+                        flow1.Controls[++currentSupplierButon].Select();
+
+                    }
+                    catch (Exception) 
+                    {
+                        if (flow1.Controls.Count > 0 && currentSupplierButon >= flow1.Controls.Count)
+                        {
+                            currentSupplierButon = 0;
+                            flow1.Controls[currentSupplierButon].Select();
+                        }
+                    }
+                }
+                if (keyData == Keys.Left)
+                {
+                    try
+                    {
+                        flow1.Controls[--currentSupplierButon].Select();
+                    }
+                    catch (Exception)
+                    {
+                        if(flow1.Controls.Count>0 && currentSupplierButon<0)
+                        {
+                            currentSupplierButon = flow1.Controls.Count - 1;
+                            flow1.Controls[currentSupplierButon].Select();
+                        }
+                    }
+                }
+                if (keyData == (Keys.Enter|Keys.Alt) && flow1.Controls.Count > 0)
+                    SupplierbuttonClick(flow1.Controls[currentSupplierButon], null);
+            }
+
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
@@ -3019,15 +3179,20 @@ namespace POS
 
         private void dataGridView1_DataSourceChanged(object sender, EventArgs e)
         {
-            foreach (DataGridViewColumn col in dataGridView1.Columns)
-                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dataGridView1.Columns["Código de Barras"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
         private void dataGridView1_RowHeightChanged(object sender, DataGridViewRowEventArgs e)
         {
-            e.Row.Height += 10;
+            int height = 0;
+            foreach (DataGridViewRow item in dataGridView1.Rows)
+            {
+                if (height < item.Height)
+                    height = item.Height;
+            }
+            dataGridView1.RowTemplate.MinimumHeight = height;
         }
 
         private void proccedPurchaseBtn_Click(object sender, EventArgs e)
@@ -3038,8 +3203,7 @@ namespace POS
 
             foreach (DataGridViewRow row in this.dataGridView2.Rows)
             {
-
-                if (Convert.ToDouble(row.Cells["amount"].Value) > 0)
+                if (Convert.ToDouble(row.Cells["amount"].Value) != 0)
                 {
                     num1 = true;
                     break;
@@ -3047,44 +3211,102 @@ namespace POS
             }
 
             if (!num1)
-
                 MessageBox.Show("Agregue productos para generar la orden de compra");
+
             else
             {
-                if (MessageBox.Show("¿Desea realizar la compra?", "Nueva Compra", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    payPurchase();
-
-                    if (this.FilteringTextbox.Text != "")
-                        this.dataGridView1.DataSource = this.proveedor.SupplierFilterProducts(this.FilteringTextbox.Text);
-                    else
-                        dataGridView1.DataSource = proveedor.GetSupplierProductList();
-                }
+                payPurchase();
             }
         }
 
         void payPurchase()
         {
-            OrdenCompra PO = new OrdenCompra(proveedor.GeneratePO(EmployeeID, DateTime.Now, DateTime.Now, calculateNextPurchaseTotal(), calculateNextPurchaseTotal()))
+            var total = Convert.ToDouble(this.grandTotalLbl.Text.Substring(this.grandTotalLbl.Text.IndexOf("$") + 1));
+            PanelProveedor_GeneratePO newPO = new PanelProveedor_GeneratePO(this.proveedor, this.EmployeeID, total > 0 ? total : 0, 2);
+            DarkForm dk = new DarkForm();
+            dk.Show();
+            if (newPO.ShowDialog() == DialogResult.OK)
             {
-                delivered = true
 
-            };
+                OrdenCompra PO = new OrdenCompra(newPO.PO_ID) { delivered = true };
+
+                addItemsToPurchase(PO.ID);
+                if (newPO.Total != 0)
+                    printAndOpenCashDrawer(PO.pay);
+
+                PO._EmployeeWhoConfirmedThePurchaseID = EmployeeID;
+                PO.updateDeliveryStatus();
+
+                resetPurchase();
+
+                this.grandTotalLbl.Text = "Total = $" + 0.ToString("n2");
 
 
-            addItemsToPurchase(PO.ID);
-            printAndOpenCashDrawer(PO.pay);
-
-            PO._EmployeeWhoConfirmedThePurchaseID = EmployeeID;
-            PO.updateDeliveryStatus();
-
-            resetPurchase();
-
-            this.grandTotalLbl.Text = "Total = $" + 0.ToString("n2");
+                if (this.FilteringTextbox.Text != "")
+                    this.dataGridView1.DataSource = this.proveedor.SupplierFilterProducts(this.FilteringTextbox.Text);
+                else
+                    dataGridView1.DataSource = proveedor.GetSupplierProductList();
+            }
+            dk.Close();
         }
 
-        private void dataGridView1_Scroll(object sender, ScrollEventArgs e)
+        private void SearchSupplierTxt_Leave(object sender, EventArgs e)
         {
+            //SearchSupplierTxt.Select();
+        }
+
+        private void SearchSupplierTxt_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode== Keys.Enter && SearchSupplierTxt.Text.Trim()!="")
+            {
+                SearchSupplier();
+            }
+        }
+
+        private void SearchSupplier()
+        {
+            if (this.SearchSupplierTxt.Text != "")
+            {
+                flow1.Controls.Clear();
+                flow1.Controls.AddRange(PopulateContainer(SearchSupplierTxt.Text));
+                foreach (Control control in this.flow1.Controls)
+                {
+                    new BunifuElipse()
+                    {
+                        ElipseRadius = 20,
+                        TargetControl = control
+                    }.ApplyElipse();
+                }
+            }
+            else
+            {
+                flow1.Controls.Clear();
+                loadSupplierList();
+            }
+            currentSupplierButon = 0;
+        }
+
+        private void bunifuImageButton3_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("¿Desea eliminar el proveedor?. La información relacionada se perderá", "Borrar Proveedor", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                proveedor.Delete();
+                bunifuImageButton1_Click(this, null);
+                flow1.Controls.Clear();
+                loadSupplierList();
+
+            }
+        }
+
+        private void dataGridView2_RowHeightChanged(object sender, DataGridViewRowEventArgs e)
+        {
+            int height = 0;
+            foreach (DataGridViewRow item in dataGridView1.Rows)
+            {
+                if (height < item.Height)
+                    height = item.Height;
+            }
+            dataGridView1.RowTemplate.MinimumHeight = height;
         }
     }
 

@@ -30,56 +30,78 @@ namespace POS
 
         public Form1(int EmployeeID)
         {
-             InitializeComponent();
+            InitializeComponent();
             Turno.SetFirsUsage(DateTime.Now);
             Recordatorio.resetReminders();
-             WindowState = FormWindowState.Maximized;
-             timer();
-             HourLbl.Visible = true;
-             MinutesLbl.Visible = true;
-             Daylbl.Visible = true;
-             DateLbl.Visible = true;
-             employee = new Empleado(EmployeeID);
-             displayHideTabs();
+            WindowState = FormWindowState.Maximized;
+            timer();
+            HourLbl.Visible = true;
+            MinutesLbl.Visible = true;
+            Daylbl.Visible = true;
+            DateLbl.Visible = true;
+            employee = new Empleado(EmployeeID);
+            displayHideTabs();
 
-            Button control =  VentasButton;
-             menu = new ContextMenu();
-             menu.MenuItems.Add(new MenuItem("Abrir en nueva ventana"));
-            control.ContextMenu =  menu;
-            control.ContextMenu.MenuItems[0].Click += (EventHandler)((s, e) =>
-            {
-                if (control.Name == homeBtn.Name)
-                    new Panel_Inicio(time, employee.ID, ContainerPanel.Size, FormWindowState.Maximized).Show();
-                else if (control.Name == VentasButton.Name)
-                {
-                    openNewSaleWindow();
-                }
-                else if (control.Name == ProductsButton.Name)
-                    new Panel_Productos(FormWindowState.Maximized).Show();
-                else if (control.Name == ClientesBtn.Name)
-                    new Panel_Clientes(FormWindowState.Maximized).Show();
-                else if (control.Name == SuppliersBtn.Name)
-                    new Panel_proveedores_Form( employee.ID, FormWindowState.Maximized).Show();
-                else if (control.Name == PurchasesBtn.Name)
-                {
-                    new PanelCompras(employee.ID, FormWindowState.Maximized).Show();
-                }
-                else
-                {
-                    if (!(control.Name == employeeBtn.Name))
-                        return;
-                    new Panel_Empleados(employee.ID, FormWindowState.Maximized).Show();
-                }
-            });
+            menu = new ContextMenu();
+            menu.MenuItems.Add(new MenuItem("Abrir en nueva ventana"));
+            menu.MenuItems[0].Click += new EventHandler(contextMenuClicked);
+
+            VentasButton.ContextMenu = menu;
+            ProductsButton.ContextMenu = menu;
+
+            //ProductsButton.ContextMenu.MenuItems[0].Click += new EventHandler(contextMenuClicked);
+
 
             //checking for unfinished sells
-          /*  DataTable unfinishedSells = Venta.getUnfinishedSalesIDs();
-            foreach (DataRow row in unfinishedSells.Rows)
-            {
-                Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized, row);
-                panel.Show();
-            }*/
+            /*  DataTable unfinishedSells = Venta.getUnfinishedSalesIDs();
+              foreach (DataRow row in unfinishedSells.Rows)
+              {
+                  Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized, row);
+                  panel.Show();
+              }*/
 
+        }
+
+        private void contextMenuClicked(object sender, EventArgs e)
+        {
+            var control = (sender as MenuItem).GetContextMenu().SourceControl;
+
+
+            if (control.Name == homeBtn.Name)
+                new Panel_Inicio(time, employee.ID, ContainerPanel.Size, FormWindowState.Maximized).Show();
+            else if (control.Name == VentasButton.Name)
+            {
+                openNewSaleWindow();
+            }
+            else if (control.Name == ProductsButton.Name)
+                openNewInventoryWindow();
+            else if (control.Name == ClientesBtn.Name)
+                new Panel_Clientes(FormWindowState.Maximized).Show();
+            else if (control.Name == SuppliersBtn.Name)
+                new Panel_proveedores_Form(employee.ID, FormWindowState.Maximized).Show();
+            else if (control.Name == PurchasesBtn.Name)
+            {
+                new PanelCompras(employee.ID, FormWindowState.Maximized).Show();
+            }
+            else
+            {
+                if (!(control.Name == employeeBtn.Name))
+                    return;
+                new Panel_Empleados(employee.ID, FormWindowState.Maximized).Show();
+            }
+        }
+
+        private void openNewInventoryWindow()
+        {
+            try
+            {
+                Panel_Productos panel = new Panel_Productos(FormWindowState.Maximized);
+                Thread thread = new Thread(() => panel.ShowDialog());
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.IsBackground = true;
+                thread.Start();
+            }
+            catch (Exception) { }
         }
 
         private void openNewSaleWindow(DataRow saleInfo = null)

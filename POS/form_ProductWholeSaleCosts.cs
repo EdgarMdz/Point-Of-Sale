@@ -26,13 +26,13 @@ namespace POS
 
         private void bunifuImageButton1_Click(object sender, EventArgs e)
         => this.Close();
-        
+
 
 
         private void AddBtn_Click(object sender, EventArgs e)
         {
             Form_new_wholesale_cost cost = new Form_new_wholesale_cost(barcode);
-            
+
             if (cost.ShowDialog() == DialogResult.OK)
             {
                 FillTable();
@@ -45,6 +45,8 @@ namespace POS
             var product = new Producto(barcode);
             dataGridView1.Columns.Clear();
             dataGridView1.DataSource = product.GetWholesaleCosts();
+            if (dataGridView1.RowCount > 0)
+                dataGridView1.CurrentCell = null;
         }
 
         private void dataGridView1_DataSourceChanged(object sender, EventArgs e)
@@ -81,7 +83,7 @@ namespace POS
 
         private void form_ProductWholeSaleCosts_Load(object sender, EventArgs e)
         => FillTable();
-        
+
 
         private void editCost(int rowIndex)
         {
@@ -92,14 +94,14 @@ namespace POS
             Form_new_wholesale_cost cost = new Form_new_wholesale_cost(barcode, Convert.ToDouble(dataGridView1.Rows[rowIndex].Cells["cantidad"].Value),
                 discount, isbypercenage, Convert.ToInt32(dataGridView1.Rows[rowIndex].Cells["id_cost"].Value));
 
-            this.Hide();
-            if(cost.ShowDialog() == DialogResult.OK)
+
+            if (cost.ShowDialog() == DialogResult.OK)
             {
                 FillTable();
             }
             this.Show();
         }
-    
+
         private void deleteCost(int rowIndex)
         {
             if (MessageBox.Show("¿Desea eliminar el valor seleccionado?", "Borrar precio de Mayoreo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
@@ -113,7 +115,7 @@ namespace POS
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == dataGridView1.Columns["edit"].Index && e.RowIndex>-1)
+            if (e.ColumnIndex == dataGridView1.Columns["edit"].Index && e.RowIndex > -1)
                 editCost(e.RowIndex);
 
             else if (e.ColumnIndex == dataGridView1.Columns["delete"].Index && e.RowIndex > -1)
@@ -139,14 +141,19 @@ namespace POS
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 if (i % 2 == 0)
+                {
                     row.DefaultCellStyle.BackColor = Color.FromArgb(217, 226, 243);
+                    row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(217, 226, 243);
+                }
 
                 else
+                {
                     row.DefaultCellStyle.BackColor = Color.White;
-
+                    row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(217, 226, 243);
+                }
                 i++;
             }
-            
+
         }
     }
 }

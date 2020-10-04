@@ -88,6 +88,7 @@ namespace POS
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.bunifuDragControl1 = new Bunifu.Framework.UI.BunifuDragControl(this.components);
             this.wholesaleCostsBtn = new Bunifu.Framework.UI.BunifuThinButton2();
+            this.bunifuImageButton2 = new Bunifu.Framework.UI.BunifuImageButton();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -103,6 +104,7 @@ namespace POS
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton2)).BeginInit();
             this.SuspendLayout();
             // 
             // label9
@@ -871,6 +873,22 @@ namespace POS
             this.wholesaleCostsBtn.Visible = false;
             this.wholesaleCostsBtn.Click += new System.EventHandler(this.wholesaleCostsBtn_Click);
             // 
+            // bunifuImageButton2
+            // 
+            this.bunifuImageButton2.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.bunifuImageButton2.BackColor = System.Drawing.Color.Transparent;
+            this.bunifuImageButton2.Image = ((System.Drawing.Image)(resources.GetObject("bunifuImageButton2.Image")));
+            this.bunifuImageButton2.ImageActive = null;
+            this.bunifuImageButton2.Location = new System.Drawing.Point(848, 53);
+            this.bunifuImageButton2.Name = "bunifuImageButton2";
+            this.bunifuImageButton2.Size = new System.Drawing.Size(19, 20);
+            this.bunifuImageButton2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.bunifuImageButton2.TabIndex = 53;
+            this.bunifuImageButton2.TabStop = false;
+            this.bunifuImageButton2.Visible = false;
+            this.bunifuImageButton2.Zoom = 10;
+            this.bunifuImageButton2.Click += new System.EventHandler(this.bunifuImageButton2_Click);
+            // 
             // Form_Agregar
             // 
             this.AllowDrop = true;
@@ -878,6 +896,7 @@ namespace POS
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(886, 795);
+            this.Controls.Add(this.bunifuImageButton2);
             this.Controls.Add(this.wholesaleCostsBtn);
             this.Controls.Add(this.bunifuImageButton1);
             this.Controls.Add(this.textBox2);
@@ -942,6 +961,7 @@ namespace POS
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1002,5 +1022,6 @@ namespace POS
         private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton1;
         private Bunifu.Framework.UI.BunifuDragControl bunifuDragControl1;
         private Bunifu.Framework.UI.BunifuThinButton2 wholesaleCostsBtn;
+        private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton2;
     }
 }

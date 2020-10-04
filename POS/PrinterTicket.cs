@@ -25,6 +25,8 @@ namespace POS
         private string _footer;
         private Font _footerFont;
         private bool _footerDisplay;
+        private bool _useMPOS;
+        private int _charactersPerLine;
 
         public string printerName
         {
@@ -154,6 +156,10 @@ namespace POS
             }
         }
 
+        public bool useMPOS { get { return _useMPOS; } }
+
+        public int charactersPerLine { get { return _charactersPerLine; } }
+
         public PrinterTicket()
         {
             this.negocio = new Capa_de_Negocio();
@@ -186,6 +192,15 @@ namespace POS
             this._footer = row["Pie de Página"].ToString();
             this._footerDisplay = Convert.ToBoolean(row["Mostrar Pie de Página"]);
             this._footerFont = new FontConverter().ConvertFromString(row["Fuente para pie de página"].ToString()) as Font;
+
+            var usePOS = row["usar Microsoft POS"].ToString();
+          
+            if (usePOS == "" || usePOS == "0")
+                _useMPOS = false;
+            else
+                _useMPOS = true;
+
+            _charactersPerLine = Convert.ToInt32(row["caracteres por linea"]);
         }
 
         public void saveConfiguration(

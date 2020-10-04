@@ -43,6 +43,9 @@ namespace POS
             this.deleteBtn.Visible = false;
             this.PayBtn.Visible = false;
             this.TotalLbl.Enabled = false;
+
+            dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
         }
 
         private void closeBtn_Click(object sender, EventArgs e)
@@ -87,7 +90,7 @@ namespace POS
                     //Nothing can be used.
                     return;
                 }
-          
+
 
             }
             catch (PosControlException)
@@ -128,7 +131,7 @@ namespace POS
         private BunifuCards[] createCard(DataTable POs)
         {
             List<BunifuCards> bunifuCardsList = new List<BunifuCards>();
-            foreach (DataRow row1 in (InternalDataCollectionBase)POs.Rows)
+            foreach (DataRow row1 in POs.Rows)
             {
                 BunifuCards bunifuCards = new BunifuCards();
                 bunifuCards.Size = new Size(420, 380);
@@ -185,7 +188,7 @@ namespace POS
                 dataGridView.DefaultCellStyle.Font = new Font("Century Gothic", 12f);
                 dataGridView.DefaultCellStyle.ForeColor = Color.Black;
                 dataGridView.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                foreach (DataGridViewColumn column in (BaseCollection)dataGridView.Columns)
+                foreach (DataGridViewColumn column in dataGridView.Columns)
                     column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 DataTable poDetails = OrdenCompra.GetPODetails(Convert.ToInt32(row1["ID_PO"]));
                 for (int index = 0; index < poDetails.Rows.Count; ++index)
@@ -288,7 +291,12 @@ namespace POS
             this.purchaseDateLbl.Text = this.PO.purchaseDate.ToShortDateString();
             this.paymentDateLbl.Text = this.PO.paymentDate.ToShortDateString();
             this.TotalLbl.Text = this.PO.total.ToString("n2");
-            this.dataGridView1.DataSource = (object)this.PO._products.Copy();
+
+            var data=this.PO._products.Copy();
+            data.Columns["cantidad"].ReadOnly = false;
+
+            this.dataGridView1.DataSource = data;
+            
             this.updateValues();
             this.supplier = new Proveedor(this.PO.SupplierID);
             this.POemployeeID = this.PO.EmployeeID;
@@ -296,7 +304,12 @@ namespace POS
             this.POsContainerPanel.Visible = false;
             this.PODescriptionPanel.Visible = true;
             this.PODescriptionPanel.Dock = DockStyle.Fill;
+
             dataGridView1.Focus();
+            this.dataGridView1.CurrentCell = dataGridView1.RowCount > 0 ? dataGridView1.Rows[0].Cells["cantidad"] : null;
+
+            if (dataGridView1.CurrentCell != null)
+                dataGridView1.BeginEdit(true);
         }
 
         private void updateValues()
@@ -359,8 +372,9 @@ namespace POS
         private void dataGridView1_DataSourceChanged(object sender, EventArgs e)
         {
             this.cm = (CurrencyManager)this.BindingContext[this.dataGridView1.DataSource];
+
             int num = 0;
-            foreach (DataGridViewColumn column in (BaseCollection)this.dataGridView1.Columns)
+            foreach (DataGridViewColumn column in this.dataGridView1.Columns)
             {
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 column.HeaderCell.Style.Font = new Font("Century Gothic", 24f, FontStyle.Bold);
@@ -369,19 +383,33 @@ namespace POS
             }
             this.dataGridView1.DefaultCellStyle.Font = new Font("Century Gothic", 16f);
             this.dataGridView1.DefaultCellStyle.ForeColor = Color.Black;
-            if (num < this.dataGridView1.Width)
-                this.dataGridView1.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+            //if (num < this.dataGridView1.Width)
+            this.dataGridView1.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
             if (!this.PO.delivered)
                 return;
+
+
             foreach (DataGridViewBand row in this.dataGridView1.Rows)
                 this.paintRow(row.Index);
-            this.dataGridView1.CurrentCell = (DataGridViewCell)null;
+
+            this.dataGridView1.CurrentCell = null;
+
         }
 
         private void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
-            if (e.ColumnIndex == 2)
+            if (e.ColumnIndex == dataGridView1.Columns["cantidad"].Index)
+            {
+                var cellRect = dataGridView1.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false);
+                toolTip1.Show("Ingrese la cantidad de cajas que se recibieron de este producto.", this, dataGridView1.Location.X + cellRect.X + 10,
+                              dataGridView1.Location.Y + cellRect.Y - 5,
+                              5000);
+                dataGridView1.ShowCellToolTips = true;
                 return;
+
+            }
             e.Cancel = true;
         }
 
@@ -391,6 +419,11 @@ namespace POS
             this.dataGridView1.Rows[e.RowIndex].Cells["Total"].Value = (object)(Convert.ToInt32(this.dataGridView1.Rows[e.RowIndex].Cells["Cantidad"].Value) * Convert.ToInt32(this.dataGridView1.Rows[e.RowIndex].Cells["Precio por Caja"].Value));
             this.paintRow(e.RowIndex);
             this.cm.ResumeBinding();
+
+            try { dataGridView1.CurrentCell = dataGridView1[e.ColumnIndex, e.RowIndex + 1]; }
+            catch { dataGridView1.CurrentCell = dataGridView1[e.ColumnIndex, 0]; }
+
+            toolTip1.Hide(this);
         }
 
         private void calculateTotalAndDebt()
@@ -408,7 +441,7 @@ namespace POS
             this.getCorrespondingIndex(RowIndex);
             try
             {
-                if (Convert.ToInt32(this.PO._products.Rows[RowIndex]["Cantidad"]) > Convert.ToInt32(this.dataGridView1[2, RowIndex].Value))
+                if (Convert.ToDouble(this.PO._products.Rows[RowIndex]["Cantidad"]) > Convert.ToDouble(this.dataGridView1[3, RowIndex].Value))
                     this.dataGridView1.Rows[RowIndex].DefaultCellStyle.ForeColor = Color.Tomato;
                 else
                     this.dataGridView1.Rows[RowIndex].DefaultCellStyle.ForeColor = Color.LimeGreen;
@@ -451,15 +484,15 @@ namespace POS
                     this.dataGridView1.CurrentCell = this.dataGridView1.Rows[selectedCell.RowIndex].Cells[selectedCell.ColumnIndex];
                     this.dataGridView1.Rows[selectedCell.RowIndex].Cells["Total"].Value = (object)(Convert.ToInt32(this.dataGridView1.Rows[selectedCell.RowIndex].Cells["Cantidad"].Value) * Convert.ToInt32(this.dataGridView1.Rows[selectedCell.RowIndex].Cells["Precio por Caja"].Value));
                 }
-                this.cm.ResumeBinding();
+                // this.cm.ResumeBinding();
             }
 
-            if(keyData ==(Keys.Alt | Keys.Left) && PODescriptionPanel.Visible)
+            if (keyData == (Keys.Alt | Keys.Left) && PODescriptionPanel.Visible)
             {
                 goBack();
             }
 
-            if(keyData==(Keys.Alt|Keys.C) && PODescriptionPanel.Visible && ConfirmBtn.Enabled)
+            if (keyData == (Keys.Alt | Keys.C) && PODescriptionPanel.Visible && ConfirmBtn.Enabled)
             {
                 ConfirmBtn_Click(this, null);
             }
@@ -499,7 +532,7 @@ namespace POS
         {
             try
             {
-                Process.Start(@"C:\Users\TIENDA\source\repos\POS\POS\Template\"+ "PO#" + (object)this.PO.ID + ".pdf");
+                Process.Start(@"C:\Users\TIENDA\source\repos\POS\POS\Template\" + "PO#" + (object)this.PO.ID + ".pdf");
             }
             catch (Exception)
             {
@@ -569,7 +602,7 @@ namespace POS
         {
             try
             {
-                if (MessageBox.Show("¿Desea cancelar la orden de compra?.\n Los productos comprados serán descontados del inventario", "Cancelar Compra", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                if (MessageBox.Show("¿Desea cancelar la orden de compra?.\n Los productos comprados serán descontados de su respectiva bodega por defecto.", "Cancelar Compra", MessageBoxButtons.YesNo) != DialogResult.Yes)
                     return;
                 this.PO.delete();
                 this.PopulateLayout(OrdenCompra.getAllPO(DateTime.Now.Date));
@@ -749,11 +782,22 @@ namespace POS
 
         private void dataGridView1_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == dataGridView1.Columns["cantidad"].Index && !PO.delivered)
-                dataGridView1.Cursor = Cursors.IBeam;
-            else
-                dataGridView1.Cursor = Cursors.Arrow;
+            if (dataGridView1.DataSource != null)
+            {
+
+                if (e.ColumnIndex == dataGridView1.Columns["cantidad"].Index && !PO.delivered)
+                    dataGridView1.Cursor = Cursors.IBeam;
+                else
+                    dataGridView1.Cursor = Cursors.Arrow;
+            }
         }
 
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == dataGridView1.Columns["cantidad"].Index)
+            {
+                dataGridView1.BeginEdit(true);
+            }
+        }
     }
 }

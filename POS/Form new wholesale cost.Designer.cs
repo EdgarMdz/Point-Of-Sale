@@ -176,8 +176,9 @@
             this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.Name = "Form_new_wholesale_cost";
             this.Padding = new System.Windows.Forms.Padding(5);
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Form_new_wholesale_cost";
+            this.Text = "Nuevo Precio de Mayoreo | Point of Sale";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form_new_wholesale_cost_Paint);
             this.headerPanel.ResumeLayout(false);
             this.headerPanel.PerformLayout();

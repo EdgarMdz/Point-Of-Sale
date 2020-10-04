@@ -47,7 +47,7 @@ namespace POS
             this.receiverDepot = new Bodega(product.defaultDepotID);
 
             this.setReceiverDepotCard();
-            textBox1.Select();
+            ProductTxt.Select();
         }
 
 
@@ -58,6 +58,7 @@ namespace POS
             this.descriptionLbl.Text = this.product.Description;
             this.brandLbl.Text = this.product.Brand;
             costLbl.Text = "$" + product.RetailCost.ToString("n2");
+            piecesPerCaseLbl.Text = product.PiecesPerCase.ToString() + " piezas por caja";
 
             if (this.product.Image != null)
             {
@@ -119,7 +120,7 @@ namespace POS
                 DataTable table = Producto.SearchValueGetTable(this.ProductTxt.Text);
                 if (table.Rows.Count == 0)
                 {
-                    int num = (int)MessageBox.Show("No se encontró el producto", "Sin coincidencias", MessageBoxButtons.OK);
+                    MessageBox.Show("No se encontró el producto", "Sin coincidencias", MessageBoxButtons.OK);
                 }
                 else if (table.Rows.Count == 1)
                 {
@@ -129,6 +130,7 @@ namespace POS
                         return;
                     this.transferCount = 0;
                     this.setDonatingDepotCard();
+                    textBox1.Select();
                 }
                 else
                 {
@@ -144,6 +146,7 @@ namespace POS
                             this.transferCount = 0;
                             this.setDonatingDepotCard();
                         }
+                        textBox1.Select();
                     }
                     darkForm.Close();
                 }
@@ -182,12 +185,18 @@ namespace POS
             if (this.receiverDepot != null && this.donatingDepot != null)
             {
                 this.transferCount = 0;
+                textBox1.Text = "0.00";
                 this.setDonatingDepotCard();
             }
+
             this.receiverDepot = new Bodega(this.ReceiverDepotIDs[this.receiverCombo.SelectedIndex]);
             this.setReceiverDepotCard();
+
+            var currentDonatingID = donatingDepot != null ? donatingDepot.ID : 0;
+
             this.DonatingCombo.Items.Clear();
             this.DonatingComboDepotsIds = new List<int>();
+            
             for (int index = 0; index < this.receiverCombo.Items.Count; ++index)
             {
                 if (index != this.receiverCombo.SelectedIndex)
@@ -196,17 +205,23 @@ namespace POS
                     this.DonatingComboDepotsIds.Add(this.ReceiverDepotIDs[index]);
                 }
             }
-            this.DonatingCombo.SelectedIndex = 0;
+
+            currentDonatingID = DonatingComboDepotsIds.IndexOf(currentDonatingID);
+            this.DonatingCombo.SelectedIndex = currentDonatingID > -1 ? currentDonatingID : 0;
         }
 
 
         private void ToCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.donatingDepot = new Bodega(this.DonatingComboDepotsIds[this.DonatingCombo.SelectedIndex]);
+
             if (this.donatingDepot == null || this.receiverDepot == null)
                 return;
-            this.transferCount = 0;
-            this.setDonatingDepotCard();
+
+            transferCount = 0;
+            textBox1.Text = "0.00";
+            addedPiecesLbl.Hide();
+            setDonatingDepotCard();
         }
 
 
@@ -223,8 +238,8 @@ namespace POS
         private void setDonatingDepotCard()
         {
             var productQuantity = getCasesAndSingleProducts(product.PiecesPerCase, donatingDepot.getProductQuantity(product.Barcode));
-            boxQuantLbl.Text = productQuantity.Item1.ToString() + " Cajas";
-            pieceQuantLbl.Text = productQuantity.Item2.ToString() + " Piezas";
+            boxQuantLbl.Text = productQuantity.Item1 != 1 ? productQuantity.Item1.ToString() + " Cajas" : productQuantity.Item1.ToString() + " Caja";
+            pieceQuantLbl.Text = productQuantity.Item2 != 1 ? productQuantity.Item2.ToString() + " Piezas" : productQuantity.Item2.ToString() + " Piezas";
             label7.Text = "0 piezas";
             label7.Visible = false;
         }
@@ -240,7 +255,7 @@ namespace POS
         {
             string str = this.receiverCombo.SelectedItem.ToString();
             this.receiverCombo.SelectedItem = this.DonatingCombo.SelectedItem;
-            this.DonatingCombo.SelectedItem = (object)str;
+            this.DonatingCombo.SelectedItem = str;
         }
 
 
@@ -295,6 +310,7 @@ namespace POS
 
                 this.addedPiecesLbl.Visible = true;
                 label7.Visible = true;
+
             }
             catch (FormatException)
             {
@@ -302,7 +318,36 @@ namespace POS
                 addedPiecesLbl.Visible = false;
                 label7.Visible = false;
             }
+
+
+            changeReveivedDepotStock();
+            changeDonatingDepotStock();
         }
+
+        private void changeDonatingDepotStock()
+        {
+            var stock = getCasesAndSingleProducts(product.PiecesPerCase, donatingDepot.getProductQuantity(product.Barcode));
+            var transfer = getCasesAndSingleProducts(product.PiecesPerCase, transferCount);
+
+            var cases = stock.Item1 - transfer.Item1;
+            var pieces = stock.Item2 - transfer.Item2;
+            
+            boxQuantLbl.Text = cases == 1 || cases == -1 ? cases.ToString() + " Caja" : cases.ToString() + " Cajas";
+            pieceQuantLbl.Text = pieces == 1 || pieces == -1 ? pieces.ToString() + " Pieza" : pieces.ToString() + " Piezas";
+        }
+
+        private void changeReveivedDepotStock()
+        {
+            var stock = getCasesAndSingleProducts(product.PiecesPerCase, receiverDepot.getProductQuantity(product.Barcode));
+            var transfer = getCasesAndSingleProducts(product.PiecesPerCase, transferCount);
+
+            var cases = stock.Item1 + transfer.Item1;
+            var pieces = stock.Item2 + transfer.Item2;
+
+            quantityLbl.Text = cases == 1 || cases == -1 ? cases.ToString() + " Caja" : cases.ToString() + " Cajas";
+            quantityPcsLbl.Text = pieces == 1 || pieces == -1 ? pieces.ToString() + " Pieza" : pieces.ToString() + " Piezas";
+        }
+
 
         private void Panel_productos_Transferir_Inventario_entre_bodegas_Paint_1(object sender, PaintEventArgs e)
         {

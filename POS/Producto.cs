@@ -36,6 +36,8 @@ namespace POS
             return new Capa_de_Negocio().product_findSellCaseByMixedProductsGroup(barcode);
         }
 
+            
+
         public bool displayAsKilogram { get; set; }
 
         public bool HideInTicket { get; set; }
@@ -107,9 +109,15 @@ namespace POS
             negocio.Product_addNewWholeSaleCost(amount, discount, isPercentage, Barcode);
         }
 
-        public static DataTable fillTable()
+        /// <summary>
+        /// Get list of products
+        /// </summary>
+        /// <param name="offset">amount of rows to offset</param>
+        /// <param name="fetchRows">rows to be fetched after offset</param>
+        /// <returns></returns>
+        public static DataTable fillTable(int offset=0, int fetchRows=0)
         {
-            return new Capa_de_Negocio().fillTable();
+            return new Capa_de_Negocio().fillTable(offset,fetchRows);
         }
 
         public void addProduct()
@@ -124,7 +132,6 @@ namespace POS
 
         public bool SearchProduct()
         {
-            DataTable dataTable1 = new DataTable();
             DataTable dataTable2 = this.negocio.SearchProduct(this.Barcode);
             if (dataTable2.Rows.Count <= 0)
                 return false;
@@ -156,7 +163,6 @@ namespace POS
 
         public static bool SearchProduct(string Barcode)
         {
-            DataTable dataTable = new DataTable();
             return new Capa_de_Negocio().SearchProduct(Barcode).Rows.Count > 0;
         }
 
@@ -386,7 +392,7 @@ namespace POS
                 else
                 {
                     //in case the given amount fits for case discount return that value
-                    if (PiecesPerCase >= Convert.ToDouble(dt.Rows[discountRowIndex]["cantidad"]))
+                    if (amount >= PiecesPerCase && PiecesPerCase >= Convert.ToDouble(dt.Rows[discountRowIndex]["cantidad"])) 
                         return (RetailCost - CostPerCase / PiecesPerCase) * amount;
 
                     //if not return the corresponding discount

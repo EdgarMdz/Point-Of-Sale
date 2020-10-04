@@ -14,14 +14,17 @@ namespace POS
     {
         int groupID;
         Producto productToBeJoined;
-
+        List<int> groupsAdded;
 
         public form_agregar_venta_surtido(string barcode)
         {
             InitializeComponent();
+            groupsAdded = new List<int>();
             productToBeJoined = new Producto(barcode);
             this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+            dataGridView1.DefaultCellStyle.Font = new Font(dataGridView1.DefaultCellStyle.Font.FontFamily, 12, FontStyle.Bold);
+
             this.Height = panel1.Height + panel2.Height;
             CenterToScreen();
             panel2.Dock = DockStyle.Fill;
@@ -31,12 +34,12 @@ namespace POS
                 lookForAGroup(barcode);
                 showNextPanel();
             }
-       
+
         }
 
         private void searchBtn_Click(object sender, EventArgs e)
         {
-            searchProduct();  
+            searchProduct();
         }
 
         private void searchProduct()
@@ -57,7 +60,7 @@ namespace POS
                 barcodeTxt.SelectAll();
                 return;
             }
-            if (!validateProduct(new Producto( barcodeTxt.Text)))
+            if (!validateProduct(new Producto(barcodeTxt.Text)))
                 return;
 
             lookForAGroup(barcodeTxt.Text);
@@ -125,6 +128,23 @@ namespace POS
             }
         }
 
+        private void lookForAGroup(int groupID)
+        {
+            //if a group was found
+            if (groupID > 0)
+            {
+                DataTable dt = Producto.getMixedSaleGroupInfo(groupID);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    dataGridView1.Rows.Add(row[0], string.Format("{0}, \r\t{1}", row[1], row[2]));
+                }
+
+                groupsAdded.Add(groupID);
+            }
+        }
+
+
         private bool validateProduct(Producto p)
         {
             if (p.CostPerCase != productToBeJoined.CostPerCase)
@@ -156,12 +176,12 @@ namespace POS
         {
             if (dataGridView1.CurrentCell != null && dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells["barcode"].Value.ToString()
                 == productToBeJoined.Barcode)
-            
+
                 if (MessageBox.Show("¿Desea eliminar el producto del grupo?", "", MessageBoxButtons.YesNo) == DialogResult.No)
                     return;
-            if (dataGridView1.CurrentCell!=null)
+            if (dataGridView1.CurrentCell != null)
                 dataGridView1.Rows.RemoveAt(dataGridView1.CurrentCell.RowIndex);
-            
+
         }
 
         private void addBtn_Click(object sender, EventArgs e)
@@ -171,8 +191,9 @@ namespace POS
 
             dk.Show();
 
-            if(addNewProduct.ShowDialog()== DialogResult.OK)
+            if (addNewProduct.ShowDialog() == DialogResult.OK)
             {
+                //looking for repeated products
                 foreach (DataGridViewRow row in dataGridView1.Rows)
                 {
                     if (row.Cells["barcode"].Value.ToString() == addNewProduct.barcode)
@@ -184,10 +205,24 @@ namespace POS
                 }
 
                 Producto p = new Producto(addNewProduct.barcode);
-                if(p.Barcode!="")
+
+                //looking for diffent costs and amounts
+                if (!validateProduct(p))
                 {
-                    dataGridView1.Rows.Add(p.Barcode, string.Format("{0}, \r\n{1}", p.Description, p.Brand));
-                    dataGridView1.CurrentCell = dataGridView1.Rows[dataGridView1.RowCount - 1].Cells[1];
+                    dk.Close();
+                    return;
+                }
+                if (p.Barcode != "")
+                {
+                    if (p.mixedCaseGroup == 0)
+                    {
+                        dataGridView1.Rows.Add(p.Barcode, string.Format("{0}, \r\n{1}", p.Description, p.Brand));
+                        dataGridView1.CurrentCell = dataGridView1.Rows[dataGridView1.RowCount - 1].Cells[1];
+                    }
+                    else
+                    {
+                        lookForAGroup(p.mixedCaseGroup);
+                    }
                 }
             }
             dk.Close();
@@ -198,33 +233,7 @@ namespace POS
             this.Close();
         }
 
-        private void okBtn_Click(object sender, EventArgs e)
-        {
-            if (groupID > 0)
-                if (MessageBox.Show("¿Desea guardar los cambios?", "Guardar Cambios", MessageBoxButtons.YesNo) == DialogResult.No)
-                    return;
 
-            if (dataGridView1.RowCount > 0)
-            {
-                DataTable dt = new DataTable();
-                dt.Columns.Add("barcode");
-                foreach (DataGridViewRow row in dataGridView1.Rows)
-                {
-                    DataRow drow = dt.NewRow();
-                    drow[0] = row.Cells["barcode"].Value.ToString();
-                    dt.Rows.Add(drow);
-                }
-
-
-                if (groupID == 0) 
-                    Producto.createNewGroup(dt);
-                else
-                    Producto.updateGroup(groupID, dt);
-
-                MessageBox.Show("Se realizó con éxito");
-                this.Close();
-            }
-        }
 
         private void barcodeTxt_KeyDown(object sender, KeyEventArgs e)
         {
@@ -245,7 +254,7 @@ namespace POS
 
         private void bunifuImageButton1_Click(object sender, EventArgs e)
         {
-            if(MessageBox.Show("¿Desea eliminar el grupo?", "Borrar grupo", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("¿Desea eliminar el grupo?", "Borrar grupo", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Producto.deleteGroup(groupID);
                 MessageBox.Show("La operación se realizó con éxito");
@@ -265,15 +274,15 @@ namespace POS
         {
             Pen p = new Pen(Brushes.Black, 3);
 
-            e.Graphics.DrawLine(p, 0,0,this.Width,0);//top
+            e.Graphics.DrawLine(p, 0, 0, this.Width, 0);//top
             e.Graphics.DrawLine(p, 0, 0, 0, this.Height);//left
-            e.Graphics.DrawLine(p, this.Width-1, 0, this.Width-1, this.Height);//right
+            e.Graphics.DrawLine(p, this.Width - 1, 0, this.Width - 1, this.Height);//right
             p.Dispose();
         }
 
         private void panel2_Paint(object sender, PaintEventArgs e)
         {
-            
+
             Pen p = new Pen(Brushes.Black, 3);
 
             e.Graphics.DrawLine(p, 0, 0, 0, this.Height);//left
@@ -294,6 +303,76 @@ namespace POS
             e.Graphics.DrawLine(p, this.Width - 1, 0, this.Width - 1, this.Height);//right
             e.Graphics.DrawLine(p, 0, panel3.Height - 1, panel3.Width - 1, panel3.Height - 1);//bottom
             p.Dispose();
+        }
+
+        private void okBtn_Click_1(object sender, EventArgs e)
+        {
+            if (groupID > 0 || groupsAdded.Count > 0)
+                if (MessageBox.Show("¿Desea guardar los cambios?", "Guardar Cambios", MessageBoxButtons.YesNo) == DialogResult.No)
+                    return;
+
+
+            if (dataGridView1.RowCount > 0)
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("barcode");
+
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    DataRow drow = dt.NewRow();
+                    drow[0] = row.Cells["barcode"].Value.ToString();
+                    dt.Rows.Add(drow);
+                    dt.AcceptChanges();
+                }
+
+                checkIfStillAreProductsFromEachGrpup();
+
+
+                groupID = groupsAdded.Count > 0 ? groupsAdded[0] : groupID;
+
+                if (groupID == 0)
+                    Producto.createNewGroup(dt);
+                else
+                {
+                    for (int i = 1; i < groupsAdded.Count; i++)
+                    {
+                        Producto.deleteGroup(groupsAdded[i]);
+                    }
+
+                    Producto.updateGroup(groupID, dt);
+
+                }
+                MessageBox.Show("Se realizó con éxito");
+                this.Close();
+            }
+        }
+
+        private void checkIfStillAreProductsFromEachGrpup()
+        {
+            foreach (int groupID in groupsAdded.ToList())
+            {
+                var dt = Producto.getMixedSaleGroupInfo(groupID);
+
+                bool flag = false;
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    foreach (DataGridViewRow dataGridViewRow in dataGridView1.Rows)
+                    {
+                        if (dataGridViewRow.Cells["barcode"].Value.ToString() == row["id_producto"].ToString())
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+
+                    if (flag)
+                        break;
+                }
+
+                if (!flag)
+                    groupsAdded.Remove(groupID);
+            }
         }
     }
 }

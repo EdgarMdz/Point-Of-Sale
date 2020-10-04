@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace POS
@@ -34,7 +28,7 @@ namespace POS
             this.stockTxt.Enabled = false;
             this.barcodeTxt.Enabled = false;
             this.ShowInTaskbar = false;
-            wholesaleCostsBtn.Show();
+         //   wholesaleCostsBtn.Show();
         }
 
         private void getDepots()
@@ -63,6 +57,7 @@ namespace POS
                 return;
             this.pictureBox1.Image = (Image)new Bitmap(openFileDialog.FileName);
             this.pictureBox1.BorderStyle = BorderStyle.None;
+            bunifuImageButton2.Show();
         }
 
         private void AcceptButton_Click(object sender, EventArgs e)
@@ -72,12 +67,38 @@ namespace POS
                 this.linkedProductBarcodeTxt.LineIdleColor = Color.Red;
                 this.linkedProductBarcodeTxt.HintForeColor = Color.Tomato;
             }
-            else if (this.LinkProductCheckBox.Checked && !Producto.SearchProduct(this.linkedProductBarcodeTxt.Text))
+            else if (LinkProductCheckBox.Checked && !Producto.SearchProduct(this.linkedProductBarcodeTxt.Text))
             {
-                int num = (int)MessageBox.Show("No se encontró el producto producto principal.\nRevise que el código de barras sea correcto");
+                MessageBox.Show("No se encontró el producto producto principal.\nRevise que el código de barras sea correcto");
+            }
+            else if (!checkFieldData())
+            {
+                MessageBox.Show("Revise los costos sean coherentes.\n " +
+                    "•El precio de compra no debe ser mayor al precio por caja\n" +
+                    "•El precio de caja no debe ser mayor al precio de menudeo multiplicado por las piezas por caja.", "Incongruencia de datos", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             else
                 this.AddEditProduct();
+        }
+
+        private bool checkFieldData()
+        {
+            try
+            {
+                var retail = Convert.ToDouble(retailCostTxt.Text);
+                var caseCost = Convert.ToDouble(costbyCaseTxt.Text);
+                var purchase = Convert.ToDouble(PurchaseCostTxt.Text);
+                var pieces = Convert.ToDouble(piecesByCaseTxt.Text);
+
+                if (purchase <= caseCost)
+                {
+                    if (caseCost <= pieces * retail)
+                        return true;
+                }
+            }
+            catch(FormatException){}
+            return false;
+
         }
 
         private void AddEditProduct()
@@ -112,8 +133,6 @@ namespace POS
 
                 if (!Producto.SearchProduct(producto.Barcode) || producto.Barcode == this.barcode)
                 {
-                    ///checking if products per case or cost per case changed to update the mixed case in case of
-                    ///belonging to a group
                     ///
                     int groupID = Producto.findSellingMixedGroup(producto.Barcode);
                     if (groupID > 0)
@@ -229,19 +248,12 @@ namespace POS
                 }
                 catch (Exception ex)
                 {
-                    int num = (int)MessageBox.Show(ex.ToString());
+                    MessageBox.Show(ex.ToString());
                 }
             }
             producto.defaultDepotID = this.depotID[this.comboBox1.SelectedIndex];
         }
 
-        private int EvaluateReader(SqlDataReader reader)
-        {
-            int num = 0;
-            while (!reader.NextResult())
-                ++num;
-            return num;
-        }
 
         private void CodigoBarrasTxt_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -334,7 +346,10 @@ namespace POS
                 this.pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
                 this.pictureBox1.Image = image;
                 this.pictureBox1.BorderStyle = BorderStyle.None;
+                bunifuImageButton2.Show();
             }
+            else
+                bunifuImageButton2.Hide();
             this.editingMode = true;
         }
 
@@ -539,6 +554,10 @@ namespace POS
         private void piecesByCaseTxt_Leave(object sender, EventArgs e)
         {
             this.piecesByCaseLbl.Visible = this.piecesByCaseTxt.Text != "";
+
+            if (piecesByCaseTxt.Text.Trim() == "")
+                piecesByCaseTxt.Text = "1.00";
+
             if (Convert.ToDouble(this.piecesByCaseTxt.Text) == 0.0)
                 this.piecesByCaseTxt.Text = "1.00";
 
@@ -665,19 +684,26 @@ namespace POS
 
         private void wholesaleCostsBtn_Click(object sender, EventArgs e)
         {
-            form_ProductWholeSaleCosts wholeSaleCosts = new form_ProductWholeSaleCosts(barcode);
+         /*   form_ProductWholeSaleCosts wholeSaleCosts = new form_ProductWholeSaleCosts(barcode);
 
             this.Hide();
 
             wholeSaleCosts.ShowDialog();
             this.Show();
 
-
+            */
         }
 
         private void Form_Agregar_FormClosing(object sender, FormClosingEventArgs e)
         {
             pictureBox1.Dispose();
+        }
+
+        private void bunifuImageButton2_Click(object sender, EventArgs e)
+        {
+            pictureBox1.Image = null;
+            pictureBox1.BorderStyle = BorderStyle.FixedSingle;
+            bunifuImageButton2.Hide();
         }
     }
 }
