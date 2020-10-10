@@ -85,6 +85,7 @@ namespace POS
             this.printDocument1 = new System.Drawing.Printing.PrintDocument();
             this.customerPaymentDocument = new System.Drawing.Printing.PrintDocument();
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
+            this.deleteEmployeeBtn = new System.Windows.Forms.Button();
             this.bunifuGradientPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
@@ -148,6 +149,7 @@ namespace POS
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.deleteEmployeeBtn);
             this.panel1.Controls.Add(this.searchBtn);
             this.panel1.Controls.Add(this.employeeListBtn);
             this.panel1.Controls.Add(this.label1);
@@ -730,6 +732,22 @@ namespace POS
             this.bunifuElipse1.ElipseRadius = 55;
             this.bunifuElipse1.TargetControl = this.changePassBtn;
             // 
+            // deleteEmployeeBtn
+            // 
+            this.deleteEmployeeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.deleteEmployeeBtn.FlatAppearance.BorderSize = 0;
+            this.deleteEmployeeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.deleteEmployeeBtn.Font = new System.Drawing.Font("Century Gothic", 17.75F, System.Drawing.FontStyle.Bold);
+            this.deleteEmployeeBtn.ForeColor = System.Drawing.Color.White;
+            this.deleteEmployeeBtn.Location = new System.Drawing.Point(909, 13);
+            this.deleteEmployeeBtn.Name = "deleteEmployeeBtn";
+            this.deleteEmployeeBtn.Size = new System.Drawing.Size(275, 48);
+            this.deleteEmployeeBtn.TabIndex = 5;
+            this.deleteEmployeeBtn.Text = "Borrar Empleado";
+            this.deleteEmployeeBtn.UseVisualStyleBackColor = false;
+            this.deleteEmployeeBtn.Visible = false;
+            this.deleteEmployeeBtn.Click += new System.EventHandler(this.deleteEmployeeBtn_Click);
+            // 
             // Panel_Empleados
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 32F);
@@ -823,5 +841,6 @@ namespace POS
         private System.Windows.Forms.Label debtLbl;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button changePassBtn;
+        private Button deleteEmployeeBtn;
     }
 }

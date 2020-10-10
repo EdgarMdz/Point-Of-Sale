@@ -6,17 +6,17 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
-using System.Diagnostics;
 using Microsoft.PointOfService;
-using System.Windows.Forms.DataVisualization.Charting;
+using LiveCharts;
+using LiveCharts.Definitions.Series;
+using LiveCharts.Wpf;
+using LiveCharts.WinForms;
 
 namespace POS
 {
@@ -25,13 +25,12 @@ namespace POS
         private List<string> OriginalColumnHeaderIndexes;
         private bool showActionPannelForDataGridView;
         private Proveedor proveedor;
-        private DateTime currentTimeinCalendar;
-        private DateTime selectedDayinCalendar;
         private int EmployeeID;
         bool settingCurrentRow;
         CashDrawer m_Drawer;
         supplierProductsToolTip tip = new supplierProductsToolTip();
         private int currentSupplierButon = 0;
+        
 
         private enum Direction
         {
@@ -62,8 +61,9 @@ namespace POS
 
             this.timer = new Timer();
 
-            this.EmployeeID = EmployeeID;
-            this.AddNewCustomerBtn.Visible = new Empleado(EmployeeID).isAdmin;
+            var employee = new Empleado(EmployeeID);
+            this.EmployeeID = employee.ID;
+            this.AddNewCustomerBtn.Visible = employee.isAdmin;
 
             this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
@@ -77,6 +77,11 @@ namespace POS
             comboColumn.ValueMember = "ID_Bodega";
 
             dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 15.75f, FontStyle.Bold);
+
+            purchaseChart = new LiveCharts.WinForms.CartesianChart() { Visible = false };
+            panel2.Controls.Add(purchaseChart);
+            purchaseChart.Visible = true;
+            purchaseChart.Dock = DockStyle.Fill;
         }
 
         private void Panel_proveedores_Form_Load(object sender, EventArgs e)
@@ -233,9 +238,15 @@ namespace POS
                 }
                 else
                 {
-                    Image image = this.createCard(row[0].ToString());
-                    bunifuImageButton.Image = image;
-                    image.Save(Directory.GetCurrentDirectory() + @"\Suppliers\" + row[1].ToString() + row[0].ToString() + ".bmp");
+                    try
+                    {
+                        Image image = this.createCard(row[0].ToString());
+                        bunifuImageButton.Image = image;
+                        image.Save(Directory.GetCurrentDirectory() + @"\Suppliers\" + row[1].ToString() + row[0].ToString() + ".bmp");
+                    }
+                    catch(Exception e)
+                    {
+                    }
                 }
 
 
@@ -728,494 +739,6 @@ namespace POS
             return NextControl.Location.X - num2;
         }
 
-        private void setCalendar(DateTime date)
-        {
-            DateTime dateTime1 = new DateTime(date.Year, date.Month, 1);
-            DateTime dateTime2 = dateTime1;
-            string str = new CultureInfo("es-MX").DateTimeFormat.GetMonthName(date.Month).ToString();
-            this.MonthLabel.Text = str.Substring(0, 1).ToUpper() + str.Substring(1) + " de " + (object)date.Year;
-            if (dateTime1.DayOfWeek != DayOfWeek.Sunday)
-            {
-                dateTime2 = dateTime2.AddDays(-1.0);
-                while (dateTime2.DayOfWeek != DayOfWeek.Sunday)
-                    dateTime2 = dateTime2.AddDays(-1.0);
-            }
-            for (int row = 1; row < 7; ++row)
-            {
-                for (int column = 0; column < 7; ++column)
-                {
-                    this.CalendarPanel.GetControlFromPosition(column, row).Text = dateTime2.Day.ToString();
-                    this.CalendarPanel.GetControlFromPosition(column, row).BackColor = Color.Transparent;
-                    this.CalendarPanel.GetControlFromPosition(column, row).ForeColor = dateTime2.Month == dateTime1.Month ? Color.White : Color.Silver;
-                    if (dateTime2.DayOfYear == DateTime.Now.DayOfYear && dateTime2.Year == DateTime.Now.Year)
-                    {
-                        this.CalendarPanel.GetControlFromPosition(column, row).BackColor = Color.SteelBlue;
-                        this.CalendarPanel.GetControlFromPosition(column, row).ForeColor = Color.White;
-                    }
-                    this.CalendarPanel.GetControlFromPosition(column, row).Paint -= new PaintEventHandler(this.paintButtonBorders);
-                    if (this.selectedDayinCalendar.DayOfYear == dateTime2.DayOfYear && this.selectedDayinCalendar.Year == dateTime2.Year)
-                    {
-                        this.CalendarPanel.GetControlFromPosition(column, row).BackColor = Color.DeepSkyBlue;
-                        this.CalendarPanel.GetControlFromPosition(column, row).Paint += new PaintEventHandler(this.paintButtonBorders);
-                    }
-                    dateTime2 = dateTime2.AddDays(1.0);
-                }
-            }
-        }
-
-        private void paintButtonBorders(object sender, PaintEventArgs e)
-        {
-            Button button = sender as Button;
-            e.Graphics.DrawRectangle(new Pen(Color.BlanchedAlmond)
-            {
-                Width = 3f
-            }, 0, 0, button.Width - 1, button.Height - 1);
-        }
-
-        private void tableLayoutPanel1_CellPaint(object sender, TableLayoutCellPaintEventArgs e)
-        {
-            e.Graphics.DrawRectangle(Pens.Silver, e.CellBounds);
-        }
-
-        private void setAgenda()
-        {
-            int num = 12;
-            DateTime now = DateTime.Now;
-            this.AgendaPanel.Controls.Clear();
-            CultureInfo cultureInfo = new CultureInfo("es-MX");
-            string str = cultureInfo.DateTimeFormat.GetMonthName(now.Month).ToString();
-            this.YearLabel.Text = str.Substring(0, 1).ToUpper() + str.Substring(1) + " de " + now.Year.ToString();
-            this.DayLabel.Text = cultureInfo.DateTimeFormat.GetDayName(now.DayOfWeek).ToString();
-            this.NextDayButton.Location = new Point(this.DayLabel.Location.X + this.DayLabel.Width + 46, this.NextDayButton.Location.Y);
-            this.DayNumberLabel.Text = now.Day.ToString();
-            for (int row = 0; row < this.AgendaPanel.RowStyles.Count; ++row)
-            {
-                Label label1 = new Label();
-                Label label2 = new Label();
-                Panel panel = new Panel();
-                label1.ForeColor = Color.Silver;
-                label1.BackColor = Color.Transparent;
-                label1.Font = new Font("Century Gothic", 12f);
-                label2.Visible = false;
-                label2.ForeColor = Color.FromArgb(0, 130, 170);
-                label2.Font = new Font("Century Gothic", 11f, FontStyle.Bold);
-                panel.BackColor = Color.Transparent;
-                if (row < 12)
-                {
-                    label1.Text = num.ToString() + "a";
-                    label2.Text = num.ToString() + ":00a";
-                }
-                else
-                {
-                    label1.Text = num.ToString() + "p";
-                    label2.Text = num.ToString() + ":00p";
-                }
-                label2.Name = label2.Text + "Lbl";
-                label1.AutoSize = true;
-                label2.AutoSize = true;
-                panel.Controls.Add((Control)label1);
-                panel.Controls.Add((Control)label2);
-                this.AgendaPanel.Controls.Add((Control)panel, 0, row);
-                panel.Dock = DockStyle.Fill;
-                label2.Location = new Point(label2.Parent.Width - label2.Width, 0);
-                ++num;
-                if (num > 12)
-                    num = 1;
-            }
-            for (int row = 0; row < this.AgendaPanel.RowStyles.Count; ++row)
-            {
-                Panel panel = new Panel();
-                BunifuSeparator bunifuSeparator = new BunifuSeparator();
-                TableLayoutPanel table = new TableLayoutPanel();
-                bunifuSeparator.Visible = false;
-                bunifuSeparator.LineColor = Color.FromArgb(0, 130, 170);
-                bunifuSeparator.AutoSize = false;
-                bunifuSeparator.LineThickness = 2;
-                bunifuSeparator.Height = 2;
-                panel.Margin = new Padding(0, 0, 0, 0);
-                panel.Padding = new Padding(0, 0, 0, 0);
-                panel.BackColor = Color.Transparent;
-                table.BackColor = Color.Transparent;
-                table.RowCount = 1;
-                table.ColumnCount = 1;
-                table.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 350f));
-                table.Name = "table" + (object)row;
-                panel.Controls.Add((Control)table);
-                panel.Controls.Add((Control)bunifuSeparator);
-                bunifuSeparator.Location = new Point(0, 0);
-                this.AgendaPanel.Controls.Add((Control)panel, 1, row);
-                panel.Dock = DockStyle.Fill;
-                bunifuSeparator.Width = bunifuSeparator.Parent.Width;
-                table.Width = table.Parent.Width;
-                table.Height = table.Parent.Height;
-                bunifuSeparator.BringToFront();
-                this.AddSupplierToolTip.SetToolTip((Control)table, "Agregar Nuevo Recordatorio");
-                if (new Empleado(this.EmployeeID).isAdmin)
-                    table.MouseDown += (MouseEventHandler)((s, e) =>
-                    {
-                        if (e.Button != MouseButtons.Left)
-                            return;
-                        DarkForm darkForm = new DarkForm();
-                        PanelProveedoresNuevoRecordatorio nuevoRecordatorio = new PanelProveedoresNuevoRecordatorio(this.getColor(this.proveedor.NombreEmpresa), int.Parse(table.Name.Substring(5)), this.proveedor.ID, true, this.selectedDayinCalendar, "Nuevo Recordatorio", true);
-                        darkForm.Show();
-                        if (nuevoRecordatorio.ShowDialog() == DialogResult.OK)
-                            this.AgendaGoToDate(this.selectedDayinCalendar);
-                        darkForm.Close();
-                    });
-            }
-            this.timer.Interval = 1000;
-            this.timer.Tick += new EventHandler(this.MoveTimeLine);
-            this.timer.Enabled = true;
-            timer.Start();
-        }
-
-        private void MoveTimeLine(object sender, EventArgs e)
-        {
-            DateTime now = DateTime.Now;
-            int hour = now.Hour;
-            for (int row = 0; row < this.AgendaPanel.RowCount; ++row)
-            {
-                if (row != hour || !(now.Date == this.selectedDayinCalendar.Date))
-                {
-                    Control controlFromPosition = this.AgendaPanel.GetControlFromPosition(0, row);
-                    if (controlFromPosition == null) return;
-
-                    try
-                    {
-                        foreach (Control control in controlFromPosition.Controls)
-                            control.Visible = control.Name == "";
-                    }
-                    catch (Exception)
-                    {
-                        return;
-                    }
-                }
-            }
-            for (int row = 0; row < this.AgendaPanel.RowCount; ++row)
-            {
-                if (row != hour || !(now.Date == this.selectedDayinCalendar.Date))
-                {
-                    Control controlFromPosition = this.AgendaPanel.GetControlFromPosition(1, row);
-                    try
-                    {
-                        foreach (Control control in controlFromPosition.Controls)
-                        {
-                            if (control.GetType().ToString() == "Bunifu.Framework.UI.BunifuSeparator")
-                                control.Visible = false;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        return;
-                    }
-                }
-            }
-            if (!(now.Date == this.selectedDayinCalendar.Date))
-                return;
-            try
-            {
-                foreach (Control control1 in this.AgendaPanel.GetControlFromPosition(0, hour).Controls)
-                {
-                    if (control1.Name == "")
-                    {
-                        control1.Visible = false;
-                    }
-                    else
-                    {
-                        if (now.Hour > 12)
-                        {
-                            control1.Text = (now.Hour - 12).ToString();
-                            Control control2 = control1;
-                            control2.Text = control2.Text + now.TimeOfDay.ToString().Substring(2, 3) + "p";
-                        }
-                        else
-                            control1.Text = now.TimeOfDay.ToString().Substring(0, 5) + "a";
-                        int num = control1.Parent.Height * now.Minute / 60;
-                        if (num + control1.Height / 2 < control1.Parent.Height && num - control1.Height / 2 > 0)
-                            control1.Location = new Point(control1.Location.X, num - control1.Height / 2);
-                        if (num + control1.Height / 2 > control1.Parent.Height && num - control1.Height / 2 > 0)
-                            control1.Location = new Point(control1.Location.X, control1.Parent.Height - control1.Height);
-                        if (num + control1.Height / 2 < control1.Parent.Height && num - control1.Height / 2 < 0)
-                            control1.Location = new Point(control1.Location.X, 0);
-                        control1.Visible = true;
-                    }
-                }
-                Control controlFromPosition = this.AgendaPanel.GetControlFromPosition(1, hour);
-                foreach (Control control in controlFromPosition.Controls)
-                {
-                    if (!(control.GetType().ToString() != "Bunifu.Framework.UI.BunifuSeparator"))
-                    {
-                        int y = controlFromPosition.Height * now.Minute / 60;
-                        if (y + 2 == controlFromPosition.Height)
-                            y = controlFromPosition.Height - 2;
-                        control.Location = new Point(control.Location.X, y);
-                        control.Visible = true;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        private void AgendaGoToDate(DateTime date)
-        {
-            DateTime now = DateTime.Now;
-            CultureInfo cultureInfo = new CultureInfo("es-MX");
-            string monthName = cultureInfo.DateTimeFormat.GetMonthName(date.Month);
-            this.YearLabel.Text = monthName.Substring(0, 1).ToUpper() + monthName.Substring(1) + " de " + date.Year.ToString();
-            this.DayLabel.Text = cultureInfo.DateTimeFormat.GetDayName(date.DayOfWeek);
-            this.DayNumberLabel.Text = date.Day.ToString();
-            this.DayLabel.Location = new Point((this.NextDayButton.Location.X + this.NextDayButton.Width - this.PreviousDayButton.Location.X) / 2 - this.DayLabel.Width / 2, this.DayLabel.Location.Y);
-            this.DayNumberLabel.Location = new Point((this.NextDayButton.Location.X + this.NextDayButton.Width - this.PreviousDayButton.Location.X) / 2 - this.DayNumberLabel.Width / 2, this.DayNumberLabel.Location.Y);
-            if (date.DayOfYear != now.DayOfYear || date.Year != now.Year)
-            {
-                this.bunifuSeparator1.Visible = false;
-                this.DayLabel.ForeColor = Color.DimGray;
-                this.DayNumberLabel.ForeColor = Color.DimGray;
-                this.TodayBtn.Enabled = true;
-                this.TodayBtn.BackColor = Color.FromArgb(0, 130, 170);
-            }
-            else
-            {
-                this.bunifuSeparator1.Visible = true;
-                this.DayLabel.ForeColor = Color.FromArgb(0, 130, 171);
-                this.DayNumberLabel.ForeColor = Color.FromArgb(0, 130, 171);
-                this.TodayBtn.Enabled = false;
-                this.TodayBtn.BackColor = Color.DimGray;
-            }
-            this.setReminders(date);
-        }
-
-        private void setReminders(DateTime date)
-        {
-            DataTable reminder = new Recordatorio()
-            {
-                ID_Supplier = this.proveedor.ID
-            }.getReminder(date);
-            this.emptyReminders();
-            DataTable dataTable = this.filterReminders(reminder, date);
-            Recordatorio[] r = new Recordatorio[dataTable.Rows.Count];
-            for (int index1 = 0; index1 < dataTable.Rows.Count; ++index1)
-            {
-                r[index1] = new Recordatorio();
-                r[index1].ID_Supplier = this.proveedor.ID;
-                r[index1].ID = int.Parse(dataTable.Rows[index1]["ID_Recordatorio"].ToString());
-                r[index1].Message = dataTable.Rows[index1]["Mensaje"].ToString();
-                r[index1].Erasable = Convert.ToBoolean(dataTable.Rows[index1]["Borrable"].ToString());
-                r[index1].StartTime = Convert.ToDateTime(dataTable.Rows[index1]["Fecha de Inicio"].ToString().Substring(0, 10) + " " + dataTable.Rows[index1]["Hora de Inicio"].ToString());
-                r[index1].EndTime = Convert.ToDateTime(dataTable.Rows[index1]["Fecha de Fin"].ToString().Substring(0, 10) + " " + dataTable.Rows[index1]["Hora de Fin"].ToString());
-                TimeSpan timeSpan = r[index1].EndTime - r[index1].StartTime;
-                r[index1].Duration = timeSpan.Hours;
-                if (timeSpan.Days > 0)
-                    r[index1].Duration = 24;
-                else if (r[index1].EndTime.Minute > 0 && r[index1].EndTime.Minute < 60)
-                    ++r[index1].Duration;
-                else if (timeSpan.Minutes > 0 && timeSpan.Minutes < 60)
-                    ++r[index1].Duration;
-                for (int index2 = 0; index2 < 7; ++index2)
-                    r[index1].RepeatingDays[index2] = dataTable.Rows[index1]["Repetir en Dias"].ToString()[index2] == '1';
-            }
-            dataTable.Dispose();
-            if (r.Length <= 0)
-                return;
-            int[] numArray = new int[r.Length];
-            for (int index = 0; index < numArray.Length; ++index)
-                numArray[index] = 1;
-            bool[,] flagArray = new bool[r.Length, r.Length];
-            for (int index1 = 0; index1 < r.Length; ++index1)
-            {
-                for (int index2 = 0; index2 < r.Length; ++index2)
-                {
-                    if (index2 != index1 && this.isInBetween(r[index1], r[index2]))
-                    {
-                        flagArray[index1, index2] = true;
-                        numArray[index1] = numArray[index1] + 1;
-                    }
-                }
-            }
-            for (int index1 = 0; index1 < r.Length; ++index1)
-            {
-                for (int index2 = 0; index2 < r.Length; ++index2)
-                {
-                    if (flagArray[index1, index2])
-                    {
-                        if (numArray[index1] > numArray[index2])
-                            numArray[index2] = numArray[index1];
-                        else
-                            numArray[index1] = numArray[index2];
-                    }
-                }
-            }
-            for (int index1 = 0; index1 < r.Length; ++index1)
-            {
-                if (r[index1].Duration != 0)
-                {
-                    int num1 = -1;
-                    for (int index2 = 0; index2 < r[index1].Duration; ++index2)
-                    {
-                        Button b = new Button();
-                        b.Name = "Btn" + index1.ToString() + "c" + index2.ToString();
-                        b.Margin = new Padding(0, 0, 0, 0);
-                        b.Padding = new Padding(0, 0, 0, 0);
-                        b.FlatStyle = FlatStyle.Flat;
-                        b.FlatAppearance.BorderSize = 0;
-                        b.BackColor = this.getColor(this.proveedor.NombreEmpresa);
-                        b.Font = new Font("Century Gothic", 16f);
-                        b.ForeColor = Color.Black;
-                        if (r[index1].Message == "")
-                            this.AddSupplierToolTip.SetToolTip((Control)b, "Ver recordatorio");
-                        else
-                            this.AddSupplierToolTip.SetToolTip((Control)b, r[index1].Message);
-                        foreach (Control control in this.AgendaPanel.GetControlFromPosition(1, r[index1].StartTime.Hour + index2).Controls)
-                        {
-                            if (control.GetType().ToString() == "System.Windows.Forms.TableLayoutPanel")
-                            {
-                                int rowNumber = int.Parse((control as TableLayoutPanel).Name.Substring(5));
-                                if ((control as TableLayoutPanel).ColumnCount < numArray[index1])
-                                {
-                                    (control as TableLayoutPanel).RowCount = 1;
-                                    (control as TableLayoutPanel).RowStyles.Add(new RowStyle(SizeType.Absolute, 43f));
-                                    int columnCount = (control as TableLayoutPanel).ColumnCount;
-                                    (control as TableLayoutPanel).ColumnCount = numArray[index1];
-                                    for (int index3 = columnCount - 1; index3 < numArray[index1]; ++index3)
-                                        (control as TableLayoutPanel).ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / (float)numArray[index1]));
-                                }
-                                if (num1 == -1)
-                                {
-                                    for (int column = 0; column < (control as TableLayoutPanel).ColumnCount; ++column)
-                                    {
-                                        if ((control as TableLayoutPanel).GetControlFromPosition(column, 0) == null)
-                                        {
-                                            num1 = column;
-                                            if (this.checkIfRowsBlank(num1, rowNumber, r[index1].Duration))
-                                            {
-                                                (control as TableLayoutPanel).Controls.Add((Control)b, column, 0);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                    (control as TableLayoutPanel).Controls.Add((Control)b, num1, 0);
-                                b.Width = b.Parent.Width;
-                                if (r[index1].Duration == 1)
-                                {
-                                    int num2 = b.Parent.Height * r[index1].StartTime.Minute / 60;
-                                    b.Height = b.Parent.Height - num2;
-                                    b.Height -= b.Parent.Height * r[index1].EndTime.Minute / 60;
-                                    if (num2 == 0)
-                                        b.Dock = DockStyle.Top;
-                                    else
-                                        b.Dock = DockStyle.Bottom;
-                                    if (r[index1].EndTime - r[index1].StartTime > new TimeSpan(1, 0, 0))
-                                    {
-                                        b.Margin = new Padding(0, 1, 1, 0);
-                                        b.Text = r[index1].Message;
-                                        b.ForeColor = Color.Black;
-                                        b.TextAlign = ContentAlignment.TopLeft;
-                                    }
-                                    b.Paint += (PaintEventHandler)((s, e) =>
-                                    {
-                                        Pen pen = new Pen(Color.DarkGray);
-                                        pen.Width = 4f;
-                                        e.Graphics.DrawLine(pen, 0.0f, pen.Width / 2f, (float)b.Width, pen.Width / 2f);
-                                        e.Graphics.DrawLine(pen, pen.Width / 2f, 0.0f, pen.Width / 2f, (float)b.Height);
-                                        e.Graphics.DrawLine(pen, (float)b.Width - pen.Width / 2f, 0.0f, (float)b.Width - pen.Width / 2f, (float)b.Height);
-                                        e.Graphics.DrawLine(pen, 0.0f, (float)b.Height - pen.Width / 2f, (float)b.Width - pen.Width, (float)b.Height - pen.Width / 2f);
-                                    });
-                                }
-                                else if (index2 == 0 && r[index1].Duration > 1)
-                                {
-                                    int y = b.Parent.Height * r[index1].StartTime.Minute / 60;
-                                    b.Height = b.Parent.Height - y;
-                                    b.Location = new Point(b.Location.X, y);
-                                    b.Dock = DockStyle.Bottom;
-                                    b.Margin = new Padding(0, 1, 1, 0);
-                                    b.Text = r[index1].Message;
-                                    b.TextAlign = ContentAlignment.TopLeft;
-                                    if ((int)b.CreateGraphics().MeasureString(b.Text, b.Font).Height + b.Location.Y > b.Height)
-                                        b.Text = "";
-                                    b.Paint += (PaintEventHandler)((s, e) =>
-                                    {
-                                        Pen pen = new Pen(Color.DarkGray);
-                                        pen.Width = 4f;
-                                        e.Graphics.DrawLine(pen, 0.0f, pen.Width / 2f, (float)b.Width, pen.Width / 2f);
-                                        e.Graphics.DrawLine(pen, pen.Width / 2f, 0.0f, pen.Width / 2f, (float)b.Height);
-                                        e.Graphics.DrawLine(pen, (float)b.Width - pen.Width / 2f, 0.0f, (float)b.Width - pen.Width / 2f, (float)b.Height);
-                                    });
-                                }
-                                else if (index2 == r[index1].Duration - 1)
-                                {
-                                    b.Margin = new Padding(0, 0, 1, 1);
-                                    if (r[index1].EndTime.Minute == 0)
-                                        b.Height = b.Parent.Height;
-                                    else
-                                        b.Height = b.Parent.Height * r[index1].EndTime.Minute / 60;
-                                    b.Paint += (PaintEventHandler)((s, e) =>
-                                    {
-                                        Pen pen = new Pen(Color.DarkGray);
-                                        pen.Width = 4f;
-                                        e.Graphics.DrawLine(pen, pen.Width / 2f, 0.0f, pen.Width / 2f, (float)b.Height);
-                                        e.Graphics.DrawLine(pen, (float)b.Width - pen.Width / 2f, 0.0f, (float)b.Width - pen.Width / 2f, (float)b.Height);
-                                        e.Graphics.DrawLine(pen, 0.0f, (float)b.Height - pen.Width / 2f, (float)b.Width - pen.Width, (float)b.Height - pen.Width / 2f);
-                                    });
-                                }
-                                else
-                                {
-                                    if (((this.AgendaPanel.GetControlFromPosition(1, r[index1].StartTime.Hour) as Panel).Controls[1] as TableLayoutPanel).GetControlFromPosition(num1, 0).Text == "" && index2 == 1)
-                                    {
-                                        b.Text = r[index1].Message;
-                                        b.TextAlign = ContentAlignment.TopLeft;
-                                    }
-                                    b.Height = b.Parent.Height;
-                                    b.Margin = new Padding(0, 0, 1, 0);
-                                    b.Paint += (PaintEventHandler)((s, e) =>
-                                    {
-                                        Pen pen = new Pen(Color.DarkGray);
-                                        pen.Width = 4f;
-                                        e.Graphics.DrawLine(pen, pen.Width / 2f, 0.0f, pen.Width / 2f, (float)b.Height);
-                                        e.Graphics.DrawLine(pen, (float)b.Width - pen.Width / 2f, 0.0f, (float)b.Width - pen.Width / 2f, (float)b.Height);
-                                    });
-                                }
-                                b.FlatAppearance.MouseOverBackColor = b.BackColor;
-                                b.FlatAppearance.MouseDownBackColor = b.BackColor;
-                                b.Click += (EventHandler)((s, e) =>
-                                {
-                                    int index = int.Parse(b.Name.Substring(3, b.Name.IndexOf("c") - 3));
-                                    DarkForm darkForm = new DarkForm();
-                                    PanelProveedoresNuevoRecordatorio nuevoRecordatorio = new PanelProveedoresNuevoRecordatorio(this.getColor(this.proveedor.NombreEmpresa), r[index].Erasable, new Empleado(this.EmployeeID).isAdmin, true);
-                                    nuevoRecordatorio.time = r[index].StartTime.Hour;
-                                    DateTime startTime = r[index].StartTime;
-                                    nuevoRecordatorio.HalfHour = startTime.Minute > 0;
-                                    nuevoRecordatorio.SupplierID = this.proveedor.ID;
-                                    nuevoRecordatorio.reminderID = r[index].ID;
-                                    nuevoRecordatorio.date = this.selectedDayinCalendar;
-                                    nuevoRecordatorio.headerTitle = "Modificar Recordatorio";
-                                    nuevoRecordatorio.eventName = r[index].Message;
-                                    nuevoRecordatorio.endtime = r[index].EndTime.Hour;
-                                    nuevoRecordatorio.endDate = r[index].EndTime;
-                                    DateTime endTime = r[index].EndTime;
-                                    nuevoRecordatorio.EndTimeHalfHour = endTime.Minute > 0;
-                                    nuevoRecordatorio.repetingDays = r[index].RepeatingDays;
-                                    darkForm.Show();
-                                    if (nuevoRecordatorio.ShowDialog() == DialogResult.OK)
-                                    {
-                                        this.AgendaGoToDate(this.selectedDayinCalendar);
-                                        if (!r[index].Erasable)
-                                        {
-                                            this.proveedor.diasVisita = nuevoRecordatorio.repetingDays;
-                                            this.displayVisitingDays();
-                                        }
-                                    }
-                                    darkForm.Close();
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         private DataTable filterReminders(DataTable reminderList, DateTime date)
         {
@@ -1332,55 +855,6 @@ namespace POS
                 _event["Fecha de Fin"] = (object)dateTime2;
         }
 
-        private void emptyReminders()
-        {
-            for (int row = 0; row < this.AgendaPanel.RowCount; ++row)
-            {
-                foreach (Control control in this.AgendaPanel.GetControlFromPosition(1, row).Controls)
-                {
-                    if (control.GetType().ToString() == "System.Windows.Forms.TableLayoutPanel")
-                    {
-                        (control as TableLayoutPanel).Controls.Clear();
-                        (control as TableLayoutPanel).ColumnCount = 1;
-                        (control as TableLayoutPanel).ColumnStyles.Clear();
-                        (control as TableLayoutPanel).RowStyles.Clear();
-                    }
-                }
-            }
-        }
-
-        private bool checkIfRowsBlank(int selectedColumn, int rowNumber, int eventDuration)
-        {
-            if (eventDuration > 24)
-                eventDuration = 24;
-            for (int row = rowNumber; row < rowNumber + eventDuration; ++row)
-            {
-                foreach (Control control in (this.AgendaPanel.GetControlFromPosition(1, row) as Panel).Controls)
-                {
-                    if (control.GetType().ToString() == "System.Windows.Forms.TableLayoutPanel" && (control as TableLayoutPanel).GetControlFromPosition(selectedColumn, 0) != null)
-                        return false;
-                }
-            }
-            return true;
-        }
-
-        private bool isInBetween(Recordatorio reminder, Recordatorio nextReminder)
-        {
-            return reminder.StartTime <= nextReminder.StartTime && reminder.EndTime > nextReminder.StartTime || nextReminder.StartTime <= reminder.StartTime && nextReminder.EndTime > reminder.StartTime || (reminder.StartTime == nextReminder.EndTime || nextReminder.StartTime == reminder.EndTime);
-        }
-
-        private void PreviousMonthButton_Click(object sender, EventArgs e)
-        {
-            this.currentTimeinCalendar = this.currentTimeinCalendar.AddMonths(-1);
-            this.setCalendar(this.currentTimeinCalendar);
-        }
-
-        private void NextMonthButton_Click(object sender, EventArgs e)
-        {
-            this.currentTimeinCalendar = this.currentTimeinCalendar.AddMonths(1);
-            this.setCalendar(this.currentTimeinCalendar);
-        }
-
         private void displayVisitingDays()
         {
             if (this.proveedor.diasVisita[0])
@@ -1416,7 +890,6 @@ namespace POS
         private void UpdateVisitingDays()
         {
             this.proveedor.UpdateVisitingDays();
-            this.setReminders(this.selectedDayinCalendar);
         }
 
         private void companyNameTxt_KeyDown(object sender, KeyEventArgs e)
@@ -1517,11 +990,17 @@ namespace POS
             //------------------- this.FilterNextPurchaseTxt.Text = "";----------------------------
             this.PrepareNextPurhcase();
 
-            this.currentTimeinCalendar = DateTime.Today;
-            this.setCalendar(this.currentTimeinCalendar);
-            this.selectedDayinCalendar = DateTime.Today;
-            this.setAgenda();
-            this.setReminders(DateTime.Now);
+
+            comboBox1.SelectedIndex = 1;
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
+            
+
+            dateTimePicker1.Value = DateTime.Today;
+
+
+
+
+            
             this.setPanelWidth(this.BasicSupplierInformationPanel, this.BasicInformationCard, 0.26);
             this.setPanelWidth(this.VisitingDaysPanel, this.BasicInformationCard, 0.25);
             this.setPanelWidth(this.DebtPannel, this.BasicInformationCard, 0.24);
@@ -1562,10 +1041,11 @@ namespace POS
             this.companyAddressTxt.Enabled = false;
             this.phoneNumberTxt.Enabled = false;
             this.ProductTableBtn.Enabled = false;
-            this.AddNewReminderBtn.Visible = false;
+            AlarmsBtn.Enabled = false;
             this.POBtn.Visible = false;
             this.label6.Hide();
             this.AdeudoLbl.Hide();
+            deleteSupplierBtn.Hide();
         }
 
         private void SearchProvider_TextChanged(object sender, EventArgs e)
@@ -1933,28 +1413,10 @@ namespace POS
                 }
 
                 load.Show();
-                Recordatorio reminder = new Recordatorio();
-                reminder.Message = "Llegada de Mercancia. Orden de Compra #" + (object)newPO.PO_ID;
-                reminder.ID_Supplier = this.proveedor.ID;
-                DateTime date = new DateTime(newPO.ArrivalDate.Year, newPO.ArrivalDate.Month, newPO.ArrivalDate.Day, 8, 0, 0);
-                reminder.StartTime = date;
-                date = date.AddHours(8.0);
-                reminder.EndTime = date;
-                reminder.Erasable = true;
-                reminder.addReminder();
-                reminder.Message = "Último día de pago para la orden de compra #" + (object)newPO.PO_ID + ". Total = $" + (object)newPO.Total;
-                date = new DateTime(newPO.PaymentDueDate.Year, newPO.PaymentDueDate.Month, newPO.PaymentDueDate.Day, 8, 0, 0);
-                reminder.StartTime = date;
-                reminder.EndTime = date.AddHours(8.0);
-                reminder.addReminder();
-                // Action action = (Action)(() => this.createPO_PDFFile(this.proveedor.NombreEmpresa, newPO.PO_ID, newPO.ArrivalDate, newPO.PaymentDueDate, newPO.Total, this.proveedor.promos));
-                //await Task.Run(action);
-
                 resetPurchase();
 
                 this.grandTotalLbl.Text = "Total = $" + calculateNextPurchaseTotal().ToString("n2");
 
-                this.setReminders(this.selectedDayinCalendar);
                 this.AdeudoLbl.Text = "$" + this.proveedor.Adeudo.ToString("n2");
 
             }
@@ -1970,6 +1432,7 @@ namespace POS
             }
 
             dataGridView2.Rows.Clear();
+            countTotalofProducts();
         }
 
         private void printAndOpenCashDrawer(double payment)
@@ -2001,40 +1464,29 @@ namespace POS
                 }
                 catch (Exception)
                 {
-                    try
-                    {
-                        PrintDialog printDialog = new PrintDialog();
-                        PrintDocument printDocument = new PrintDocument() { PrintController = new StandardPrintController() };
-                        printDialog.PrinterSettings.PrinterName = new PrinterTicket().printerName;
-                        printDocument.PrinterSettings.PrinterName = printDialog.PrinterSettings.PrinterName;
-                        printDialog.Document = printDocument;
-                        printDocument.Print();
-
-                    }
-                    catch (InvalidPrinterException)
-                    {
-                        MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-                    }
+                    useNativePrinter();
                     //<<<step1>>>--End
                 }
             }
             else
+                useNativePrinter();
+        }
+
+        private void useNativePrinter()
+        {
+            try
             {
-                try
-                {
-                    PrintDialog printDialog = new PrintDialog();
-                    PrintDocument printDocument = new PrintDocument() { PrintController = new StandardPrintController() };
-                    printDialog.PrinterSettings.PrinterName = new PrinterTicket().printerName;
-                    printDocument.PrinterSettings.PrinterName = printDialog.PrinterSettings.PrinterName;
-                    printDialog.Document = printDocument;
-                    printDocument.Print();
 
-                }
-                catch (InvalidPrinterException)
-                {
-                    MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-                }
+                var printDialog = new PrintDialog();               
+                var printDocument = new PrintDocument() { PrintController = new StandardPrintController()};
+                printDialog.PrinterSettings.PrinterName = new PrinterTicket().printerName;
+                printDialog.Document = printDocument;
 
+                printDocument.Print();
+            }
+            catch (InvalidPrinterException)
+            {
+                MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
             }
         }
 
@@ -2402,7 +1854,6 @@ namespace POS
             this.SuppliersPanel.Dock = DockStyle.Fill;
             this.SuppliersPanel.Show();
             this.SupplierInfromationPanel.Dock = DockStyle.None;
-            this.goTOToday();
             this.timer.Stop();
             this.timer.Dispose();
             FilteringTextbox.Text = "";
@@ -2416,88 +1867,9 @@ namespace POS
             e.Handled = true;
         }
 
-        private void DayButtons_Click(object sender, EventArgs e)
-        {
-            Button button = sender as Button;
-            int year = int.Parse(this.MonthLabel.Text.Substring(this.MonthLabel.Text.Length - 4));
-            int month = -1;
-            switch (this.MonthLabel.Text.Substring(0, this.MonthLabel.Text.IndexOf(" ")))
-            {
-                case "Enero":
-                    month = 1;
-                    break;
-                case "Febrero":
-                    month = 2;
-                    break;
-                case "Marzo":
-                    month = 3;
-                    break;
-                case "Abril":
-                    month = 4;
-                    break;
-                case "Mayo":
-                    month = 5;
-                    break;
-                case "Junio":
-                    month = 6;
-                    break;
-                case "Julio":
-                    month = 7;
-                    break;
-                case "Agosto":
-                    month = 8;
-                    break;
-                case "Septiembre":
-                    month = 9;
-                    break;
-                case "Octubre":
-                    month = 10;
-                    break;
-                case "Noviembre":
-                    month = 11;
-                    break;
-                case "Diciembre":
-                    month = 12;
-                    break;
-            }
-            int day = int.Parse(button.Text);
-            if (button.ForeColor == Color.Silver && button.Name[3] == '0')
-            {
-                --month;
-                if (month == 0)
-                {
-                    --year;
-                    month = 12;
-                }
-            }
-            if (button.ForeColor == Color.Silver && button.Name[3] == '4' || button.Name[3] == '5')
-            {
-                ++month;
-                if (month == 13)
-                {
-                    ++year;
-                    month = 1;
-                }
-            }
-            this.selectedDayinCalendar = new DateTime(year, month, day);
-            this.AgendaGoToDate(this.selectedDayinCalendar);
-            this.setCalendar(this.selectedDayinCalendar);
-        }
+     
 
-        private void AddNewReminderBtn_Click(object sender, EventArgs e)
-        {
-            if (new PanelProveedoresNuevoRecordatorio(this.getColor(this.proveedor.NombreEmpresa), 0, this.proveedor.ID, true, this.selectedDayinCalendar, "Nuevo Recordatorio", true).ShowDialog() != DialogResult.OK)
-                return;
-            this.setReminders(this.selectedDayinCalendar);
-        }
-
-        private void AddEventToAgenda(DateTime EventTime)
-        {
-            TimeSpan timeOfDay = EventTime.TimeOfDay;
-            int day = EventTime.Day;
-            int month = EventTime.Month;
-        }
-
+    
         private void centerControlInTablePanel(Control l)
         {
             l.Anchor = AnchorStyles.Left | AnchorStyles.Right;
@@ -2508,35 +1880,6 @@ namespace POS
             l.Anchor = AnchorStyles.None;
         }
 
-        private void NextDayButton_Click(object sender, EventArgs e)
-        {
-            this.selectedDayinCalendar = this.selectedDayinCalendar.AddDays(1.0);
-            if (this.currentTimeinCalendar.Month != this.selectedDayinCalendar.Month)
-                this.currentTimeinCalendar = this.selectedDayinCalendar;
-            this.AgendaGoToDate(this.selectedDayinCalendar);
-            this.setCalendar(this.selectedDayinCalendar);
-        }
-
-        private void PreviousDayButton_Click(object sender, EventArgs e)
-        {
-            this.selectedDayinCalendar = this.selectedDayinCalendar.AddDays(-1.0);
-            if (this.currentTimeinCalendar.Month != this.selectedDayinCalendar.Month)
-                this.currentTimeinCalendar = this.selectedDayinCalendar;
-            this.AgendaGoToDate(this.selectedDayinCalendar);
-            this.setCalendar(this.selectedDayinCalendar);
-        }
-
-        private void TodayBtn_Click(object sender, EventArgs e)
-        {
-            this.goTOToday();
-        }
-
-        private void goTOToday()
-        {
-            this.selectedDayinCalendar = DateTime.Now;
-            this.AgendaGoToDate(this.selectedDayinCalendar);
-            this.setCalendar(this.selectedDayinCalendar);
-        }
 
         private void AddNewCustomerBtn_Click(object sender, EventArgs e)
         {
@@ -2551,12 +1894,6 @@ namespace POS
                 try
                 {
                     this.proveedor.Add();
-                    PanelProveedoresNuevoRecordatorio nuevoRecordatorio = new PanelProveedoresNuevoRecordatorio(this.getColor(this.proveedor.NombreEmpresa), 0, this.proveedor.ID, false, DateTime.Now, "Dias de Visita del Proveedor", false);
-                    if (nuevoRecordatorio.ShowDialog() == DialogResult.OK)
-                    {
-                        this.proveedor.diasVisita = nuevoRecordatorio.repetingDays;
-                        this.proveedor.UpdateVisitingDays();
-                    }
                     this.flow1.Controls.Clear();
                     this.loadSupplierList();
                     this.flow1.ControlAdded += (ControlEventHandler)((ss, ee) =>
@@ -2568,7 +1905,7 @@ namespace POS
                 }
                 catch (Exception ex)
                 {
-                    int num = (int)MessageBox.Show("No se pudo completar la acción.\n Error: " + ex.ToString());
+                    MessageBox.Show("No se pudo completar la acción.\n Error: " + ex.ToString());
                 }
             }
             darkForm.Close();
@@ -2623,8 +1960,6 @@ namespace POS
             timer.Dispose();
             dataGridView1.Dispose();
             dataGridView2.Dispose();
-            AgendaPanel.Dispose();
-            CalendarPanel.Dispose();//<<<step1>>>--Start
             if (m_Drawer != null)
             {
                 try
@@ -3307,6 +2642,89 @@ namespace POS
                     height = item.Height;
             }
             dataGridView1.RowTemplate.MinimumHeight = height;
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            setPurchaseStatistics();
+        }
+
+        private void setPurchaseStatistics()
+        {
+            setPurchaseChart();
+        }
+
+        private void setPurchaseChart()
+        {
+            Proveedor.PeriodOfTime period;
+            switch (comboBox1.SelectedIndex)
+            {
+                case 0:
+                    period = Proveedor.PeriodOfTime.ByDays;
+                    break;
+                case 1:
+                    period = Proveedor.PeriodOfTime.ByMonth;
+                    break;
+                case 2:
+                    period = Proveedor.PeriodOfTime.ByYear;
+                    break;
+
+                default:
+                    period = Proveedor.PeriodOfTime.ByDays;
+                    break;
+            }
+
+            DataTable dt = proveedor.getPurchaseStatistics(dateTimePicker1.Value, period);
+           
+            this.purchaseChart.Series.Clear();
+            this.purchaseChart.AxisX.Clear();
+            this.purchaseChart.AxisY.Clear();
+            this.purchaseChart.Zoom = ZoomingOptions.X;
+            this.purchaseChart.Pan = PanningOptions.Unset;
+
+            ChartValues<double> chartValues1 = new ChartValues<double>();
+            ChartValues<double> chartValues2 = new ChartValues<double>();
+            List<string> stringList = new List<string>();
+            foreach (DataRow row in dt.Rows)
+            {
+                chartValues1.Add(Convert.ToDouble(row["Total"]));
+                chartValues2.Add(Convert.ToDouble(row["Abono"]));
+                stringList.Add(row["Fecha"].ToString());
+            }
+            LiveCharts.SeriesCollection series1 = this.purchaseChart.Series;
+            LineSeries lineSeries1 = new LineSeries();
+            lineSeries1.Title = "Compra";
+            lineSeries1.Values = chartValues1;
+
+            LineSeries lineSeries2 = lineSeries1;
+            series1.Add(lineSeries2);
+            SeriesCollection series2 = this.purchaseChart.Series;
+
+            LineSeries lineSeries3 = new LineSeries();
+            lineSeries3.Title = "Pago realizado";
+            lineSeries3.Values = chartValues2;
+
+            LineSeries lineSeries4 = lineSeries3;
+
+            series2.Add((ISeriesView)lineSeries4);
+            this.purchaseChart.AxisX.Add(new Axis()
+            {
+                Title = "Fecha",
+                Labels = (IList<string>)stringList
+            });
+            this.purchaseChart.AxisY.Add(new Axis()
+            {
+                Title = "Cantidad",
+                LabelFormatter = (Func<double, string>)(value => value.ToString("N")),
+                MinValue = 0.0
+            });
+
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            setPurchaseChart();
         }
     }
 

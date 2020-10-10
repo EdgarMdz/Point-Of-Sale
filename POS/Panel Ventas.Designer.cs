@@ -34,16 +34,15 @@ namespace POS
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Panel_Ventas));
             this.LastSaleElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.LastSaleBtn = new System.Windows.Forms.Button();
             this.LookForTicketBtn = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.refoundBtn = new System.Windows.Forms.Button();
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
-            this.printDocument1 = new System.Drawing.Printing.PrintDocument();
             this.panel1 = new System.Windows.Forms.Panel();
             this.CanceledLbl = new Bunifu.Framework.UI.BunifuCustomLabel();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
@@ -69,11 +68,11 @@ namespace POS
             this.saleCancelledDocument = new System.Drawing.Printing.PrintDocument();
             this.packageReturnedDocument = new System.Drawing.Printing.PrintDocument();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.CustomerPaymentBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.ClearCustomerBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.debtLbl = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.CustomerBtn = new Bunifu.Framework.UI.BunifuThinButton2();
+            this.CustomerPaymentBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.panel6 = new System.Windows.Forms.Panel();
             this.printTicketBtn = new System.Windows.Forms.Button();
             this.EmployeeCanceldSaleLbl = new System.Windows.Forms.Label();
@@ -102,8 +101,6 @@ namespace POS
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.MimimizeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.bunifuElipse1 = new Bunifu.Framework.UI.BunifuElipse(this.components);
-            this.printDocument2 = new System.Drawing.Printing.PrintDocument();
-            this.reprintTicket = new System.Drawing.Printing.PrintDocument();
             this.reprintElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.panel7 = new System.Windows.Forms.Panel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -176,11 +173,6 @@ namespace POS
             this.refoundBtn.UseVisualStyleBackColor = false;
             this.refoundBtn.Click += new System.EventHandler(this.refoundBtn_Click);
             // 
-            // printDocument1
-            // 
-            this.printDocument1.DocumentName = " ";
-            this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.CanceledLbl);
@@ -216,14 +208,14 @@ namespace POS
             this.dataGridView2.BackgroundColor = System.Drawing.Color.White;
             this.dataGridView2.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridView2.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Century Gothic", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView2.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
+            dataGridViewCellStyle13.Font = new System.Drawing.Font("Century Gothic", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle13.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView2.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.barcode,
@@ -235,14 +227,14 @@ namespace POS
             this.Total,
             this.depot,
             this.WholesaleDiscountApplied});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Century Gothic", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView2.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle15.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle15.Font = new System.Drawing.Font("Century Gothic", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
+            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView2.DefaultCellStyle = dataGridViewCellStyle15;
             this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView2.EnableHeadersVisualStyles = false;
             this.dataGridView2.Location = new System.Drawing.Point(0, 100);
@@ -254,7 +246,6 @@ namespace POS
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView2.Size = new System.Drawing.Size(889, 855);
             this.dataGridView2.TabIndex = 2;
-            this.dataGridView2.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellContentClick);
             this.dataGridView2.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView2_CellFormatting);
             this.dataGridView2.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView2_CellMouseClick);
             this.dataGridView2.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellValueChanged);
@@ -322,8 +313,8 @@ namespace POS
             // depot
             // 
             this.depot.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.depot.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.depot.DefaultCellStyle = dataGridViewCellStyle14;
             this.depot.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.depot.HeaderText = "Bodega";
             this.depot.Name = "depot";
@@ -497,11 +488,11 @@ namespace POS
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.CustomerPaymentBtn);
             this.groupBox1.Controls.Add(this.ClearCustomerBtn);
             this.groupBox1.Controls.Add(this.debtLbl);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.CustomerBtn);
+            this.groupBox1.Controls.Add(this.CustomerPaymentBtn);
             this.groupBox1.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.groupBox1.Location = new System.Drawing.Point(47, 252);
@@ -512,32 +503,6 @@ namespace POS
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Cliente";
             this.groupBox1.SizeChanged += new System.EventHandler(this.groupBox1_SizeChanged);
-            // 
-            // CustomerPaymentBtn
-            // 
-            this.CustomerPaymentBtn.ActiveBorderThickness = 1;
-            this.CustomerPaymentBtn.ActiveCornerRadius = 20;
-            this.CustomerPaymentBtn.ActiveFillColor = System.Drawing.Color.SeaGreen;
-            this.CustomerPaymentBtn.ActiveForecolor = System.Drawing.Color.White;
-            this.CustomerPaymentBtn.ActiveLineColor = System.Drawing.Color.SeaGreen;
-            this.CustomerPaymentBtn.BackColor = System.Drawing.Color.White;
-            this.CustomerPaymentBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("CustomerPaymentBtn.BackgroundImage")));
-            this.CustomerPaymentBtn.ButtonText = "Abonar";
-            this.CustomerPaymentBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.CustomerPaymentBtn.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CustomerPaymentBtn.ForeColor = System.Drawing.Color.SeaGreen;
-            this.CustomerPaymentBtn.IdleBorderThickness = 1;
-            this.CustomerPaymentBtn.IdleCornerRadius = 20;
-            this.CustomerPaymentBtn.IdleFillColor = System.Drawing.Color.White;
-            this.CustomerPaymentBtn.IdleForecolor = System.Drawing.Color.SeaGreen;
-            this.CustomerPaymentBtn.IdleLineColor = System.Drawing.Color.SeaGreen;
-            this.CustomerPaymentBtn.Location = new System.Drawing.Point(44, 226);
-            this.CustomerPaymentBtn.Margin = new System.Windows.Forms.Padding(5);
-            this.CustomerPaymentBtn.Name = "CustomerPaymentBtn";
-            this.CustomerPaymentBtn.Size = new System.Drawing.Size(297, 41);
-            this.CustomerPaymentBtn.TabIndex = 6;
-            this.CustomerPaymentBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.CustomerPaymentBtn.Click += new System.EventHandler(this.CustomerPaymentBtn_Click);
             // 
             // ClearCustomerBtn
             // 
@@ -607,6 +572,32 @@ namespace POS
             this.toolTip1.SetToolTip(this.CustomerBtn, "Seleccionar Cliente\r\nAlt + L");
             this.CustomerBtn.Click += new System.EventHandler(this.CustomerBtn_Click);
             // 
+            // CustomerPaymentBtn
+            // 
+            this.CustomerPaymentBtn.ActiveBorderThickness = 1;
+            this.CustomerPaymentBtn.ActiveCornerRadius = 20;
+            this.CustomerPaymentBtn.ActiveFillColor = System.Drawing.Color.SeaGreen;
+            this.CustomerPaymentBtn.ActiveForecolor = System.Drawing.Color.White;
+            this.CustomerPaymentBtn.ActiveLineColor = System.Drawing.Color.SeaGreen;
+            this.CustomerPaymentBtn.BackColor = System.Drawing.Color.White;
+            this.CustomerPaymentBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("CustomerPaymentBtn.BackgroundImage")));
+            this.CustomerPaymentBtn.ButtonText = "Abonar";
+            this.CustomerPaymentBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.CustomerPaymentBtn.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomerPaymentBtn.ForeColor = System.Drawing.Color.SeaGreen;
+            this.CustomerPaymentBtn.IdleBorderThickness = 1;
+            this.CustomerPaymentBtn.IdleCornerRadius = 20;
+            this.CustomerPaymentBtn.IdleFillColor = System.Drawing.Color.White;
+            this.CustomerPaymentBtn.IdleForecolor = System.Drawing.Color.SeaGreen;
+            this.CustomerPaymentBtn.IdleLineColor = System.Drawing.Color.SeaGreen;
+            this.CustomerPaymentBtn.Location = new System.Drawing.Point(44, 226);
+            this.CustomerPaymentBtn.Margin = new System.Windows.Forms.Padding(5);
+            this.CustomerPaymentBtn.Name = "CustomerPaymentBtn";
+            this.CustomerPaymentBtn.Size = new System.Drawing.Size(297, 41);
+            this.CustomerPaymentBtn.TabIndex = 6;
+            this.CustomerPaymentBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.CustomerPaymentBtn.Click += new System.EventHandler(this.CustomerPaymentBtn_Click);
+            // 
             // panel6
             // 
             this.panel6.Controls.Add(this.refoundBtn);
@@ -620,8 +611,8 @@ namespace POS
             this.panel6.Controls.Add(this.label4);
             this.panel6.Controls.Add(this.label2);
             this.panel6.Controls.Add(this.pictureBox1);
-            this.panel6.Controls.Add(this.ReturnPackagesBtn);
             this.panel6.Controls.Add(this.LastSaleBtn);
+            this.panel6.Controls.Add(this.ReturnPackagesBtn);
             this.panel6.Location = new System.Drawing.Point(0, 382);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(478, 575);
@@ -1030,10 +1021,6 @@ namespace POS
             this.bunifuElipse1.ElipseRadius = 10;
             this.bunifuElipse1.TargetControl = this.refoundBtn;
             // 
-            // reprintTicket
-            // 
-            this.reprintTicket.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.reprintTicket_PrintPage);
-            // 
             // reprintElipse
             // 
             this.reprintElipse.ElipseRadius = 10;
@@ -1117,7 +1104,6 @@ namespace POS
         private System.Windows.Forms.Panel panel1;
         private Bunifu.Framework.UI.BunifuElipse LookForTicketBtn;
         private System.Windows.Forms.PrintDialog printDialog1;
-        private System.Drawing.Printing.PrintDocument printDocument1;
         private RichTextBox ProductTxt;
         private Label AmountProdctsLbl;
         private System.Drawing.Printing.PrintDocument customerPaymentDocument;
@@ -1159,8 +1145,6 @@ namespace POS
         private Button discountList;
         private Bunifu.Framework.UI.BunifuElipse bunifuElipse1;
         private Button printTicketBtn;
-        private PrintDocument printDocument2;
-        private PrintDocument reprintTicket;
         private Bunifu.Framework.UI.BunifuElipse reprintElipse;
         private Panel panel7;
         private CheckBox autoGrouping;

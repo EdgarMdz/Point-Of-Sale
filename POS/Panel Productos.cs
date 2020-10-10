@@ -28,7 +28,6 @@ namespace POS
             this.InitializeComponent();
             this.WindowState = windowState;
             this.dataGridView1.ColumnHeaderMouseClick += new DataGridViewCellMouseEventHandler(this.showDatagridViewMenu);
-            //  this.ProductPanel.Dock = DockStyle.Fill;
             this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             dataGridView1.RowTemplate.Height = 50;
@@ -411,6 +410,23 @@ namespace POS
                         this.dataGridView1.Rows[index].DefaultCellStyle.BackColor = Color.White;
                     ++num;
                 }
+            }
+        }
+
+        private delegate void setEmployeeDelegate(int employeeID);
+
+        public void setEmployee(int employeeID)
+        {
+            if(this.InvokeRequired)
+            {
+                var del = new setEmployeeDelegate(setEmployee);
+                this.Invoke(del, new object[] { employeeID });
+            }
+            else
+            {
+                dataGridView1.CancelEdit();
+                if (!new Empleado(employeeID).isAdmin)
+                    this.Close();
             }
         }
 

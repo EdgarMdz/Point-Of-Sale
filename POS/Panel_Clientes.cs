@@ -47,7 +47,6 @@ namespace POS
 
         private void Buscar_Click(object sender, EventArgs e)
         {
-            DataTable dataTable = new DataTable();
             this.cliente = new Cliente();
             this.cliente.Name = this.SearchTxt.Text;
             this.DetalleCompraDataGridView1.DataSource = (object)null;
@@ -124,6 +123,7 @@ namespace POS
             this.PagosBtn.Visible = true;
             this.discountLbl.Visible = true;
             this.discountTxt.Visible = true;
+            deleteCustomer.Show();
         }
 
         private void HideLabels()
@@ -151,9 +151,10 @@ namespace POS
             this.InfoLbl.Visible = false;
             this.label6.Visible = false;
             this.label7.Visible = false;
+            this.deleteCustomer.Visible = false;
         }
 
-        private void FillDataList()
+        private async void FillDataList()
         {
             this.listView1.Clear();
             if (this.cliente.ID != 0)
@@ -163,7 +164,7 @@ namespace POS
                 this.TelefonoLbl.Text = this.cliente.TelephoneNumber;
                 this.discountTxt.Text = this.cliente.isDiscountbyPercentage ? this.cliente.generalDiscount.ToString("n2") + "%" : this.cliente.generalDiscount.ToString("n2");
                 this.fitTextboxToContent();
-                List<string[]> customerPurchases = this.cliente.GetCustomerPurchases();
+                List<string[]> customerPurchases = await Task.Run(()=> this.cliente.GetCustomerPurchases());
                 List<string> stringList1 = new List<string>();
                 this.listView1.Columns.Add("Hora", 30, HorizontalAlignment.Center);
                 this.listView1.Columns.Add("Número de Ticket", 30, HorizontalAlignment.Center);
@@ -288,9 +289,8 @@ namespace POS
         {
         }
 
-        private void fillGridView(int index)
+        private  void fillGridView(int index)
         {
-            DataTable dataTable = new DataTable();
             string idHex = listView1.Items[index].SubItems[1].Text;
 
             Venta venta = new Venta(Convert.ToInt32(idHex, 16));
@@ -409,74 +409,64 @@ namespace POS
 
                     this.customerPaymentDocument.PrintPage += (PrintPageEventHandler)((ss, ee) =>
                     {
-                        PrinterTicket printerTicket = new PrinterTicket();
                         Graphics graphics = ee.Graphics;
+                        var ticket = new PrinterTicket();
+
+                        this.customerPaymentDocument.PrinterSettings.PrinterName = ticket.printerName;
                         this.customerPaymentDocument.DefaultPageSettings.PaperSize = new PaperSize("Custom", 200, 200);
                         int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
-                        int y1 = 10;
-                        Size size1 = printerTicket.printLogo(graphics, y1);
-                        int y2 = size1.Height == 0 ? y1 : y1 + size1.Height + 10;
-                        Size size2 = printerTicket.printHeader(graphics, y2);
-                        int y3 = size2.Height == 0 ? y2 : y2 + size2.Height + 10;
-                        Size size3 = printerTicket.printAddress(graphics, y3);
-                        int y4 = size3.Height == 0 ? y3 : y3 + size3.Height + 10;
-                        Size size4 = printerTicket.printPhone(graphics, y4);
-                        int num666 = size4.Height == 0 ? y4 : y4 + size4.Height + 10;
-                        graphics.DrawLine(Pens.Black, 10, num666, width - 10, num666);
-                        int num2 = num666 + 5;
-                        string str1 = "Pago de Cliente";
-                        Font font1 = this.getFont(str1, width, FontStyle.Regular);
-                        Size stringSize1 = this.getStringSize(str1, font1);
-                        graphics.DrawString(str1, font1, Brushes.Black, (float)((width - stringSize1.Width) / 2), (float)num2);
-                        int num3 = num2 + (15 + stringSize1.Height);
-                        if (this.cliente.ID != 0)
-                        {
-                            Font font2 = new Font("Times new Roman", 8f, FontStyle.Bold);
-                            Size stringSize2 = this.getStringSize("Cliente: " + this.cliente.Name, font2);
-                            graphics.DrawString("Cliente: " + this.cliente.Name, font2, Brushes.Black, 0.0f, (float)num3);
-                            num3 += stringSize2.Height + 10;
-                        }
-                        string str2 = string.Format("Fecha: {0}\t{1}", (object)DateTime.Now.Date.ToShortDateString(), (object)DateTime.Now.Date.ToShortTimeString());
-                        Font font3 = new Font("Times new Roman", 8f, FontStyle.Bold);
-                        Size stringSize3 = this.getStringSize(str2, font3);
-                        int num4;
-                        if (stringSize3.Width + 10 < width)
-                        {
-                            graphics.DrawString(str2, font3, Brushes.Black, 0.0f, (float)num3);
-                            num4 = num3 + (stringSize3.Height + 5);
-                        }
-                        else
-                        {
-                            this.Font = this.getFont(str2, width - 10, FontStyle.Bold);
-                            Size stringSize2 = this.getStringSize(str2, font3);
-                            graphics.DrawString(str2, font3, Brushes.Black, 10f, (float)num3);
-                            num4 = num3 + (stringSize2.Height + 5);
-                        }
-                        double num5 = Convert.ToDouble(form.Pay);
-                        string str3 = string.Format("Adeudo Previo: ${0}", (object)(this.cliente.Debt + num5).ToString("n2"));
-                        Font font4 = this.getFont(str3, width * 5 / 8, FontStyle.Regular);
-                        Size stringSize4 = this.getStringSize(str3, font4);
-                        graphics.DrawString(str3, font4, Brushes.Black, 0.0f, (float)num4);
-                        int num6 = num4 + (stringSize4.Height + 3);
-                        string str4 = string.Format("Monto a pagar: ${0}", (object)num5.ToString("n2"));
-                        Size stringSize5 = this.getStringSize(str4, font4);
-                        graphics.DrawString(str4, font4, Brushes.Black, 0.0f, (float)num6);
-                        int num7 = num6 + (stringSize5.Height + 3);
-                        string str5 = string.Format("Adeudo Actualizado: ${0}", (object)this.cliente.Debt.ToString("n2"));
-                        Font font5 = this.getFont(str5, width * 3 / 4, FontStyle.Bold);
-                        Size stringSize6 = this.getStringSize(str3, font5);
-                        graphics.DrawString(str5, font5, Brushes.Black, 0.0f, (float)num7);
-                        int num8 = num7 + (stringSize6.Height + 8);
-                        string str6 = string.Format("Efectivo: ${0}", (object)cash.ToString("n2"));
-                        Size stringSize7 = this.getStringSize(str6, font4);
-                        graphics.DrawString(str6, font4, Brushes.Black, (float)(width - stringSize7.Width), (float)num8);
-                        int num9 = num8 + (stringSize7.Height + 3);
-                        string str7 = string.Format("Cambio: ${0}", (object)change.ToString("n2"));
-                        Size stringSize8 = this.getStringSize(str7, font4);
-                        graphics.DrawString(str7, font4, Brushes.Black, (float)(width - stringSize8.Width), (float)num9);
-                        int y5 = num9 + (8 + stringSize8.Height);
-                        Size size5 = printerTicket.printFooter(graphics, y5);
-                        int num10 = size5.Height == 0 ? y5 : y5 + size5.Height + 10;
+
+                        int y1 = 0;
+                        Size stringSize = ticket.printLogo(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        stringSize = ticket.printHeader(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        stringSize = ticket.printAddress(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        stringSize = ticket.printPhone(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 5;
+
+                        string str = "Pago de Cliente";
+                        Font font = new Font("times new roman", 20f, FontStyle.Bold);//this.getFont(str1, width, FontStyle.Regular);
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1) + 1;
+
+                        font = new Font("Times new Roman", 10f, FontStyle.Regular);
+
+                        str = "Cliente: " + this.cliente.Name;
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
+
+
+                        str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.Date.ToShortTimeString());
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
+
+
+                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+
+                        num1 = Convert.ToDouble(form.Pay);
+                        str = string.Format("Adeudo Previo: ${0}", (cliente.Debt + num1).ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+
+                        str = string.Format("Monto a pagar: ${0}", num1.ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+
+                        str = string.Format("Adeudo Actualizado: ${0}", cliente.Debt.ToString("n2"));
+                        y1 += printingClass.printLine(str, new Font("times new roman", 10f, FontStyle.Bold), width, StringAlignment.Near, graphics, y1);
+
+                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+
+                        str = string.Format("Efectivo: ${0}", cash.ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+
+                        str = string.Format("Cambio: ${0}", change.ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+
+                        if (ticket.footerDisplay)
+                            printingClass.printLine(ticket.footer, ticket.footerFont, width, StringAlignment.Center, graphics, y1);
                     });
                     try
                     {
@@ -486,7 +476,7 @@ namespace POS
                     }
                     catch (InvalidPrinterException)
                     {
-                        int num2 = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
+                        MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
                     }
                     int num12 = (int)formCambio.ShowDialog();
                     this.DetalleCompraDataGridView1.DataSource = (object)null;
@@ -501,7 +491,7 @@ namespace POS
                 }
                 else
                 {
-                    int num13 = (int)MessageBox.Show("El Cliente no genera ningun adeudo");
+                    MessageBox.Show("El Cliente no genera ningun adeudo");
                 }
             }
             darkForm.Close();
@@ -844,210 +834,218 @@ namespace POS
 
         private void printTicketBtn_Click(object sender, EventArgs e)
         {
-            if (this.DetalleCompraDataGridView1.DataSource == null)
+            
+            if (listView1.SelectedItems.Count==0)
                 return;
             try
             {
-                this.printDocument1.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
-                this.printDialog1.Document = this.printDocument1;
-                this.printDocument1.Print();
+                prepareData(Convert.ToInt32(listView1.SelectedItems[0].SubItems[1].Text, 16));
             }
-            catch (InvalidPrinterException ex)
+            catch (InvalidPrinterException)
             {
-                int num = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
+                MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
             }
-            this.printDocument1 = new PrintDocument();
-            printDocument1.PrintController = new StandardPrintController();
-            this.printDocument1.PrintPage += new PrintPageEventHandler(this.printDocument1_PrintPage);
         }
 
-        private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
+        private async void prepareData(int saleID)
         {
-            if (this.listView1.SelectedItems.Count == 1)
+            int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
+            string data;
+            Font mainFont;
+            var infoList = new List<Tuple<string, List<object>, bool>>();
+            bool hasCancelledSales = false;
+
+            PrinterTicket ticket = new PrinterTicket();
+            if (listView1.SelectedItems.Count == 1)
             {
-                PrinterTicket printerTicket = new PrinterTicket();
-                int num1 = 0;
-                foreach (ListViewItem selectedItem in this.listView1.SelectedItems)
+                Venta sale = await Task.Run(() => new Venta(saleID));
+                if (ticket.logoDisplay)
                 {
-                    Venta venta = new Venta(Convert.ToInt32(selectedItem.SubItems[1].Text, 16));
-                    Cliente cliente = new Cliente(venta.CustomerID);
-                    DataTable dataTable = new DataTable();
-                    dataTable.Columns.Add("Código de Barras");
-                    dataTable.Columns.Add("Descripción");
-                    dataTable.Columns.Add("Marca");
-                    dataTable.Columns.Add("Cantidad");
-                    dataTable.Columns.Add("Precio");
-                    dataTable.Columns.Add("Total");
-                    foreach (DataRow row1 in (InternalDataCollectionBase)venta.getSoldProducts.Rows)
-                    {
-                        DataRow row2 = dataTable.NewRow();
-                        Producto producto = new Producto(row1["id_producto"].ToString());
-                        row2["Código de Barras"] = (object)producto.Barcode;
-                        row2["Descripción"] = (object)producto.Description;
-                        row2["Marca"] = (object)producto.Brand;
-                        row2["Cantidad"] = (object)Convert.ToDouble(row1["Cantidad"]).ToString("n2");
-                        row2["Precio"] = (object)Convert.ToDouble(row1["Precio"]).ToString("n2");
-                        row2["Total"] = Convert.ToDouble(row1["Descuento"]) > 0.0 ? (object)string.Format("{0}\n-{1}", (object)Convert.ToDouble(row1["Importe"]).ToString("n2"), (object)Convert.ToDouble(row1["Descuento"]).ToString("n2")) : (object)string.Format("{0}", (object)Convert.ToDouble(row1["Importe"]).ToString("n2"));
-                        dataTable.Rows.Add(row2);
-                    }
-                    Graphics graphics1 = e.Graphics;
-                    this.printDocument1.DefaultPageSettings.PaperSize = new PaperSize("Custom", 200, 200);
-                    int width1 = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
-                    int y1 = num1 + 10;
-                    Size size1 = printerTicket.printLogo(graphics1, y1);
-                    int y2 = size1.Height == 0 ? y1 : y1 + size1.Height + 10;
-                    Size size2 = printerTicket.printHeader(graphics1, y2);
-                    int y3 = size2.Height == 0 ? y2 : y2 + size2.Height + 10;
-                    Size size3 = printerTicket.printAddress(graphics1, y3);
-                    int y4 = size3.Height == 0 ? y3 : y3 + size3.Height + 10;
-                    Size size4 = printerTicket.printPhone(graphics1, y4);
-                    int num2 = size4.Height == 0 ? y4 : y4 + size4.Height + 10;
-                    graphics1.DrawLine(Pens.Black, 10, num2, width1 - 10, num2);
-                    int num3 = num2 + 5;
-                    string str1 = "Detalle de Venta";
-                    Font font1 = this.getFont(str1, width1, FontStyle.Regular);
-                    Size stringSize1 = this.getStringSize(str1, font1);
-                    graphics1.DrawString(str1, font1, Brushes.Black, (float)((width1 - stringSize1.Width) / 2), (float)num3);
-                    int num4 = num3 + (15 + stringSize1.Height);
-                    string str2 = string.Format("Folio: {0}", (object)venta.ID.ToString("X"));
-                    Font font2 = new Font("Times new Roman", 8f);
-                    Size stringSize2 = this.getStringSize(str2, font2);
-                    int num5;
-                    if (stringSize2.Width + 10 < width1)
-                    {
-                        graphics1.DrawString(str2, font2, Brushes.Black, 10f, (float)num4);
-                        num5 = num4 + (stringSize2.Height + 1);
-                    }
-                    else
-                    {
-                        font2 = this.getFont(str2, width1 - 10, FontStyle.Bold);
-                        stringSize2 = this.getStringSize(str2, font2);
-                        graphics1.DrawString(str2, font2, Brushes.Black, 10f, (float)num4);
-                        num5 = num4 + (stringSize2.Height + 1);
-                    }
-                    if (cliente.ID != 0)
-                    {
-                        Size stringSize3 = this.getStringSize("Cliente: " + cliente.Name, font2);
-                        graphics1.DrawString("Cliente: " + cliente.Name, font2, Brushes.Black, 10f, (float)num5);
-                        num5 += stringSize3.Height + 10;
-                    }
-                    string str3 = string.Format("Fecha: {0}\t{1}", (object)venta.Date.ToShortDateString(), (object)venta.Date.ToShortTimeString());
-                    Font font3 = new Font("Times new Roman", 8f);
-                    int num6;
-                    if (this.getStringSize(str3, font3).Width + 10 < width1)
-                    {
-                        graphics1.DrawString(str3, font3, Brushes.Black, 10f, (float)num5);
-                        num6 = num5 + (stringSize2.Height + 1);
-                    }
-                    else
-                    {
-                        font2 = this.getFont(venta.ID.ToString(), width1 - 10, FontStyle.Bold);
-                        stringSize2 = this.getStringSize(venta.ID.ToString(), font2);
-                        graphics1.DrawString(venta.ID.ToString(), font2, Brushes.Black, 10f, (float)num5);
-                        num6 = num5 + (stringSize2.Height + 1);
-                    }
-                    DataTable getSoldProducts = venta.getSoldProducts;
-                    graphics1.DrawLine(Pens.Black, 10, num6, width1 - 10, num6);
-                    int num7 = num6 + 1;
-                    string text = "Cantidad\tPrecio\tImporte";
-                    Font font4 = font2;
-                    Size stringSize4 = this.getStringSize(text, font4);
-                    graphics1.DrawString("Cantidad", font4, Brushes.Black, 10f, (float)num7);
-                    graphics1.DrawString("Precio", font4, Brushes.Black, (float)((width1 - this.getStringSize("Precio", font4).Width) / 2), (float)num7);
-                    graphics1.DrawString("Importe", font4, Brushes.Black, (float)(width1 - this.getStringSize("Importe", font4).Width), (float)num7);
-                    int num8 = num7 + (stringSize4.Height + 1);
-                    graphics1.DrawLine(Pens.Black, 10, num8, width1 - 10, num8);
-                    int num9 = num8 + 2;
-                    double num10 = 0.0;
-                    foreach (DataRow row in (InternalDataCollectionBase)dataTable.Rows)
-                    {
-                        string str4 = new Producto(row["Código de Barras"].ToString()).HideInTicket ? "Artículo Varios" : string.Format("{0} {1}", row["Descripción"], row["Marca"]);
-                        Font font5 = new Font(font4, FontStyle.Regular);
-                        Size stringSize3 = this.getStringSize(str4, font5);
-                        if (stringSize3.Width > width1)
-                        {
-                            int letterByMeasuring = this.getLastLetterByMeasuring(str4, font5, width1);
-                            str4 = str4.Insert(letterByMeasuring, str4[letterByMeasuring] == ' ' ? "\n" : "-\n");
-                            stringSize3 = this.getStringSize(str4, font5);
-                        }
-                        graphics1.DrawString(str4, font5, Brushes.Black, 10f, (float)num9);
-                        num9 += stringSize3.Height + 2;
-                        double num11 = row["Total"].ToString().IndexOf("-") > -1 ? Convert.ToDouble(row["Total"].ToString().Substring(row["Total"].ToString().IndexOf("-") + 1)) : 0.0;
-                        string.Format("{0}\t{1}\t{2}", row["Cantidad"], row["Precio"], row["Total"].ToString().IndexOf("-") == -1 ? (object)Convert.ToDouble(row["Total"]).ToString("n2") : (object)row["Total"].ToString().Substring(0, row["Total"].ToString().IndexOf("-")));
-                        Font font6 = font5;
-                        Size stringSize5 = this.getStringSize("$" + row["Total"].ToString(), font6);
-                        graphics1.DrawString(row["Cantidad"].ToString(), font6, Brushes.Black, 10f, (float)num9);
-                        Graphics graphics2 = graphics1;
-                        string s1 = "$" + row["Precio"].ToString();
-                        Font font7 = font6;
-                        Brush black1 = Brushes.Black;
-                        int num12 = width1;
-                        Size stringSize6 = this.getStringSize(row["Precio"].ToString(), font6);
-                        int width2 = stringSize6.Width;
-                        double num13 = (double)((num12 - width2) / 2);
-                        double num14 = (double)num9;
-                        graphics2.DrawString(s1, font7, black1, (float)num13, (float)num14);
-                        Graphics graphics3 = graphics1;
-                        string s2 = "$" + row["Total"].ToString();
-                        Font font8 = font6;
-                        Brush black2 = Brushes.Black;
-                        int num15 = width1;
-                        stringSize6 = this.getStringSize(row["Total"].ToString(), font6);
-                        int width3 = stringSize6.Width;
-                        double num16 = (double)(num15 - width3);
-                        double num17 = (double)num9;
-                        graphics3.DrawString(s2, font8, black2, (float)num16, (float)num17);
-                        num10 += num11;
-                        num9 += stringSize5.Height + 5;
-                    }
-                    graphics1.DrawLine(Pens.Black, 10, num9, width1 - 10, num9);
-                    int num18 = num9 + 3;
-                    string str5 = string.Format("Total: ${0}", (object)venta.Total.ToString("n2"));
-                    Font font9 = font2;
-                    Size stringSize7 = this.getStringSize(str5, font4);
-                    graphics1.DrawString(str5, font9, Brushes.Black, (float)(width1 - stringSize7.Width), (float)num18);
-                    int y5 = num18 + (stringSize7.Height + 3);
-                    if (!venta.isPaid)
-                    {
-                        string str4 = string.Format("Usted pagó: ${0}", (object)venta.Payment);
-                        Size stringSize3 = this.getStringSize(str4, font9);
-                        graphics1.DrawString(str4, font9, Brushes.Black, (float)(width1 - stringSize3.Width), (float)y5);
-                        y5 += stringSize3.Height + 3;
-                    }
-                    if (num10 > 0.0)
-                    {
-                        string str4 = string.Format("Usted ahorró: ${0}", (object)num10.ToString("n2"));
-                        this.getFont(str4, width1 / 2 - 10, FontStyle.Bold);
-                        Size stringSize3 = this.getStringSize(str4, font9);
-                        graphics1.DrawString(str4, font9, Brushes.Black, (float)(width1 - stringSize3.Width), (float)y5);
-                        y5 += stringSize3.Height + 20;
-                    }
-                    if (venta.isSaleCanceled)
-                    {
-                        string str4 = "Cancelada";
-                        Font font5 = this.getFont(str4, width1, FontStyle.Bold);
-                        this.getStringSize(str4, font5);
-                        GraphicsState gstate = graphics1.Save();
-                        graphics1.ResetTransform();
-                        graphics1.RotateTransform(315f);
-                        graphics1.TranslateTransform(0.0f, (float)y5, MatrixOrder.Append);
-                        graphics1.DrawString(str4, font5, (Brush)new SolidBrush(Color.FromArgb(50, 0, 0, 0)), 0.0f, 0.0f);
-                        graphics1.Restore(gstate);
-                    }
-                    Size size5 = printerTicket.printFooter(graphics1, y5);
-                    int y6 = size5.Height == 0 ? y5 : y5 + size5.Height + 10;
-                    Image image = BarcodeDrawFactory.Code128WithChecksum.Draw(venta.ID.ToString("X8"), 50);
-                    graphics1.DrawImage(image, 10, y6, width1 - 10, 20);
-                    num1 = y6 + (image.Height + 10);
+                    infoList.Add(new Tuple<string, List<object>, bool>("printImage",
+                        new List<object>(new object[] { ticket.logo, width, ticket.logoHeight }),
+                        true));
                 }
+
+                if (ticket.headderDisplay)
+                {
+                    data = ticket.header;
+                    mainFont = ticket.headerFont;
+
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                     new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                     true));
+                }
+                if (ticket.addressDisplay)
+                {
+                    data = ticket.address;
+                    mainFont = ticket.addressFont;
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                        true));
+
+                }
+
+                if (ticket.phoneDisplay)
+                {
+                    data = ticket.phone;
+                    mainFont = ticket.phoneFont;
+
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }), true));
+                }
+
+                infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                    new List<object>(new object[] { 10, width - 10 }),
+                    true));
+
+
+                data = "Detalle de Venta";
+                mainFont = new Font("Times new roman", 20f, FontStyle.Bold);
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                    true));
+
+                data = string.Format("Folio: {0}", sale.ID.ToString("X"));
+                mainFont = new Font("Times new Roman", 9.9f);
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }), true));
+
+                if (cliente.ID != 0)
+                {
+                    data = "Cliente: " + cliente.Name;
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }), true));
+                }
+
+                data = string.Format("Fecha: {0} {1}", sale.Date.ToShortDateString(), sale.Date.ToShortTimeString());
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { data, mainFont, width, StringAlignment.Near })
+                    , true));
+
+                //DataTable getSoldProducts = lastSale.getSoldProducts;
+                infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                    new List<object>(new object[] { 10, width - 10 }), true));
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { "Cantidad", mainFont, width, StringAlignment.Near }),
+                    false));
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { "Precio", mainFont, width, StringAlignment.Center }),
+                    false));
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { "Importe", mainFont, width, StringAlignment.Far }),
+                    true));
+
+                infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                    new List<object>(new object[] { 10, width - 10 }),
+                    true));
+
+                double num9 = 0.0;
+                foreach (DataRow row in sale.getSoldProducts.Rows)
+                {
+                    var barcode = row["id_producto"].ToString();
+                    if (barcode != "")
+                    {
+                        data = Convert.ToBoolean(row["Ocultar en Ticket"]) ? "Artículo Varios" :
+                            string.Format("{0}, {1}", row["Descripción"], row["Marca"]);
+
+
+                        infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }),
+                            true));
+
+                        var dis = Convert.ToDouble(row["Descuento"]); //getDiscountFromRow(row.Index);
+
+
+                        infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { row["Cantidad"].ToString(), mainFont, width, StringAlignment.Near }),
+                            false));
+
+                        infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { "$" + row["Precio"].ToString(), mainFont, width, StringAlignment.Center }),
+                            false));
+
+                        infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { "$" + row["Importe"].ToString(), mainFont, width, StringAlignment.Far }),
+                            true));
+
+
+
+                        if (dis > 0)
+                        {
+                            data = string.Format("Descuento: -${0}", dis.ToString("n2")); //getDiscountFromRow(row.Index).ToString("n2"));
+                            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                                new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                                true));
+
+                            data = string.Format("Costo Final: ${0}", Convert.ToDouble(row["importe"]) - dis); //getTotalFromRow(row.Index).ToString("n2"));
+                            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                                new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                                true));
+                        }
+
+                        num9 += dis;
+                    }
+                }
+
+                infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                    new List<object>(new object[] { 10, width - 10 }),
+                    true));
+
+                data = string.Format("Total: ${0}", sale.Total.ToString("n2"));//GetTotal().ToString("n2"));
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                                new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                                true));
+
+                if (!sale.isPaid)
+                {
+                    data = string.Format("Usted pagó: ${0}", sale.Payment);
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                        true));
+                }
+
+                data = string.Format("Efectivo: ${0}", sale.Cash);
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }), true));
+
+                data = string.Format("Cambio: ${0}", (sale.Cash - sale.Payment));
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                    true));
+
+                if (num9 > 0.0)
+                {
+                    data = string.Format("Usted ahorró: ${0}", num9.ToString("n2"));
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                        true));
+                }
+
+                if (ticket.footerDisplay)
+                {
+                    data = ticket.footer;
+                    mainFont = ticket.footerFont;
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                       new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                       true));
+                }
+
+                Image image = BarcodeDrawFactory.Code128WithChecksum.Draw(sale.ID.ToString("X8"), 50);
+                infoList.Add(new Tuple<string, List<object>, bool>("printImage",
+                    new List<object>(new object[] { image, width, 35 }),
+                    true));
             }
             else
             {
-                if (this.listView1.SelectedItems.Count <= 1)
-                    return;
                 DataTable dataTable = new DataTable();
-                bool hasCancelledSales = false;
-                double num1 = 0.0;
+                
+                double accumulatedTotal = 0.0;
+
                 dataTable.Columns.Add("Código de Barras");
                 dataTable.Columns.Add("Descripción");
                 dataTable.Columns.Add("Marca");
@@ -1057,115 +1055,221 @@ namespace POS
                 dataTable.Columns.Add("Total");
                 foreach (ListViewItem selectedItem in this.listView1.SelectedItems)
                 {
-                    Venta venta = new Venta(Convert.ToInt32(selectedItem.SubItems[1].Text, 16));
+                    Venta venta = await Task.Run(() => new Venta(Convert.ToInt32(selectedItem.SubItems[1].Text, 16)));
+
                     if (!venta.isSaleCanceled)
                     {
-                        num1 += (double)venta.Payment;
+                        accumulatedTotal += (double)venta.Payment;
                         foreach (DataRow row in (InternalDataCollectionBase)venta.getSoldProducts.Rows)
                             this.addItemToTable(row, dataTable);
                     }
                     else
                         hasCancelledSales = true;
                 }
-                Graphics graphics = e.Graphics;
-                PrinterTicket printerTicket = new PrinterTicket();
-                Font font1 = new Font("times new roman", 8f);
-                int y1 = 0;
-                int width = (int)this.printDocument1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
-                Size size1 = printerTicket.printLogo(graphics, y1);
-                int y2 = size1.Height == 0 ? y1 : y1 + size1.Height + 10;
-                Size size2 = printerTicket.printHeader(graphics, y2);
-                int y3 = size2.Height == 0 ? y2 : y2 + size2.Height + 10;
-                Size size3 = printerTicket.printAddress(graphics, y3);
-                int y4 = size3.Height == 0 ? y3 : y3 + size3.Height + 10;
-                Size size4 = printerTicket.printPhone(graphics, y4);
-                int num2 = size4.Height == 0 ? y4 : y4 + size4.Height + 10;
-                graphics.DrawLine(Pens.Black, 10, num2, width - 10, num2);
-                int num3 = num2 + 5;
-                string str1 = "Resumen de Compras";
-                Font font2 = this.getFont(str1, width, FontStyle.Bold);
-                Size stringSize1 = this.getStringSize(str1, font2);
-                graphics.DrawString(str1, font2, Brushes.Black, (float)((width - stringSize1.Width) / 2), (float)num3);
-                int num4 = num3 + (stringSize1.Height + 3);
-                string str2 = "Cliente: " + this.cliente.Name;
-                Font font3 = font1;
-                Size stringSize2 = this.getStringSize(str2, font3);
-                if (stringSize2.Width > width)
+
+                
+                mainFont = new Font("times new roman", 10f);
+
+                if (ticket.logoDisplay)
                 {
-                    int letterByMeasuring = this.getLastLetterByMeasuring(str2, font3, width);
-                    str2 = str2.Insert(letterByMeasuring, str2[letterByMeasuring] == ' ' ? "\n" : "-\n");
-                    stringSize2 = this.getStringSize(str2, font3);
+                    infoList.Add(new Tuple<string, List<object>, bool>("printImage",
+                        new List<object>(new object[] { ticket.logo, width, ticket.logoHeight }),
+                        true));
                 }
-                graphics.DrawString(str2, font3, Brushes.Black, 0.0f, (float)num4);
-                int num5 = num4 + (stringSize2.Height + 3);
-                string str3 = string.Format("Fecha: {0}\t{1}", (object)DateTime.Now.ToShortDateString(), (object)DateTime.Now.ToShortTimeString());
-                Font font4 = new Font("Times new Roman", 8f);
-                Size stringSize3 = this.getStringSize(str3, font4);
-                int num6;
-                if (stringSize3.Width + 10 < width)
+
+                if (ticket.headderDisplay)
                 {
-                    graphics.DrawString(str3, font4, Brushes.Black, 10f, (float)num5);
-                    num6 = num5 + (stringSize3.Height + 1);
+                    data = ticket.header;
+                    mainFont = ticket.headerFont;
+
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                     new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                     true));
                 }
-                else
+                if (ticket.addressDisplay)
                 {
-                    graphics.DrawString(str3, font4, Brushes.Black, 10f, (float)num5);
-                    num6 = num5 + (stringSize3.Height + 1);
+                    data = ticket.address;
+                    mainFont = ticket.addressFont;
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                        true));
+
                 }
-                graphics.DrawLine(Pens.Black, 0, num6, width - 10, num6);
-                int num7 = num6 + 1;
-                Size stringSize4 = this.getStringSize("Cantidad\tImporte\tTotal", font1);
-                graphics.DrawString("Cantidad", font1, Brushes.Black, 0.0f, (float)num7);
-                graphics.DrawString("Importe", font1, Brushes.Black, (float)((width - this.getStringSize("Importe", font1).Width) / 2), (float)num7);
-                graphics.DrawString("Total", font1, Brushes.Black, (float)(width - this.getStringSize("Total", font1).Width), (float)num7);
-                int num8 = num7 + (stringSize4.Height + 1);
-                graphics.DrawLine(Pens.Black, 10, num8, width - 10, num8);
-                int num9 = num8 + 2;
-                foreach (DataRow row in (InternalDataCollectionBase)dataTable.Rows)
+
+                if (ticket.phoneDisplay)
+                {
+                    data = ticket.phone;
+                    mainFont = ticket.phoneFont;
+
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }), true));
+                }
+
+                infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                 new List<object>(new object[] { 10, width - 10 }),
+                 true));
+                
+                data = "Resumen de Compras";
+                mainFont = new Font("times new roman", 20f, FontStyle.Bold); //this.getFont(data, width, FontStyle.Bold);
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+               new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+               true));
+                
+                data = "Cliente: " + this.cliente.Name;
+                mainFont = new Font("times new roman", 10f, FontStyle.Regular);
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+               new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }),
+               true));
+
+                data = string.Format("Fecha: {0} {1}", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+               new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }),
+               true));
+
+                infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+               new List<object>(new object[] { 10, width - 10 }), true));
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { "Cantidad", mainFont, width, StringAlignment.Near }),
+                    false));
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { "Precio", mainFont, width, StringAlignment.Center }),
+                    false));
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { "Importe", mainFont, width, StringAlignment.Far }),
+                    true));
+
+                infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                    new List<object>(new object[] { 10, width - 10 }),
+                    true));
+
+                foreach (DataRow row in dataTable.Rows)
                 {
                     Producto producto = new Producto(row["Código de Barras"].ToString());
-                    string str4 = producto.HideInTicket ? "Artículo Varios" : string.Format("{0}, {1}", (object)producto.Description, (object)producto.Brand);
-                    Size stringSize5 = this.getStringSize(str4, font1);
-                    if (stringSize5.Width > width)
-                    {
-                        int letterByMeasuring = this.getLastLetterByMeasuring(str4, font1, width);
-                        str4 = str4.Insert(letterByMeasuring, str4[letterByMeasuring] == ' ' ? "\n" : "-\n");
-                        stringSize5 = this.getStringSize(str4, font1);
-                    }
-                    graphics.DrawString(str4, font1, Brushes.Black, 0.0f, (float)num9);
-                    num9 += stringSize5.Height + 2;
-                    string s = row["Cantidad"].ToString();
-                    graphics.DrawString(s, font1, Brushes.Black, 0.0f, (float)num9);
-                    string str5 = Convert.ToDouble(row["Descuento"]) > 0.0 ? string.Format(" ${0}\n-${1}", row["Importe"], row["Descuento"]) : string.Format("${0}", row["Importe"]);
-                    Size stringSize6 = this.getStringSize(str5, font1);
-                    graphics.DrawString(str5, font1, Brushes.Black, (float)((width - stringSize6.Width) / 2), (float)num9);
+                    data = producto.HideInTicket ? "Artículo Varios" : string.Format("{0}, {1}", (object)producto.Description, (object)producto.Brand);
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                           new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }),
+                           true));
+
+                    data = row["Cantidad"].ToString();
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] {data, mainFont, width, StringAlignment.Near }),
+                        false));
+
+                    data = string.Format("${0}", row["Importe"]);
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                         new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                         false));
+
+
                     string str6 = "$" + Convert.ToDouble(row["Total"]).ToString("n2");
-                    Size stringSize7 = this.getStringSize(str6, font1);
-                    graphics.DrawString(str6, font1, Brushes.Black, (float)(width - stringSize7.Width), (float)num9);
-                    num9 += stringSize6.Height + 3;
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] {data, mainFont, width, StringAlignment.Far }),
+                        true));
+
+                    var dis = Convert.ToDouble(row["Descuento"]);
+                    
+                    if (dis > 0)
+                    {
+                        data = string.Format("Descuento: -${0}", dis.ToString("n2")); //getDiscountFromRow(row.Index).ToString("n2"));
+                        infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                            true));
+
+                        data = string.Format("Costo Final: ${0}", Convert.ToDouble(row["Total"]) - dis); //getTotalFromRow(row.Index).ToString("n2"));
+                        infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                            true));
+                    }
                 }
-                graphics.DrawLine(Pens.Black, 10, num9, width - 10, num9);
-                int num10 = num9 + 3;
-                string str7 = string.Format("Total de las Ventas: ${0}", (object)this.getTotal(dataTable).ToString("n2"));
-                Size stringSize8 = this.getStringSize(str7, font1);
-                graphics.DrawString(str7, font1, Brushes.Black, (float)(width - stringSize8.Width), (float)num10);
-                int num11 = num10 + (stringSize8.Height + 3);
-                string str8 = string.Format("Pago realizado: ${0}", (object)num1.ToString("n2"));
-                Size stringSize9 = this.getStringSize(str8, font1);
-                graphics.DrawString(str8, font1, Brushes.Black, (float)(width - stringSize9.Width), (float)num11);
-                int num12 = num11 + (stringSize9.Height + 3);
-                string str9 = string.Format("Adeudo: ${0}", (object)(this.getTotal(dataTable) - num1).ToString("n2"));
-                Size stringSize10 = this.getStringSize(str9, font1);
-                graphics.DrawString(str9, font1, Brushes.Black, (float)(width - stringSize10.Width), (float)num12);
-                this.printDocument1.EndPrint += (PrintEventHandler)((ss, ee) =>
+                infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                    new List<object>(new object[] { 10, width - 10 }),
+                    true));
+
+                data = string.Format("Total de las Ventas: ${0}", this.getTotal(dataTable).ToString("n2"));
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                            true));
+
+
+                data= string.Format("Pago realizado: ${0}", accumulatedTotal.ToString("n2"));
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                               new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                               true));
+
+                data= string.Format("Adeudo: ${0}", (this.getTotal(dataTable) - accumulatedTotal).ToString("n2"));
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                            true));
+
+            }
+            var printdocument = new PrintDocument();
+            printdocument.PrintController = new StandardPrintController();
+
+            printdocument.PrintPage += (s, e) =>
+            {
+                printTicket(e.Graphics, infoList, e.PageSettings.PaperSize.Height);
+
+                if (infoList.Count > 0)
+                    e.HasMorePages = true;
+            };
+            printdocument.EndPrint += (s, e) =>
+            {
+                mainFont.Dispose();
+                if (hasCancelledSales)
+                    MessageBox.Show("Las ventas canceladas no fueron tomadas en cuenta");
+            };
+
+
+            try
+            {
+                printDialog1.Document = printdocument;
+                printdocument.Print();
+
+            }
+            catch (InvalidPrinterException)
+            {
+                MessageBox.Show("No se encontró la impresora");
+            }
+            catch (Exception) { }
+        }
+
+        private void printTicket(Graphics graphics, List<Tuple<string, List<object>, bool>> infoList, int maxHeight)
+        {
+            Type thisType = typeof(printingClass);
+            int location = 0;
+
+            while (location < maxHeight - 10 && infoList.Count > 0)
+            {
+                var item = infoList[0];
+
+                System.Reflection.MethodInfo theMethod = thisType.GetMethod(item.Item1);
+
+                var parameters = new object[item.Item2.Count + 2];
+
+                int i;
+
+                for (i = 0; i < item.Item2.Count; i++)
                 {
-                    if (!hasCancelledSales)
-                        return;
-                    int num = (int)MessageBox.Show("Las ventas canceladas no fueron tomadas en cuenta");
-                });
+                    parameters[i] = item.Item2.ElementAt(i);
+                }
+                parameters[i++] = graphics;
+                parameters[i] = location;
+
+                if (item.Item3)
+                    location += (int)theMethod.Invoke(this, parameters);
+
+                else
+                    theMethod.Invoke(this, parameters);
+
+                infoList.RemoveAt(0);
             }
         }
 
+      
         private double getTotal(DataTable dt)
         {
             double num = 0.0;
@@ -1252,6 +1356,35 @@ namespace POS
             return num;
         }
 
-       
+        private void customerPaymentDocument_PrintPage(object sender, PrintPageEventArgs e)
+        {
+
+        }
+
+        private void deleteCustomer_Click(object sender, EventArgs e)
+        {
+            if (!cliente.IsEmployee ())
+            {
+                if (cliente.Debt == 0)
+                {
+
+                    if (MessageBox.Show("¿Desea borrar la información del cliente?", "Borrar Cliente",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                    {
+                        cliente.Delete();
+                        HideLabels();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Es necesario liquidar el adeudo para realizar esta acción");
+                }
+            }
+            else
+            {
+                MessageBox.Show("El cliente es un empleado. Para poder utilizar esta opción es necesario utilizar primero la opción \"Borrar Empleado\" en la" +
+                    "ventana Empleados");
+            }
+        }
     }
 }

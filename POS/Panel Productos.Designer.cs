@@ -52,10 +52,10 @@ namespace POS
             this.promoBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.wholesaleCostsBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.bunifuGradientPanel4 = new Bunifu.Framework.UI.BunifuGradientPanel();
+            this.NewDepotBtn = new Bunifu.Framework.UI.BunifuThinButton2();
+            this.scrapBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.SearchTxt = new System.Windows.Forms.TextBox();
-            this.scrapBtn = new System.Windows.Forms.Button();
-            this.NewDepotBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).BeginInit();
             this.bunifuGradientPanel3.SuspendLayout();
@@ -111,10 +111,10 @@ namespace POS
             this.bunifuGradientPanel3.Controls.Add(this.MimimizeBtn);
             this.bunifuGradientPanel3.Controls.Add(this.closeBtn);
             this.bunifuGradientPanel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.bunifuGradientPanel3.GradientBottomLeft = System.Drawing.Color.White;
-            this.bunifuGradientPanel3.GradientBottomRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel3.GradientTopLeft = System.Drawing.Color.White;
-            this.bunifuGradientPanel3.GradientTopRight = System.Drawing.Color.White;
+            this.bunifuGradientPanel3.GradientBottomLeft = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.bunifuGradientPanel3.GradientBottomRight = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.bunifuGradientPanel3.GradientTopLeft = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.bunifuGradientPanel3.GradientTopRight = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.bunifuGradientPanel3.Location = new System.Drawing.Point(0, 0);
             this.bunifuGradientPanel3.Name = "bunifuGradientPanel3";
             this.bunifuGradientPanel3.Quality = 10;
@@ -354,47 +354,6 @@ namespace POS
             this.bunifuGradientPanel4.Size = new System.Drawing.Size(1555, 65);
             this.bunifuGradientPanel4.TabIndex = 8;
             // 
-            // label1
-            // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Century Gothic", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.label1.Location = new System.Drawing.Point(515, 14);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(103, 32);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "Buscar";
-            // 
-            // SearchTxt
-            // 
-            this.SearchTxt.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.SearchTxt.Font = new System.Drawing.Font("Century Gothic", 19.8F, System.Drawing.FontStyle.Bold);
-            this.SearchTxt.Location = new System.Drawing.Point(622, 12);
-            this.SearchTxt.Margin = new System.Windows.Forms.Padding(2);
-            this.SearchTxt.Name = "SearchTxt";
-            this.SearchTxt.Size = new System.Drawing.Size(417, 40);
-            this.SearchTxt.TabIndex = 1;
-            this.SearchTxt.TextChanged += new System.EventHandler(this.SearchTxt_TextChanged);
-            this.SearchTxt.Enter += new System.EventHandler(this.SearchTxt_Enter);
-            this.SearchTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTxt_KeyDown);
-            // 
-            // scrapBtn
-            // 
-            this.scrapBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.scrapBtn.FlatAppearance.BorderSize = 0;
-            this.scrapBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.scrapBtn.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.scrapBtn.ForeColor = System.Drawing.Color.White;
-            this.scrapBtn.Location = new System.Drawing.Point(30, 12);
-            this.scrapBtn.Name = "scrapBtn";
-            this.scrapBtn.Size = new System.Drawing.Size(171, 40);
-            this.scrapBtn.TabIndex = 2;
-            this.scrapBtn.Text = "Scrap";
-            this.scrapBtn.UseVisualStyleBackColor = false;
-            this.scrapBtn.Click += new System.EventHandler(this.scrapBtn_Click);
-            // 
             // NewDepotBtn
             // 
             this.NewDepotBtn.ActiveBorderThickness = 1;
@@ -421,6 +380,47 @@ namespace POS
             this.NewDepotBtn.TabIndex = 110;
             this.NewDepotBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.NewDepotBtn.Click += new System.EventHandler(this.NewDepotBtn_Click);
+            // 
+            // scrapBtn
+            // 
+            this.scrapBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.scrapBtn.FlatAppearance.BorderSize = 0;
+            this.scrapBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.scrapBtn.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.scrapBtn.ForeColor = System.Drawing.Color.White;
+            this.scrapBtn.Location = new System.Drawing.Point(30, 12);
+            this.scrapBtn.Name = "scrapBtn";
+            this.scrapBtn.Size = new System.Drawing.Size(171, 40);
+            this.scrapBtn.TabIndex = 2;
+            this.scrapBtn.Text = "Scrap";
+            this.scrapBtn.UseVisualStyleBackColor = false;
+            this.scrapBtn.Click += new System.EventHandler(this.scrapBtn_Click);
+            // 
+            // label1
+            // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Century Gothic", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
+            this.label1.Location = new System.Drawing.Point(515, 14);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(103, 32);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Buscar";
+            // 
+            // SearchTxt
+            // 
+            this.SearchTxt.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.SearchTxt.Font = new System.Drawing.Font("Century Gothic", 19.8F, System.Drawing.FontStyle.Bold);
+            this.SearchTxt.Location = new System.Drawing.Point(622, 12);
+            this.SearchTxt.Margin = new System.Windows.Forms.Padding(2);
+            this.SearchTxt.Name = "SearchTxt";
+            this.SearchTxt.Size = new System.Drawing.Size(417, 40);
+            this.SearchTxt.TabIndex = 1;
+            this.SearchTxt.TextChanged += new System.EventHandler(this.SearchTxt_TextChanged);
+            this.SearchTxt.Enter += new System.EventHandler(this.SearchTxt_Enter);
+            this.SearchTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTxt_KeyDown);
             // 
             // Panel_Productos
             // 

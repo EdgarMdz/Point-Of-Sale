@@ -578,9 +578,11 @@ namespace POS
                             m_Drawer.Close();
                         }
                         catch (PosControlException)
-                        {
-                        }
+                        { useNativePrinter(); }
                     }
+                    else
+                        useNativePrinter();
+                    
 
                     //<<<step1>>>--End
                     MessageBox.Show("Se realizó abono con exito");
@@ -596,6 +598,24 @@ namespace POS
             }
             else
                 MessageBox.Show("Primero debe confirmar el pedido para realizar un abono", "No se puede realizar un abono", MessageBoxButtons.OK);
+        }
+
+        private void useNativePrinter()
+        {
+            try
+            {
+
+                var printDialog = new PrintDialog();
+                var printDocument = new PrintDocument() { PrintController = new StandardPrintController() };
+                printDialog.PrinterSettings.PrinterName = new PrinterTicket().printerName;
+                printDialog.Document = printDocument;
+
+                printDocument.Print();
+            }
+            catch (InvalidPrinterException)
+            {
+                MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
+            }
         }
 
         private void deleteBtn_Click(object sender, EventArgs e)
@@ -642,11 +662,14 @@ namespace POS
 
         private void ConfirmBtn_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewBand row in this.dataGridView1.Rows)
+            dataGridView1.EndEdit();
+            foreach (DataGridViewRow row in this.dataGridView1.Rows)
             {
                 if (row.DefaultCellStyle.ForeColor.ToKnownColor() == Color.FromArgb(0, 0, 0, 0).ToKnownColor())
                 {
                     MessageBox.Show("Aún quedan artículos sin revisar");
+                    dataGridView1.CurrentCell = row.Cells["Cantidad"];
+                    dataGridView1.BeginEdit(true);
                     return;
                 }
             }

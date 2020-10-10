@@ -28,7 +28,7 @@ namespace POS
             this.stockTxt.Enabled = false;
             this.barcodeTxt.Enabled = false;
             this.ShowInTaskbar = false;
-         //   wholesaleCostsBtn.Show();
+            wholesaleCostsBtn.Show();
         }
 
         private void getDepots()
@@ -684,14 +684,11 @@ namespace POS
 
         private void wholesaleCostsBtn_Click(object sender, EventArgs e)
         {
-         /*   form_ProductWholeSaleCosts wholeSaleCosts = new form_ProductWholeSaleCosts(barcode);
-
-            this.Hide();
-
+            form_ProductWholeSaleCosts wholeSaleCosts = new form_ProductWholeSaleCosts(barcode);
             wholeSaleCosts.ShowDialog();
             this.Show();
 
-            */
+            
         }
 
         private void Form_Agregar_FormClosing(object sender, FormClosingEventArgs e)

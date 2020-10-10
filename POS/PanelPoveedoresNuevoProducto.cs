@@ -94,6 +94,21 @@ namespace POS
 
         private void AcceptBtn_Click(object sender, EventArgs e)
         {
+            try
+            {
+                Convert.ToDouble(this.precioTxt.Text);
+
+            }
+            catch (FormatException) { precioTxt.Select();precioTxt.SelectAll() ; return; }
+            try
+            {
+                Convert.ToDouble(this.piecesperCaseTxt.Text);
+            }
+            catch (FormatException)
+            {
+                piecesperCaseTxt.Select(); piecesperCaseTxt.SelectAll(); return;
+            }
+
             if (this.precioTxt.Text == "" || Convert.ToDouble(this.precioTxt.Text) == 0.0)
             {
                 MessageBox.Show("El precio debe ser diferente de cero");
@@ -106,6 +121,7 @@ namespace POS
                     proveedor.ID = this.SupplierID;
                     this.price = Convert.ToDouble(this.precioTxt.Text);
                     this.piecesPerCase = this.piecesperCaseTxt.Text != "" ? Convert.ToDouble(this.piecesperCaseTxt.Text) : 1.0;
+
                     string text = this.BarCodeTxt.Text;
                     try
                     {
@@ -115,7 +131,8 @@ namespace POS
                         this.Close();
                     }
                     catch (Exception ex)
-                    {MessageBox.Show("Error:\n" + ex.ToString());
+                    {
+                        MessageBox.Show("Error:\n" + ex.ToString());
                         this.DialogResult = DialogResult.Cancel;
                     }
                 }
@@ -159,7 +176,7 @@ namespace POS
         {
             if (!isNumber(BarCodeTxt.Text))
             {
-                var results = Producto.SearchValueGetTable(BarCodeTxt.Text);
+                var results = new Proveedor(SupplierID).searchForNewProduct(BarCodeTxt.Text);
 
                 if (results.Rows.Count == 1)
                 {
@@ -167,6 +184,7 @@ namespace POS
                     {
                         barcode = results.Rows[0]["código de barras"].ToString();
                         var p = new Producto(barcode);
+                        BarCodeTxt.Text = barcode;
                         descriptionLbl.Text = p.Description;
                         MarcaLbl.Text = p.Brand;
                         StockLbl.Text = p.CurrentStock.ToString("n2");
@@ -186,8 +204,9 @@ namespace POS
                     if (form.ShowDialog() == DialogResult.OK)
                     {
                         barcode = form.selectedItem[0];
-
                         var p = new Producto(barcode);
+
+                        BarCodeTxt.Text = p.Barcode;
                         descriptionLbl.Text = p.Description;
                         MarcaLbl.Text = p.Brand;
                         StockLbl.Text = p.CurrentStock.ToString("n2");

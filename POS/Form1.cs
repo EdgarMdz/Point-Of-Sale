@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Media;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace POS
@@ -20,7 +14,6 @@ namespace POS
 
         private Empleado employee;
         private ContextMenu menu;
-        private bool displayingReminder;
         private ActiveWindow currentWindow;
 
         private enum ActiveWindow
@@ -303,35 +296,6 @@ namespace POS
             string str2 = cultureInfo.DateTimeFormat.GetMonthName(now.Month).Substring(0, 3);
             DateLbl.Text = str2.Substring(0, 1).ToUpper() + str2.Substring(1) + " " + now.Day.ToString();
 
-            if (DateTime.Now.TimeOfDay == new TimeSpan(0, 0, 0))
-                Recordatorio.resetReminders();
-
-           //  setUpReminders();
-        }
-
-        private async void setUpReminders()
-        {
-            await Task.Run((Action)(() =>
-            {
-                if (displayingReminder)
-                    return;
-
-                 displayingReminder = true;
-                DataTable unseenReminders = Recordatorio.getUnseenReminders();
-                SoundPlayer soundPlayer = new SoundPlayer(Properties.Resources.Windows_Notify_Calendar);
-
-                foreach (DataRow row in unseenReminders.Rows)
-                {
-                    soundPlayer.Play();
-                    Recordatorio recordatorio = new Recordatorio(Convert.ToInt32(row["ID_Recordatorio"]));
-                    if (recordatorio.ID != null && new Display_Reminder(new Proveedor(recordatorio.ID_Supplier).NombreEmpresa, recordatorio.Message, recordatorio.StartTime, recordatorio.EndTime).ShowDialog() == DialogResult.OK)
-                    {
-                        recordatorio.MarkAsSeen();
-                        Thread.Sleep(1000);
-                    }
-                }
-                 displayingReminder = false;
-            }));
         }
 
         private void ClientesBtn_Click(object sender, EventArgs e)
@@ -492,11 +456,37 @@ namespace POS
             if (MessageBox.Show(string.Format("¿Desea cambiar de usuario?.\nGuarde su información antes de continuar."), "", MessageBoxButtons.YesNo) != DialogResult.Yes)
                 return;
             darkForm.Show();
+        
             if (formLogin.ShowDialog() == DialogResult.OK)
             {
                  employee = new Empleado(formLogin.ID);
                  displayHideTabs();
                  homeBtn_Click((object)this, (EventArgs)null);
+
+                try { (ContainerPanel.Controls[0] as Panel_Inicio).EmployeeID = employee.ID; }
+                catch (Exception) { }
+
+                var count = Application.OpenForms.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    var item = Application.OpenForms[i];
+                    
+
+                    if ( item.GetType() ==typeof( Panel_Ventas))
+                    {
+                        (item as Panel_Ventas).setEmployee(employee.ID);
+                    }
+                    if (item.GetType() == typeof(Panel_Productos))
+                    {
+                        (item as Panel_Productos).setEmployee(employee.ID);
+
+                        if (count > Application.OpenForms.Count)
+                        {
+                            i--;
+                            count = Application.OpenForms.Count;
+                        }
+                    }
+                }
             }
             darkForm.Close();
         }

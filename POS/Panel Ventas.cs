@@ -12,11 +12,13 @@ using Zen.Barcode;
 using Microsoft.PointOfService;
 using System.IO;
 using System.Drawing.Imaging;
+using System.Linq;
 
 namespace POS
 {
     public partial class Panel_Ventas : Form
     {
+        private delegate void hideButtonDelegate(int employeeID);
         private Size customerGroupBoxMaxSize = new Size(384, 280);
         private Size customerGroupBoxMinSize = new Size(384, 134);
         private Size pictureBoxMinSize = new Size(242, 213);
@@ -39,6 +41,8 @@ namespace POS
         ToolTip[] ShortcutTips = null;
         Control[] controlsShortcuts = null;
 
+        int printedPart = 0;
+        int pagecount = 0;
         public bool canClose
         {
             get
@@ -141,18 +145,21 @@ namespace POS
             int x = 0;
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
-                var barcode = row.Cells["barcode"].Value.ToString();
-                if (barcode.IndexOf("promo(") > -1)
-                    continue;
-                else
+                if (row.Cells["barcode"].Value != null)
                 {
-                    Producto p = new Producto(barcode);
-                    if (p.displayAsKilogram)
-                        x++;
+                    var barcode = row.Cells["barcode"].Value.ToString();
+                    if (barcode.IndexOf("promo(") > -1)
+                        continue;
                     else
                     {
-                        x += dataGridView2.RowCount > 0 ?(int) Math.Ceiling(getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), p)) :
-                        0;
+                        Producto p = new Producto(barcode);
+                        if (p.displayAsKilogram)
+                            x++;
+                        else
+                        {
+                            x += dataGridView2.RowCount > 0 ? (int)Math.Ceiling(getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), p)) :
+                            0;
+                        }
                     }
                 }
             }
@@ -265,53 +272,60 @@ namespace POS
             Producto p = new Producto(dataGridView2.Rows[rowIndex].Cells["barcode"].Value.ToString());
             double amount = getAmountOfSinglePieces(dataGridView2.Rows[rowIndex].Cells["amount"].Value.ToString(), p);
 
-
-
             Tuple<int, double> tuple = Producto.getCasesAndSingleProducts(p, amount);
 
             int cases = tuple.Item1;
             double singlePieces = tuple.Item2;
 
-            double cost = p.CostPerCase * cases + p.RetailCost * singlePieces;
+            double newDisc = 0;
 
-            //getting general discount
-            double genDiscount;
-
-            double customerCost = customer.getCost(p.Barcode, amount);
-
-            genDiscount = (cost) / 100 * generalDiscount;
-
-            //getting discount for customer
-            double customerDiscount = (p.RetailCost - customerCost) * amount;
-            if (customerDiscount < 0)
-                customerDiscount = 0;
-
-            //getting discount for cases
-            double caseDiscount = 0;
-            if (cases > 0)
+            if (discount > 0)
             {
-                caseDiscount = p.RetailCost * p.PiecesPerCase * cases - p.CostPerCase * cases;
-
-                caseDiscount = caseDiscount < 0 ? 0 : caseDiscount;
+                newDisc = validateDiscount(discount, p, amount);
             }
-
-            double totalDiscount = customerDiscount > caseDiscount ? customerDiscount : caseDiscount;
-
-            totalDiscount = totalDiscount > genDiscount ? totalDiscount : generalDiscount;
-
-
-            if (caseDiscount > 0)
-                totalDiscount = caseDiscount;
             else
             {
-                if (customerDiscount > generalDiscount)
-                    totalDiscount = customerDiscount;
+                double cost = p.CostPerCase * cases + p.RetailCost * singlePieces;
+
+                //getting general discount
+                double genDiscount;
+
+                double customerCost = customer.getCost(p.Barcode, amount);
+
+                genDiscount = (cost) / 100 * generalDiscount;
+
+                //getting discount for customer
+                double customerDiscount = (p.RetailCost - customerCost) * amount;
+                if (customerDiscount < 0)
+                    customerDiscount = 0;
+
+                //getting discount for cases
+                double caseDiscount = 0;
+                if (cases > 0)
+                {
+                    caseDiscount = p.RetailCost * p.PiecesPerCase * cases - p.CostPerCase * cases;
+
+                    caseDiscount = caseDiscount < 0 ? 0 : caseDiscount;
+                }
+
+                double totalDiscount = customerDiscount > caseDiscount ? customerDiscount : caseDiscount;
+
+                totalDiscount = totalDiscount > genDiscount ? totalDiscount : genDiscount;
+
+
+                if (caseDiscount > 0)
+                    totalDiscount = caseDiscount;
                 else
-                    totalDiscount = generalDiscount;
+                {
+                    if (customerDiscount > generalDiscount)
+                        totalDiscount = customerDiscount;
+                    else
+                        totalDiscount = genDiscount;
+                }
+
+
+                newDisc = validateDiscount(discount + totalDiscount, p, amount);
             }
-
-
-            double newDisc = validateDiscount(discount + totalDiscount, p, amount);
             ///if there still a discount then show it in the table as the format -> "$100.00 \n -$15.00"
             ///otherwise show just the total
             if (newDisc > 0.0)
@@ -420,7 +434,7 @@ namespace POS
         {
             //list to store values
             //Dictionary<barcode,tuple<rowindex,amount,accumulated amount>
-            Dictionary<string, Tuple<int, double, double>> values = new Dictionary<string, Tuple<int, double, double>>();
+            // Dictionary<string, Tuple<int, double, double>> values = new Dictionary<string, Tuple<int, double, double>>();
 
             //Dictionary<barcode,tuple<rowindex,amount,accumulated amount>
             Dictionary<int, Tuple<string, double, double>> valuesx = new Dictionary<int, Tuple<string, double, double>>();
@@ -506,16 +520,15 @@ namespace POS
                     addDiscountToRow(item.Key, disc);
                 }
             }
-            /*  else
-              {
-                  values.Remove(product.Barcode);
+            else
+            {
+                valuesx.Remove(rowIndex);
 
-                  foreach (KeyValuePair<string, Tuple<int, double, double>> item in values)
-                  {
-                      Producto p = new Producto(item.Key);
-                      addDiscountToRow(item.Value.Item1, 0);
-                  }
-              }*/
+                foreach (KeyValuePair<int, Tuple<string, double, double>> item in valuesx)
+                {
+                    addDiscountToRow(item.Key, 0);
+                }
+            }
             return discount;
         }
 
@@ -573,7 +586,7 @@ namespace POS
                 this.ClearSale();
         }
 
-        private void CancelSaleBtn_Click(object sender, EventArgs e)
+        private async void CancelSaleBtn_Click(object sender, EventArgs e)
         {
             if (this.sale != null) //&& this.sale.Date > DateTime.Now.AddDays(-2.0))
             {
@@ -615,12 +628,16 @@ namespace POS
                 if (cancelWholeSale)
                 {
                     sale.Cancel(EmployeeID);
+                    double alreadyReturned = 0;
+
                     foreach (DataGridViewRow row in dataGridView2.Rows)
                     {
                         var refound = row.Cells["refound"];
-                        if (!refound.ReadOnly)
-                            MoneyToBeRefounded += getTotalFromRow(row.Index);
+                        if (refound.ReadOnly)
+                            alreadyReturned += getTotalFromRow(row.Index);
                     }
+
+                    MoneyToBeRefounded = (double)sale.Total - alreadyReturned > (double)sale.Payment ? 0 : (double)sale.Total - alreadyReturned;
                 }
 
                 else
@@ -628,22 +645,21 @@ namespace POS
                     DataTable barcodesToBeRefounded = getRefoundedProduct();
                     sale.RefoundProductsToCustomer(barcodesToBeRefounded);
 
-
                     int totalOfRefoundedProducts = 0;
+
                     foreach (DataGridViewRow row in dataGridView2.Rows)
                     {
                         var refound = row.Cells["refound"];
-                        if (!refound.ReadOnly && Convert.ToBoolean(refound.Value))
-                            MoneyToBeRefounded += getTotalFromRow(row.Index);
-
-
                         if (Convert.ToBoolean(refound.Value))
                             totalOfRefoundedProducts++;
                     }
 
-                    if (totalOfRefoundedProducts == sale.getSoldProducts.Rows.Count)
-                        sale.Cancel(EmployeeID);
 
+                    if (totalOfRefoundedProducts == sale.getSoldProducts.Rows.Count)
+                        await Task.Run(() => sale.Cancel(EmployeeID));
+
+
+                    MoneyToBeRefounded = calculateRefound();
                 }
 
                 setSale(sale.ID);
@@ -660,6 +676,28 @@ namespace POS
             {
                 MessageBox.Show(string.Format("La compra excede el lapso permitido de {0} días para realizar la devolución.\n\nFecha de la venta: {1} de {2} del {3}", (object)2, (object)this.sale.Date.Day, (object)new CultureInfo("es-MX").DateTimeFormat.GetMonthName(this.sale.Date.Month), (object)this.sale.Date.Year), "No se puede cancelar");
             }
+        }
+
+        private double calculateRefound()
+        {
+            double MoneyToBeRefounded = 0;
+            double alreadyReturned = 0;
+
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                var refound = row.Cells["refound"];
+                if (refound.ReadOnly && Convert.ToBoolean(refound.Value))
+                    alreadyReturned += getTotalFromRow(row.Index);
+
+                else if (!refound.ReadOnly && Convert.ToBoolean(refound.Value))
+                    MoneyToBeRefounded += getTotalFromRow(row.Index);
+            }
+
+            var alreadyRefound = (double)sale.Payment - ((double)sale.Total - alreadyReturned);
+            alreadyRefound = alreadyRefound > 0 ? alreadyRefound : 0;
+            MoneyToBeRefounded = (double)sale.Payment - ((double)sale.Total - alreadyReturned - MoneyToBeRefounded) - alreadyRefound;
+            
+            return MoneyToBeRefounded > 0 ? MoneyToBeRefounded : 0;
         }
 
         private DataTable getRefoundedProduct()
@@ -835,13 +873,17 @@ namespace POS
                         double discountFromRow = this.getDiscountFromRow(row.Index);
                         list.Add(new Tuple<string, double, double, double, int>
                             (product.Barcode, product.RetailCost, amountOfSinglePieces, discountFromRow, getDepotIDFromRow(row.Index)));
-                        if (!product.HideInTicket)
-                            if (product.Brand.Trim() != "")
-                                printingString += "\u001b|N" + string.Format("{0}, {1}", product.Description, product.Brand) + "\n";
+
+                        if (printer != null)
+                        {
+                            if (!product.HideInTicket)
+                                if (product.Brand.Trim() != "")
+                                    printingString += "\u001b|N" + string.Format("{0}, {1}", product.Description, product.Brand) + "\n";
+                                else
+                                    printingString += "\u001b|N" + string.Format("{0}", product.Description) + "\n";
                             else
-                                printingString += "\u001b|N" + string.Format("{0}", product.Description) + "\n";
-                        else
-                            printingString += "\u001b|N" + string.Format("Productos Varios").Trim(',') + "\n";
+                                printingString += "\u001b|N" + string.Format("Productos Varios").Trim(',') + "\n";
+                        }
                     }
                     else if (barcode.IndexOf("promo(") > -1)
                     {
@@ -875,19 +917,22 @@ namespace POS
                     else
                         continue;
 
-                    printingString += "\u001b|N" + getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), new Producto(barcode)).ToString("n2");
-                    printingString += "\u001b|cA" + "$" + row.Cells["UnitCost"].Value;
-                    printingString += "\u001b|rA" + "$" + getTotalFromRowWithoutDiscount(row.Index).ToString("n2") + "\n";
-
-
-                    var productDiscount = getDiscountFromRow(row.Index);
-
-                    if (productDiscount > 0)
+                    if (printer != null)
                     {
-                        printingString += "\u001b|rA" + "Descuento: -$" + getDiscountFromRow(row.Index).ToString("n2") + "\n";
-                        printingString += "\u001b|rA" + "Costo Final: $" + getTotalFromRow(row.Index).ToString("n2") + "\u001b|N\n";
+                        printingString += "\u001b|N" + getAmountOfSinglePieces(row.Cells["amount"].Value.ToString(), new Producto(barcode)).ToString("n2");
+                        printingString += "\u001b|cA" + "$" + row.Cells["UnitCost"].Value;
+                        printingString += "\u001b|rA" + "$" + getTotalFromRowWithoutDiscount(row.Index).ToString("n2") + "\n";
+
+
+                        var productDiscount = getDiscountFromRow(row.Index);
+
+                        if (productDiscount > 0)
+                        {
+                            printingString += "\u001b|rA" + "Descuento: -$" + getDiscountFromRow(row.Index).ToString("n2") + "\n";
+                            printingString += "\u001b|rA" + "Costo Final: $" + getTotalFromRow(row.Index).ToString("n2") + "\u001b|N\n";
+                        }
+                        discount += productDiscount;
                     }
-                    discount += productDiscount;
                 }
 
                 FormCambio formCambio = new FormCambio(Convert.ToDouble(formPagar.Cash) - Convert.ToDouble(formPagar.Pay));
@@ -911,20 +956,21 @@ namespace POS
                 formCambio.Focus();
             }
             darkForm.Close();
-
         }
 
         private void printTicket(int saleID, string products, double discount)
         {
-            Venta lastSale = new Venta(saleID);
-            try
+            if (printer != null)
             {
-                if (printer != null)
+                try
                 {
+
                     printer.Claim(1000);
                     printer.DeviceEnabled = true;
                     printer.RecLetterQuality = true;
 
+
+                    Venta lastSale = new Venta(saleID);
 
                     string text = "";
                     if (ticket.logoDisplay)
@@ -1000,265 +1046,514 @@ namespace POS
                     printer.Release();
                     //printer.Close();
                 }
-            }
 
-            catch (PosException e)
+
+                catch (PosException e)
+                {
+                    MessageBox.Show(e.Message);
+                    if (printer.State != ControlState.Closed)
+                    {
+                        printer.Release();
+                    }
+
+                    if (MessageBox.Show("Ocurrió un error al imprimir el Ticket.\n ¿Desea intentar imprimirlo nuevamente?", "Error de Impresión", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                    {
+                        prepareData(saleID);
+                    }
+                }
+            }
+            else
             {
-                MessageBox.Show(e.Message);
-                if (printer.State != ControlState.Closed)
-                {
-                    printer.Release();
-                }
-
-                if (MessageBox.Show("Ocurrió un error al imprimir el Ticket.\n ¿Desea intentar imprimirlo nuevamente?", "Error de Impresión", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
-                {
-                    printDefaultPrinter(printDocument1);
-                }
+                prepareData(saleID);
+               // printDefaultPrinter(printDocument1);
             }
+
         }
 
+        private async void prepareData(int saleID)
+        {
+            Venta lastSale = await Task.Run(() => new Venta(saleID));
+            int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
+            string data;
+            Font mainFont;
+            var infoList = new List<Tuple<string, List<object>, bool>>();
+            
+
+            if (ticket.logoDisplay)
+            { infoList.Add(new Tuple<string, List<object>, bool>("printImage",
+                  new List<object>(new object[] { ticket.logo,width, ticket.logoHeight }),
+                  true));
+            }
+
+            if (ticket.headderDisplay)
+            {
+                data = ticket.header;
+                mainFont = ticket.headerFont;
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                 new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                 true));
+            }
+            if (ticket.addressDisplay)
+            {
+                data = ticket.address;
+                mainFont = ticket.addressFont;
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                    true));
+
+            }
+
+            if (ticket.phoneDisplay)
+            {
+                data = ticket.phone;
+                mainFont = ticket.phoneFont;
+
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }), true));
+            }
+
+            infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                new List<object>(new object[] { 10, width - 10 }),
+                true));
+
+
+            data = "Detalle de Venta";
+            mainFont = new Font("Times new roman", 20f, FontStyle.Bold);
+
+            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                true));
+
+            data = string.Format("Folio: {0}", lastSale.ID.ToString("X"));
+            mainFont = new Font("Times new Roman", 9.9f);
+
+            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }), true));
+
+            if (lastSale.CustomerID != 0)
+            {
+                data = "Cliente: " + new Cliente(lastSale.CustomerID).Name;
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }), true));
+            }
+
+            data = string.Format("Fecha: {0} {1}", lastSale.Date.ToShortDateString(), lastSale.Date.ToShortTimeString());
+            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                new List<object>(new object[] { data, mainFont, width, StringAlignment.Near })
+                , true));
+
+            infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                new List<object>(new object[] { 10, width - 10 }), true));
+
+            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                new List<object>(new object[] { "Cantidad", mainFont, width, StringAlignment.Near }),
+                false));
+
+            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                new List<object>(new object[] { "Precio", mainFont, width, StringAlignment.Center }),
+                false));
+
+            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                new List<object>(new object[] { "Importe", mainFont, width, StringAlignment.Far }),
+                true));
+
+            infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                new List<object>(new object[] { 10, width - 10 }),
+                true));
+            
+            double num9 = 0.0;
+            foreach (DataRow row in lastSale.getSoldProducts.Rows)
+            {
+                var barcode = row["id_producto"].ToString();
+                if (barcode != "")
+                {
+                    data = Convert.ToBoolean(row["Ocultar en Ticket"]) ? "Artículo Varios" :
+                        string.Format("{0}, {1}", row["Descripción"], row["Marca"]);
+                    
+
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }),
+                        true));
+
+                    var dis = Convert.ToDouble(row["Descuento"]); //getDiscountFromRow(row.Index);
+
+
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { row["Cantidad"].ToString(), mainFont, width, StringAlignment.Near }),
+                        false));
+
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { "$" + row["Precio"].ToString(), mainFont, width, StringAlignment.Center }),
+                        false));
+
+                    infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                        new List<object>(new object[] { "$" + row["Importe"].ToString(), mainFont, width, StringAlignment.Far }),
+                        true));
+
+
+
+                    if (dis > 0)
+                    {
+                        data = string.Format("Descuento: -${0}", dis.ToString("n2")); //getDiscountFromRow(row.Index).ToString("n2"));
+                        infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                            true));
+
+                        data = string.Format("Costo Final: ${0}", Convert.ToDouble(row["importe"]) - dis); //getTotalFromRow(row.Index).ToString("n2"));
+                        infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                            true));
+                    }
+
+                    num9 += dis;
+                }
+            }
+                        
+            infoList.Add(new Tuple<string, List<object>, bool>("drawLine",
+                new List<object>(new object[] { 10, width - 10 }),
+                true));
+
+            data = string.Format("Total: ${0}", lastSale.Total.ToString("n2"));//GetTotal().ToString("n2"));
+            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                            new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                            true));
+
+            if (!lastSale.isPaid)
+            {
+                data = string.Format("Usted pagó: ${0}", lastSale.Payment);
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                    true));
+            }
+
+            data = string.Format("Efectivo: ${0}", lastSale.Cash);
+            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }), true));
+            
+            data = string.Format("Cambio: ${0}", (lastSale.Cash - lastSale.Payment));
+            infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                true));
+
+            if (num9 > 0.0)
+            {
+                data = string.Format("Usted ahorró: ${0}", num9.ToString("n2"));
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                    new List<object>(new object[] { data, mainFont, width, StringAlignment.Far }),
+                    true));
+            }
+
+            if (ticket.footerDisplay)
+            {
+                data = ticket.footer;
+                mainFont = ticket.footerFont;
+                infoList.Add(new Tuple<string, List<object>, bool>("printLine",
+                   new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
+                   true));
+            }
+
+            Image image = BarcodeDrawFactory.Code128WithChecksum.Draw(lastSale.ID.ToString("X8"), 50);
+            infoList.Add(new Tuple<string, List<object>, bool>("printImage",
+                new List<object>(new object[] { image,width, 40 }),
+                true));
+
+
+            var printdocument = new PrintDocument();
+            printdocument.PrintController = new StandardPrintController();
+
+            printdocument.PrintPage += (s, e) =>
+              {
+                 printTicket(e.Graphics, infoList,e.PageSettings.PaperSize.Height);
+
+                  if (infoList.Count > 0)
+                      e.HasMorePages = true;
+              };
+            printdocument.EndPrint += (s, e) => { image.Dispose();mainFont.Dispose(); };
+            
+
+            try
+            {
+                printDialog1.Document = printdocument;
+                printdocument.Print();
+
+            }
+            catch(InvalidPrinterException)
+            {
+                MessageBox.Show("No se encontró la impresora");
+            }
+            catch(Exception){ }
+        }
+
+        private void printTicket(Graphics graphics, List<Tuple<string, List<object>, bool>> infoList, int maxHeight)
+        {
+            Type thisType = typeof(printingClass);
+            int location = 0;
+
+            while (location < maxHeight - 5 && infoList.Count > 0)
+            {
+                var item = infoList[0];
+
+                System.Reflection.MethodInfo theMethod = thisType.GetMethod(item.Item1);
+
+                var parameters = new object[item.Item2.Count + 2];
+
+                int i;
+                
+                for (i=0; i < item.Item2.Count; i++)
+                {
+                    parameters[i] = item.Item2.ElementAt(i);
+                }
+                parameters[i++] = graphics;
+                parameters[i] = location;
+
+                if (item.Item3)
+                    location += (int)theMethod.Invoke(this, parameters);
+
+                else
+                    theMethod.Invoke(this, parameters);
+
+                infoList.RemoveAt(0);
+            }
+        }
 
         private void printTicket(int saleID)
         {
             Venta lastSale = new Venta(saleID);
-            try
+
+            if (printer != null)
             {
-                string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
-                //printer.Open();
-                printer.Claim(1000);
-                printer.DeviceEnabled = true;
-                printer.RecLetterQuality = true;
-
-                if (printer.CapRecBitmap)
+                try
                 {
+                    string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
+                    //printer.Open();
+                    printer.Claim(1000);
+                    printer.DeviceEnabled = true;
+                    printer.RecLetterQuality = true;
 
-                    for (int iRetryCount = 0; iRetryCount < 5; iRetryCount++)
+                    if (printer.CapRecBitmap)
                     {
-                        try
+
+                        for (int iRetryCount = 0; iRetryCount < 5; iRetryCount++)
                         {
-                            //Register a bitmap
-                            printer.SetBitmap(1, PrinterStation.Receipt,
-                                logopath, printer.RecLineWidth * ticket.logoHeight / 114,
-                                PosPrinter.PrinterBitmapCenter);
-                            break;
+                            try
+                            {
+                                //Register a bitmap
+                                printer.SetBitmap(1, PrinterStation.Receipt,
+                                    logopath, printer.RecLineWidth * ticket.logoHeight / 114,
+                                    PosPrinter.PrinterBitmapCenter);
+                                break;
+                            }
+                            catch (PosControlException pce)
+                            {
+                                if (pce.ErrorCode == ErrorCode.Failure && pce.ErrorCodeExtended == 0 && pce.Message == "It is not initialized.")
+                                {
+                                    Thread.Sleep(1000);
+                                }
+                                else
+                                {
+                                    MessageBox.Show(pce.Message + " " + pce.HelpLink);
+                                }
+                            }
                         }
-                        catch (PosControlException pce)
+
+                    }
+
+
+                    if (ticket.logoDisplay)
+                        printer.PrintNormal(PrinterStation.Receipt, "\u001b|1B");//printing logo
+
+                    if (ticket.headderDisplay)
+                        printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b| 3C" + "\u001b|bC" + ticket.header + "\n");
+
+                    if (ticket.addressDisplay)
+                        printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|1C" + ticket.address + "\n");
+
+                    if (ticket.phoneDisplay)
+                        printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|1C" + ticket.phone + "\n");
+
+                    string divisionLine = "_".PadLeft(printer.RecLineChars - 2, '_');
+
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n");
+
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|4C" + "Detalle de Venta" + "\u001b|1C\n");
+
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|N" + "\nFolio:" + saleID.ToString("X") + "\n");
+
+                    if (lastSale.CustomerID != 0)
+                        printer.PrintNormal(PrinterStation.Receipt, "Cliente: " + new Cliente(lastSale.CustomerID).Name + "\n");
+
+                    printer.PrintNormal(PrinterStation.Receipt, "Fecha: " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + "\n");
+
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n");
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|N" + "Cantidad");
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "Precio");
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Importe" + "\n");
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n" + "\u001b|N");
+
+                    double discount = 0.0;
+                    Console.WriteLine("before adding productds");
+                    foreach (DataGridViewRow row in dataGridView2.Rows)
+                    {
+                        var barcode = row.Cells["barcode"].Value.ToString();
+                        if (barcode != "")
                         {
-                            if (pce.ErrorCode == ErrorCode.Failure && pce.ErrorCodeExtended == 0 && pce.Message == "It is not initialized.")
+                            string product = "";
+                            if (barcode.IndexOf("promo(") == -1)
                             {
-                                System.Threading.Thread.Sleep(1000);
+                                product = new Producto(barcode).HideInTicket ? "Artículo Varios" : string.Format("{0}, {1}", row.Cells["description"].Value, row.Cells["brand"].Value);
+
                             }
-                            else
+                            else if (barcode.IndexOf("promo(") > -1)
                             {
-                                MessageBox.Show(pce.Message + " " + pce.HelpLink);
+                                DataSet table = Producto.getPromo(getPromoIDFromRow(row.Index));
+
+                                string description = string.Format("Promoción: ");
+
+                                foreach (DataRow childRow in table.Tables[1].Rows)
+                                {
+                                    description += Convert.ToDouble(childRow["amount"]).ToString() + " " + childRow["producto"].ToString().
+                                        Substring(0, childRow["producto"].ToString().LastIndexOf(",")) + ", ";
+                                }
+
+                                product = description.Substring(0, description.Length - 2);
                             }
+
+
+
+                            printer.PrintNormal(PrinterStation.Receipt, product + "\n");
+
+                            var productDiscount = getDiscountFromRow(row.Index);
+
+                            Console.WriteLine("Adding Product");
+
+                            printer.PrintNormal(PrinterStation.Receipt, row.Cells["amount"].Value.ToString());
+                            printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "$" + row.Cells["UnitCost"].Value);
+                            printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "$" + getTotalFromRowWithoutDiscount(row.Index).ToString("n2") + "\n");
+
+                            if (productDiscount > 0)
+                            {
+                                printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Descuento: -$" + getDiscountFromRow(row.Index).ToString("n2") + "\n");
+                                printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Costo Final: $" + getTotalFromRow(row.Index).ToString("n2") + "\u001b|N\n");
+                            }
+                            Console.WriteLine("Product added");
+
+                            discount += productDiscount;
                         }
                     }
 
-                }
+                    Console.WriteLine("Products added");
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n");
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Total: $" + lastSale.Total.ToString("n2") + "\n");
+
+                    if (!lastSale.isPaid)
+                        printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Usted pagó: $" + lastSale.Payment.ToString("n2"));
+
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Efectivo: $" + lastSale.Cash.ToString("n2") + "\n");
 
 
-                if (ticket.logoDisplay)
-                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|1B");//printing logo
+                    var change = lastSale.Cash - lastSale.Total;
+                    change = change >= 0 ? change : 0;
 
-                if (ticket.headderDisplay)
-                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b| 3C" + "\u001b|bC" + ticket.header + "\n");
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Cambio: $" + (change).ToString("n2") + "\n");
 
-                if (ticket.addressDisplay)
-                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|1C" + ticket.address + "\n");
+                    if (discount > 0)
+                        printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Usted Ahorró: $" + discount.ToString("n2") + "\n");
 
-                if (ticket.phoneDisplay)
-                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|1C" + ticket.phone + "\n");
+                    printer.PrintNormal(PrinterStation.Receipt, "\n");
 
-                string divisionLine = "_".PadLeft(printer.RecLineChars - 2, '_');
+                    if (ticket.footerDisplay)
+                        printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|bC" + ticket.footer + "\n\n");
 
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n");
-
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|4C" + "Detalle de Venta" + "\u001b|1C\n");
-
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|N" + "\nFolio:" + saleID.ToString("X") + "\n");
-
-                if (lastSale.CustomerID != 0)
-                    printer.PrintNormal(PrinterStation.Receipt, "Cliente: " + new Cliente(lastSale.CustomerID).Name + "\n");
-
-                printer.PrintNormal(PrinterStation.Receipt, "Fecha: " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + "\n");
-
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n");
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|N" + "Cantidad");
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "Precio");
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Importe" + "\n");
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n" + "\u001b|N");
-
-                double discount = 0.0;
-                Console.WriteLine("before adding productds");
-                foreach (DataGridViewRow row in dataGridView2.Rows)
-                {
-                    var barcode = row.Cells["barcode"].Value.ToString();
-                    if (barcode != "")
+                    //<<<step4>>>--Start
+                    if (printer.CapRecBarCode == true)
                     {
-                        string product = "";
-                        if (barcode.IndexOf("promo(") == -1)
-                        {
-                            product = new Producto(barcode).HideInTicket ? "Artículo Varios" : string.Format("{0}, {1}", row.Cells["description"].Value, row.Cells["brand"].Value);
-
-                        }
-                        else if (barcode.IndexOf("promo(") > -1)
-                        {
-                            DataSet table = Producto.getPromo(getPromoIDFromRow(row.Index));
-
-                            string description = string.Format("Promoción: ");
-
-                            foreach (DataRow childRow in table.Tables[1].Rows)
-                            {
-                                description += Convert.ToDouble(childRow["amount"]).ToString() + " " + childRow["producto"].ToString().
-                                    Substring(0, childRow["producto"].ToString().LastIndexOf(",")) + ", ";
-                            }
-
-                            product = description.Substring(0, description.Length - 2);
-                        }
-
-
-
-                        printer.PrintNormal(PrinterStation.Receipt, product + "\n");
-
-                        var productDiscount = getDiscountFromRow(row.Index);
-
-                        Console.WriteLine("Adding Product");
-
-                        printer.PrintNormal(PrinterStation.Receipt, row.Cells["amount"].Value.ToString());
-                        printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "$" + row.Cells["UnitCost"].Value);
-                        printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "$" + getTotalFromRowWithoutDiscount(row.Index).ToString("n2") + "\n");
-
-                        if (productDiscount > 0)
-                        {
-                            printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Descuento: -$" + getDiscountFromRow(row.Index).ToString("n2") + "\n");
-                            printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Costo Final: $" + getTotalFromRow(row.Index).ToString("n2") + "\u001b|N\n");
-                        }
-                        Console.WriteLine("Product added");
-
-                        discount += productDiscount;
+                        //Barcode printing
+                        printer.PrintBarCode(PrinterStation.Receipt, lastSale.ID.ToString("X8"),
+                            BarCodeSymbology.Code128, 80,
+                            printer.RecLineWidth, PosPrinter.PrinterBarCodeCenter,
+                            BarCodeTextPosition.None);
                     }
-                }
 
-                Console.WriteLine("Products added");
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + divisionLine + "\n");
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Total: $" + lastSale.Total.ToString("n2") + "\n");
+                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
 
-                if (!lastSale.isPaid)
-                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Usted pagó: $" + lastSale.Payment.ToString("n2"));
-
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Efectivo: $" + lastSale.Cash.ToString("n2") + "\n");
-
-
-                var change = lastSale.Cash - lastSale.Total;
-                change = change >= 0 ? change : 0;
-
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Cambio: $" + (change).ToString("n2") + "\n");
-
-                if (discount > 0)
-                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA" + "Usted Ahorró: $" + discount.ToString("n2") + "\n");
-
-                printer.PrintNormal(PrinterStation.Receipt, "\n");
-
-                if (ticket.footerDisplay)
-                    printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "\u001b|bC" + ticket.footer + "\n\n");
-
-                //<<<step4>>>--Start
-                if (printer.CapRecBarCode == true)
-                {
-                    //Barcode printing
-                    printer.PrintBarCode(PrinterStation.Receipt, lastSale.ID.ToString("X8"),
-                        BarCodeSymbology.Code128, 80,
-                        printer.RecLineWidth, PosPrinter.PrinterBarCodeCenter,
-                        BarCodeTextPosition.None);
-                }
-
-                printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
-
-                printer.DeviceEnabled = false;
-                printer.Release();
-                //printer.Close();
-            }
-
-            catch (PosException)
-            {
-                if (printer.State != ControlState.Closed)
-                {
+                    printer.DeviceEnabled = false;
                     printer.Release();
-                    //printer.Close();
                 }
 
-                if (MessageBox.Show("Ocurrió un error al imprimir el Ticket.\n ¿Desea intentar imprimirlo nuevamente?", "Error de Impresión", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                catch (PosException)
                 {
+                    if (printer != null && printer.State != ControlState.Closed)
+                        printer.Release();
 
-                    printDefaultPrinter(reprintTicket);
 
+                    if (MessageBox.Show("Ocurrió un error al imprimir el Ticket.\n ¿Desea intentar imprimirlo nuevamente?", "Error de Impresión", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                        prepareData(saleID);
                 }
             }
+            else
+            {
+                prepareData(sale.ID);
+            }
+            
         }
 
         private void printDefaultPrinter(PrintDocument printDocument)
         {
             try
             {
+                printDocument.PrintController = new StandardPrintController();
                 printDocument.PrinterSettings.PrinterName = printDialog1.PrinterSettings.PrinterName;
-                printDialog1.Document = reprintTicket;
+                printDialog1.Document = printDocument;
                 printDocument.Print();
             }
             catch (InvalidPrinterException)
             {
                 MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
             }
+            catch(Exception){
 
+            }
             printDocument = new PrintDocument();
             printDocument.PrintController = new StandardPrintController();
-            printDocument.PrintPage += new PrintPageEventHandler(reprintTicket_PrintPage);
+            printDocument.PrintPage += new PrintPageEventHandler(saleCancelledDocument_PrintPage);
         }
 
         private void openCashDrawer()
         {
-            string message = "";
-            try
+            if (cashDrawer != null)
             {
-                if (cashDrawer != null)
+                try
                 {
-                    //Open the device
-                    //Use a Logical Device Name which has been set on the SetupPOS.
-                    //cashDrawer.Open();
-                    message = "opened";
-
                     //Get the exclusive control right for the opened device.
                     //Then the device is disable from other application.
                     cashDrawer.Claim(1000);
-                    message = "claimed";
                     //Enable the device.
                     cashDrawer.DeviceEnabled = true;
-                    message = "enabled";
+
                     //Open the drawer by using the "OpenDrawer" method.
                     if (!cashDrawer.DrawerOpened)
                         cashDrawer.OpenDrawer();
-                    message = "cash drawer opened";
-
-                    //When the drawer is not closed in ten seconds after opening, beep until it is closed.
-                    //If  that method is executed, the value is not returned until the drawer is closed.
-                    // m_Drawer.WaitForDrawerClose(10000, 2000, 100, 1000);
 
                     cashDrawer.DeviceEnabled = false;
-                    message = "disabled";
+
                     cashDrawer.Release();
-                    message = "released";
-                    // cashDrawer.Close();
-                    message = "closed";
+
+                }
+                catch (PosControlException)
+                {
+                    if (cashDrawer != null && cashDrawer.State != ControlState.Closed)
+                        cashDrawer.Release();
+                }
+                catch (Exception)
+                {
+                    if (cashDrawer != null && cashDrawer.State != ControlState.Closed)
+                        cashDrawer.Release();
                 }
             }
-            catch (PosControlException ex)
+            else
             {
-               // MessageBox.Show(ex.Message + " " + ex.HelpLink + " " + ex.HResult + "\n stage: " + message);
-                cashDrawer.Release();
-            }
-            catch (Exception)
-            {
-                cashDrawer.Release();
+                printDefaultPrinter(saleCancelledDocument);
             }
         }
 
@@ -1304,7 +1599,7 @@ namespace POS
             this.CustomerPaymentBtn.Enabled = this.customer.Debt > 0.0;
         }
 
-        private void CustomerPaymentBtn_Click(object sender, EventArgs e)
+        private async void CustomerPaymentBtn_Click(object sender, EventArgs e)
         {
             FormPagar form = new FormPagar("$" + this.customer.Debt.ToString("n2"), false, 0.0);
             DarkForm darkForm = new DarkForm();
@@ -1315,7 +1610,7 @@ namespace POS
                 double cash = Convert.ToDouble(form.Cash);
                 if (customerPayment > 0.0)
                 {
-                    DataTable acountsReceivable = this.customer.GetAcountsReceivable();
+                    DataTable acountsReceivable = await Task.Run(() => customer.GetAcountsReceivable());
                     double change = cash <= customerPayment ? 0.0 : cash - customerPayment;
                     for (int index = 0; index < acountsReceivable.Rows.Count; ++index)
                     {
@@ -1338,70 +1633,60 @@ namespace POS
                         this.customerPaymentDocument.PrinterSettings.PrinterName = this.ticket.printerName;
                         this.customerPaymentDocument.DefaultPageSettings.PaperSize = new PaperSize("Custom", 200, 200);
                         int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
-                        int y1 = 10;
-                        Size size1 = this.ticket.printLogo(graphics, y1);
-                        int y2 = size1.Height == 0 ? y1 : y1 + size1.Height + 10;
-                        Size size2 = this.ticket.printHeader(graphics, y2);
-                        int y3 = size2.Height == 0 ? y2 : y2 + size2.Height + 10;
-                        Size size3 = this.ticket.printAddress(graphics, y3);
-                        int y4 = size3.Height == 0 ? y3 : y3 + size3.Height + 10;
-                        Size size4 = this.ticket.printPhone(graphics, y4);
-                        int num1 = size4.Height == 0 ? y4 : y4 + size4.Height + 10;
-                        graphics.DrawLine(Pens.Black, 10, num1, width - 10, num1);
-                        int num2 = num1 + 5;
-                        string str1 = "Pago de Cliente";
-                        Font font1 = this.getFont(str1, width, FontStyle.Regular);
-                        Size stringSize1 = this.getStringSize(str1, font1);
-                        graphics.DrawString(str1, font1, Brushes.Black, (float)((width - stringSize1.Width) / 2), (float)num2);
-                        int num3 = num2 + (15 + stringSize1.Height);
+                        
+                        int y1 = 0;
+                        Size stringSize = this.ticket.printLogo(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        stringSize = this.ticket.printHeader(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        stringSize = this.ticket.printAddress(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        stringSize = this.ticket.printPhone(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        y1 += printingClass.drawLine(10, width - 10, graphics, y1)+5;
+
+                        string str = "Pago de Cliente";
+                        Font font = new Font("times new roman", 20f, FontStyle.Bold);//this.getFont(str1, width, FontStyle.Regular);
+                        y1+= printingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1)+1;
+
+                        font = new Font("Times new Roman", 10f, FontStyle.Regular);
+
                         if (this.customer.ID != 0)
-                        {
-                            Font font2 = new Font("Times new Roman", 8f, FontStyle.Bold);
-                            Size stringSize2 = this.getStringSize("Cliente: " + this.customer.Name, font2);
-                            graphics.DrawString("Cliente: " + this.customer.Name, font2, Brushes.Black, 0.0f, (float)num3);
-                            num3 += stringSize2.Height + 10;
+                        {                            
+                            str = "Cliente: " + this.customer.Name;
+                            y1 += printingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
                         }
-                        string str2 = string.Format("Fecha: {0}\t{1}", (object)DateTime.Now.Date.ToShortDateString(), (object)DateTime.Now.Date.ToShortTimeString());
-                        Font font3 = new Font("Times new Roman", 8f, FontStyle.Bold);
-                        Size stringSize3 = this.getStringSize(str2, font3);
-                        int num4;
-                        if (stringSize3.Width + 10 < width)
-                        {
-                            graphics.DrawString(str2, font3, Brushes.Black, 0.0f, (float)num3);
-                            num4 = num3 + (stringSize3.Height + 5);
-                        }
-                        else
-                        {
-                            this.Font = this.getFont(str2, width - 10, FontStyle.Bold);
-                            Size stringSize2 = this.getStringSize(str2, font3);
-                            graphics.DrawString(str2, font3, Brushes.Black, 10f, (float)num3);
-                            num4 = num3 + (stringSize2.Height + 5);
-                        }
+
+                        str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.Date.ToShortTimeString());
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
+
+
+                        y1 += printingClass.drawLine(10, width - 10, graphics, y1)+3;
+
                         customerPayment = Convert.ToDouble(form.Pay);
-                        string str3 = string.Format("Adeudo Previo: ${0}", (object)(this.customer.Debt + customerPayment).ToString("n2"));
-                        Font font4 = this.getFont(str3, width * 5 / 8, FontStyle.Regular);
-                        Size stringSize4 = this.getStringSize(str3, font4);
-                        graphics.DrawString(str3, font4, Brushes.Black, 0.0f, (float)num4);
-                        int num5 = num4 + (stringSize4.Height + 3);
-                        string str4 = string.Format("Monto a pagar: ${0}", (object)customerPayment.ToString("n2"));
-                        Size stringSize5 = this.getStringSize(str4, font4);
-                        graphics.DrawString(str4, font4, Brushes.Black, 0.0f, (float)num5);
-                        int num6 = num5 + (stringSize5.Height + 3);
-                        string str5 = string.Format("Adeudo Actualizado: ${0}", (object)this.customer.Debt.ToString("n2"));
-                        Font font5 = this.getFont(str5, width * 3 / 4, FontStyle.Bold);
-                        Size stringSize6 = this.getStringSize(str3, font5);
-                        graphics.DrawString(str5, font5, Brushes.Black, 0.0f, (float)num6);
-                        int num7 = num6 + (stringSize6.Height + 8);
-                        string str6 = string.Format("Efectivo: ${0}", (object)cash.ToString("n2"));
-                        Size stringSize7 = this.getStringSize(str6, font4);
-                        graphics.DrawString(str6, font4, Brushes.Black, (float)(width - stringSize7.Width), (float)num7);
-                        int num8 = num7 + (stringSize7.Height + 3);
-                        string str7 = string.Format("Cambio: ${0}", (object)change.ToString("n2"));
-                        Size stringSize8 = this.getStringSize(str7, font4);
-                        graphics.DrawString(str7, font4, Brushes.Black, (float)(width - stringSize8.Width), (float)num8);
-                        int y5 = num8 + (8 + stringSize8.Height);
-                        Size size5 = this.ticket.printFooter(graphics, y5);
-                        int num9 = size5.Height == 0 ? y5 : y5 + size5.Height + 10;
+                        str = string.Format("Adeudo Previo: ${0}", (this.customer.Debt + customerPayment).ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+
+                        str = string.Format("Monto a pagar: ${0}", customerPayment.ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+                        
+                        str = string.Format("Adeudo Actualizado: ${0}", customer.Debt.ToString("n2"));
+                        y1 += printingClass.printLine(str, new Font("times new roman", 10f, FontStyle.Bold), width, StringAlignment.Near, graphics, y1);
+                        
+                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+
+                        str = string.Format("Efectivo: ${0}", cash.ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+
+                        str = string.Format("Cambio: ${0}", change.ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+
+                        if (ticket.footerDisplay)
+                            printingClass.printLine(ticket.footer, ticket.footerFont, width, StringAlignment.Center, graphics, y1);
                     });
                     try
                     {
@@ -1411,16 +1696,15 @@ namespace POS
                     }
                     catch (InvalidPrinterException)
                     {
-                        int num = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
+                        MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
                     }
-                    int num10 = (int)formCambio.ShowDialog();
+                    
+                    formCambio.ShowDialog();
                     this.customer.RefreshInfo();
                     this.debtLbl.Text = "$" + this.customer.Debt.ToString("n2");
                 }
                 else
-                {
-                    int num11 = (int)MessageBox.Show("El Cliente no genera ningun adeudo");
-                }
+                    MessageBox.Show("El Cliente no genera ningun adeudo");
             }
             darkForm.Close();
         }
@@ -1810,6 +2094,7 @@ namespace POS
         {
             if (!this.isNewSale)
                 return;
+
             this.subtractOneProduct();
 
             totalLbl.Text = string.Format("Total   ${0}", GetTotal().ToString("n2"));
@@ -1980,7 +2265,7 @@ namespace POS
             this.InitializeComponent();
             this.WindowState = windowState;
             ProductTxt.Focus();
-            this.EmployeeID = employeeID;
+            setEmployee(employeeID);
             this.defaultTxt = "";// "Producto * Cantidad";
 
             this.customer = SellInfo != null ? new Cliente(Convert.ToInt32(SellInfo["id_cliente"])) : new Cliente(0);
@@ -1993,10 +2278,6 @@ namespace POS
 
             this.dataGridView2.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView2.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
-
-            this.discountBtn.Visible = new Empleado(employeeID).isAdmin;
-            this.generalDiscount = SellInfo != null ? Convert.ToDouble(SellInfo["descuento"]) : 0.0;
-            this.isDiscountbyPercentage = true;
 
             var comboColumn = dataGridView2.Columns["depot"] as DataGridViewComboBoxColumn;
             var depotSource= Bodega.GetDepots(); 
@@ -2012,8 +2293,6 @@ namespace POS
                 color.G + 100 < 255 ? color.G + 100 : 255, color.B + 100 < 255 ? color.B + 100 : 255);
             bunifuGradientPanel1.GradientTopLeft = Color.FromArgb(color.R + 100 < 255 ? color.R + 100 : 255,
                 color.G + 100 < 255 ? color.G + 100 : 255, color.B + 100 < 255 ? color.B + 100 : 255);
-
-            printDocument1.PrintController = new StandardPrintController();
 
             
             controlsShortcuts = new Control[] {discountBtn,discountList,newWindowBtn,lessBtn,moreBtn,checkBox1,ClearCustomerBtn,
@@ -2034,6 +2313,23 @@ namespace POS
                 {
                     addProductToDataGrid(new Producto(row["id_producto"].ToString()), Convert.ToDouble(row["cantidad"]), Convert.ToInt32(row["id_bodega"]));
                 }
+            }
+        }
+
+        public void setEmployee(int employeeID)
+        {
+            if (discountBtn.InvokeRequired)
+            {
+                var d = new hideButtonDelegate(setEmployee);
+                discountBtn.Invoke(d, new object[] { employeeID });
+            }
+            else
+            {             
+                this.EmployeeID = employeeID;
+                this.isDiscountbyPercentage = true;
+                this.discountBtn.Visible = new Empleado(employeeID).isAdmin;
+                generalDiscount = 0;
+                reassignCosts();
             }
         }
 
@@ -2061,73 +2357,70 @@ namespace POS
 
         private async void setUpPOSDevices()
         {
-            if (ticket.useMPOS)
+            try
             {
+                //Create PosExplorer
+                PosExplorer posExplorer = new PosExplorer();
+                DeviceInfo deviceInfo = null;
                 try
                 {
-                    //Create PosExplorer
-                    PosExplorer posExplorer = new PosExplorer();
-                    DeviceInfo deviceInfo = null;
-                    try
+                    deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, "CashDrawer");
+                    cashDrawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
+                    await Task.Run(() => cashDrawer.Open());
+
+                }
+                catch (Exception) {                   /*Nothing can be used.  */       }
+
+                try
+                {
+                    printer = posExplorer.CreateInstance(posExplorer.GetDevice(DeviceType.PosPrinter, "PosPrinter")) as PosPrinter;
+                    printer.Open();
+
+                    string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
+
+                    printer.Claim(1000);
+                    printer.DeviceEnabled = true;
+                    printer.RecLetterQuality = true;
+
+                    if (printer.CapRecBitmap)
                     {
-                        deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, "CashDrawer");
-                        cashDrawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
-                        await Task.Run(() => cashDrawer.Open());
 
-                    }
-                    catch (Exception) {                   /*Nothing can be used.  */       }
-
-                    try
-                    {
-                        printer = posExplorer.CreateInstance(posExplorer.GetDevice(DeviceType.PosPrinter, "PosPrinter")) as PosPrinter;
-                        printer.Open();
-
-                        string logopath = Directory.GetCurrentDirectory() + "\\new logo.bmp";
-
-                        printer.Claim(1000);
-                        printer.DeviceEnabled = true;
-                        printer.RecLetterQuality = true;
-
-                        if (printer.CapRecBitmap)
+                        for (int iRetryCount = 0; iRetryCount < 5; iRetryCount++)
                         {
-
-                            for (int iRetryCount = 0; iRetryCount < 5; iRetryCount++)
+                            try
                             {
-                                try
+                                //Register a bitmap
+                                printer.SetBitmap(1, PrinterStation.Receipt,
+                                    logopath, printer.RecLineWidth * ticket.logoHeight / 114,
+                                    PosPrinter.PrinterBitmapCenter);
+                                break;
+                            }
+                            catch (PosControlException pce)
+                            {
+                                if (pce.ErrorCode == ErrorCode.Failure && pce.ErrorCodeExtended == 0 && pce.Message == "It is not initialized.")
                                 {
-                                    //Register a bitmap
-                                    printer.SetBitmap(1, PrinterStation.Receipt,
-                                        logopath, printer.RecLineWidth * ticket.logoHeight / 114,
-                                        PosPrinter.PrinterBitmapCenter);
-                                    break;
+                                    System.Threading.Thread.Sleep(1000);
                                 }
-                                catch (PosControlException pce)
+                                else
                                 {
-                                    if (pce.ErrorCode == ErrorCode.Failure && pce.ErrorCodeExtended == 0 && pce.Message == "It is not initialized.")
-                                    {
-                                        System.Threading.Thread.Sleep(1000);
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show(pce.Message + " " + pce.HelpLink);
-                                    }
+                                    MessageBox.Show(pce.Message + " " + pce.HelpLink);
                                 }
                             }
-
                         }
 
-                        printer.DeviceEnabled = false;
-                        printer.Release();
                     }
-                    catch (Exception) { }
+
+                    printer.DeviceEnabled = false;
+                    printer.Release();
+                }
+                catch (Exception) { }
 
 
-                }
-                catch (PosControlException)
-                {
-                    //Nothing can be used.
-                    MessageBox.Show("No se tuvo acceso a la impresora o al cajon");
-                }
+            }
+            catch (PosControlException)
+            {
+                //Nothing can be used.
+                MessageBox.Show("No se tuvo acceso a la impresora o al cajon");
             }
         }
 
@@ -2246,8 +2539,10 @@ namespace POS
             {
                 int selectionStart = this.ProductTxt.SelectionStart;
                 int num = this.ProductTxt.Text.IndexOf("*") + 1;
+             
                 if (this.ProductTxt.Text.Length <= num)
                     return;
+               
                 this.ProductTxt.Find(this.ProductTxt.Text.Substring(num), num, RichTextBoxFinds.WholeWord);
                 this.ProductTxt.SelectionColor = Color.LimeGreen;
                 this.ProductTxt.DeselectAll();
@@ -2623,182 +2918,7 @@ namespace POS
                         dataGridView2.Rows.Remove(dataGridView2.Rows[i]);
                     }
             }
-        }
-
-
-
-        private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
-        {
-            Graphics graphics = e.Graphics;
-            printDialog1.PrinterSettings.PrinterName = this.ticket.printerName;
-            printDocument1.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
-            int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
-            int location = 10;
-
-            Size size1 = ticket.printLogo(graphics, location);
-            location = size1.Height == 0 ? location : location + size1.Height + 10;
-            Size size2 = ticket.printHeader(graphics, location);
-            location = size2.Height == 0 ? location : location + size2.Height + 10;
-            Size size3 = ticket.printAddress(graphics, location);
-            location = size3.Height == 0 ? location : location + size3.Height + 10;
-            Size size4 = ticket.printPhone(graphics, location);
-            location = size4.Height == 0 ? location : location + size4.Height + 10;
-            graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
-            location = location + 5;
-
-            Venta lastSale = Venta.getLastSale();
-
-            string str1 = "Detalle de Venta";
-            Font font1 = PrinterTicket.getFont(str1, width - 10, FontStyle.Regular);
-            Size stringSize1 = PrinterTicket.getStringSize(str1, font1);
-            graphics.DrawString(str1, font1, Brushes.Black, (float)((width-10 - stringSize1.Width) / 2), (float)location);
-            location = location + (15 + stringSize1.Height);
-
-            string str2 = string.Format("Folio: {0}", lastSale.ID.ToString("X"));
-            Font mainFont = new Font("Times new Roman", 9.9f);
-            Size stringSize2 = PrinterTicket.getStringSize(str2, mainFont);
-
-            if (stringSize2.Width + 10 < width)
-            {
-                graphics.DrawString(str2, mainFont, Brushes.Black, 10f, (float)location);
-                location = location + (stringSize2.Height + 1);
-            }
-            else
-            {
-                stringSize2 = PrinterTicket.getStringSize(str2, mainFont);
-                graphics.DrawString(str2, mainFont, Brushes.Black, 10f, (float)location);
-                location = location + (stringSize2.Height + 1);
-            }
-
-            if (customer.ID != 0)
-            {
-                Size stringSize3 = PrinterTicket.getStringSize("Cliente: " + customer.Name, mainFont);
-                graphics.DrawString("Cliente: " + customer.Name, mainFont, Brushes.Black, 10f, (float)location);
-                location += stringSize3.Height + 10;
-            }
-
-            string str3 = string.Format("Fecha: {0}\t{1}", lastSale.Date.ToShortDateString(), lastSale.Date.ToShortTimeString());
-            Font font3 = new Font("Times new Roman", 8f);
-
-            if (PrinterTicket.getStringSize(str3, font3).Width + 10 < width)
-            {
-                graphics.DrawString(str3, font3, Brushes.Black, 10f, (float)location);
-                location = location + (stringSize2.Height + 1);
-            }
-            else
-            {
-                mainFont = PrinterTicket.getFont(lastSale.ID.ToString(), width - 10, FontStyle.Bold);
-                stringSize2 = PrinterTicket.getStringSize(lastSale.ID.ToString(), mainFont);
-                graphics.DrawString(lastSale.ID.ToString(), mainFont, Brushes.Black, 10f, (float)location);
-                location = location + (stringSize2.Height + 1);
-            }
-
-            DataTable getSoldProducts = lastSale.getSoldProducts;
-            graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
-            location = location + 1;
-
-            string text = "Cantidad\tPrecio\tImporte";
-            Size stringSize4 = PrinterTicket.getStringSize(text, mainFont);
-
-            graphics.DrawString("Cantidad", mainFont, Brushes.Black, 10f, (float)location);
-            graphics.DrawString("Precio", mainFont, Brushes.Black, ((width - PrinterTicket.getStringSize("Precio", mainFont).Width) / 2), location);
-            graphics.DrawString("Importe", mainFont, Brushes.Black, (width - PrinterTicket.getStringSize("Importe", mainFont).Width), location);
-
-            location = location + (stringSize4.Height + 1);
-            graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
-            location = location + 2;
-
-            double num9 = 0.0;
-            foreach (DataGridViewRow row in dataGridView2.Rows)
-            {
-                var barcode = row.Cells["barcode"].Value.ToString();
-                if (barcode != "")
-                {
-                    string str4 = "";
-                    if (barcode.IndexOf("promo(") == -1)
-                    {
-                        str4 = new Producto(barcode).HideInTicket ? "Artículo Varios" : string.Format("{0}, {1}", row.Cells["description"].Value, row.Cells["brand"].Value);
-
-                    }
-                    else if (barcode.IndexOf("promo(") > -1)
-                    {
-                        DataSet table = Producto.getPromo(getPromoIDFromRow(row.Index));
-
-                        string description = string.Format("Promoción: ");
-
-                        foreach (DataRow childRow in table.Tables[1].Rows)
-                        {
-                            description += Convert.ToDouble(childRow["amount"]).ToString() + " " + childRow["producto"].ToString().
-                                Substring(0, childRow["producto"].ToString().LastIndexOf(",")) + ", ";
-                        }
-
-                        str4 = description.Substring(0, description.Length - 2);
-                    }
-
-                    Size stringSize3 = PrinterTicket.getStringSize(str4, mainFont);
-                    if (stringSize3.Width > width)
-                    {
-                        int letterByMeasuring = PrinterTicket.getLastLetterByMeasuring(str4, mainFont, width);
-                        str4 = str4.Insert(letterByMeasuring, str4[letterByMeasuring] == ' ' ? "\n" : "-\n");
-                        stringSize3 = PrinterTicket.getStringSize(str4, mainFont);
-                    }
-                    graphics.DrawString(str4,mainFont, Brushes.Black, 10f, location);
-
-
-                    location += stringSize3.Height + 2;
-                    getDiscountFromRow(row.Index);
-                    string.Format("{0}\t{1}\t{2}", row.Cells["amount"].Value, row.Cells["UnitCost"].Value, getTotalFromRowWithoutDiscount(row.Index).ToString("n2"));
-                    Font font6 = mainFont;
-                    Size stringSize5 = PrinterTicket.getStringSize("$" + row.Cells["Total"].Value.ToString(), font6);
-                    graphics.DrawString(row.Cells["amount"].Value.ToString(), font6, Brushes.Black, 10f, (float)location);
-                    graphics.DrawString("$" + row.Cells["UnitCost"].Value.ToString(), font6, Brushes.Black, (float)((width - PrinterTicket.getStringSize(row.Cells["UnitCost"].Value.ToString(), font6).Width) / 2), (float)location);
-                    graphics.DrawString("$" + row.Cells["Total"].Value.ToString(), font6, Brushes.Black, (float)(width - PrinterTicket.getStringSize(row.Cells["Total"].Value.ToString(), font6).Width), (float)location);
-                    num9 += getDiscountFromRow(row.Index);
-                    location += stringSize5.Height + 5;
-                }
-            }
-            graphics.DrawLine(Pens.Black, 10, location, width - 10, location);
-            int num10 = location + 3;
-            string str5 = string.Format("Total: ${0}", GetTotal().ToString("n2"));
-            
-            Size stringSize6 = PrinterTicket.getStringSize(str5, mainFont);
-            graphics.DrawString(str5, mainFont, Brushes.Black, (width - stringSize6.Width), num10);
-            int num11 = num10 + (stringSize6.Height + 3);
-            if (!lastSale.isPaid)
-            {
-                string str4 = string.Format("Usted pagó: ${0}", lastSale.Payment);
-                Size stringSize3 = PrinterTicket.getStringSize(str4, mainFont);
-                graphics.DrawString(str4, mainFont, Brushes.Black, (width - stringSize3.Width), num11);
-                num11 += stringSize3.Height + 3;
-            }
-            string str6 = string.Format("Efectivo: ${0}", lastSale.Cash);
-            Size stringSize7 = PrinterTicket.getStringSize(str6, mainFont);
-            graphics.DrawString(str6, mainFont, Brushes.Black, (width - stringSize7.Width), num11);
-            int num12 = num11 + (stringSize7.Height + 3);
-            string str7 = string.Format("Cambio: ${0}", (lastSale.Cash - lastSale.Payment));
-            Size stringSize8 = PrinterTicket.getStringSize(str7, mainFont);
-            graphics.DrawString(str7, mainFont, Brushes.Black, (width - stringSize8.Width), num12);
-            int y5 = num12 + (3 + stringSize8.Height);
-
-            if (num9 > 0.0)
-            {
-                string str4 = string.Format("Usted ahorró: ${0}", num9.ToString("n2"));
-                PrinterTicket.getFont(str4, width / 2 - 10, FontStyle.Bold);
-                Size stringSize3 = PrinterTicket.getStringSize(str4, mainFont);
-                graphics.DrawString(str4, mainFont, Brushes.Black, (width - stringSize3.Width), y5);
-                y5 += stringSize3.Height + 20;
-            }
-            Size size5 = ticket.printFooter(graphics, y5);
-            int y6 = size5.Height == 0 ? y5 : y5 + size5.Height + 10;
-            Image image = BarcodeDrawFactory.Code128WithChecksum.Draw(lastSale.ID.ToString("X8"), 50);
-            graphics.DrawImage(image, (width - ((int)(width * 0.75))) / 2, y6, (int)(width * 0.75), 40);
-
-            y6 += 30 + 30;
-            graphics.DrawLine(Pens.White, new Point(0, y6), new Point(width, y6));
-
-
-        }
-
+        }    
         private void customerPaymentDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
         }
@@ -3211,7 +3331,7 @@ namespace POS
         {
             Graphics graphics = e.Graphics;
             printDialog1.PrinterSettings.PrinterName = this.ticket.printerName;
-            printDocument1.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
+            
             int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
             int location = 10;
 
@@ -3370,6 +3490,7 @@ namespace POS
             }
             Size size5 = ticket.printFooter(graphics, y5);
             int y6 = size5.Height == 0 ? y5 : y5 + size5.Height + 10;
+
             Image image = BarcodeDrawFactory.Code128WithChecksum.Draw(lastSale.ID.ToString("X8"), 50);
             graphics.DrawImage(image, (width - ((int)(width * 0.75))) / 2, y6, (int)(width * 0.75), 40);
 
@@ -3386,7 +3507,6 @@ namespace POS
 
         private void saleCancelledDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
-            e.PageSettings.PaperSize = new PaperSize("No Size", 0, 0);
         }
 
 
@@ -3480,4 +3600,37 @@ namespace POS
 
         }
     }
+
+    public static class printingClass
+    {
+        public static int printLine(string text, Font font, int width, StringAlignment alignment, Graphics g, int yOffset)
+        {
+            try
+            {
+                Size stringSize = g.MeasureString(text, font, width - 10).ToSize();
+                g.DrawString(text, font, Brushes.Black, new RectangleF(0, yOffset, width, stringSize.Height),
+                    new StringFormat { Alignment = alignment });
+
+                return (int)stringSize.Height;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
+        public static int drawLine(int x, int width, Graphics graphics, int yOffset)
+        {
+            graphics.DrawLine(Pens.Black, x, yOffset, width, yOffset);
+            return 2;
+        }
+
+        public static int printImage(Image image, int width, int Height, Graphics g, int yOffset)
+        {
+            var newWidth = (int)(width * 0.9);
+            g.DrawImage(image, (width - newWidth) / 2, yOffset, newWidth, Height);
+            return Height + 1;
+        }
+    }
+
 }

@@ -253,5 +253,10 @@ namespace POS
         {
             return new Capa_de_Negocio().Employee_userNameExist(user);
         }
+
+        public void delete()
+        {
+            negocio.employee_Delete(ID);
+        }
     }
 }

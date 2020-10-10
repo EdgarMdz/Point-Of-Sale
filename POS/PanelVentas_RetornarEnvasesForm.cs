@@ -165,6 +165,7 @@ namespace POS
             try
             {
                 dataGridView1.CurrentCell = dataGridView1[5, 0];
+                dataGridView1.BeginEdit(true);
             }
             catch (Exception) { }
         }

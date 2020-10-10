@@ -10,15 +10,30 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Layout;
 using Microsoft.PointOfService;
+using POS.dataBaseDataSetTableAdapters;
 
 namespace POS
 {
     public partial class Panel_Inicio : Form
     {
-        private Timer time;
         private int employeeID;
         private DateTime date;
         private CashDrawer m_Drawer;
+
+        public int EmployeeID
+        {
+            set
+            {
+                if (!new Empleado(value).isAdmin)
+                    flowLayoutPanel1.Controls.Clear();
+                else
+                    if (flowLayoutPanel1.Controls.Count == 0)
+                    {
+                        populateNotificationPanel();
+                    }
+                employeeID = value;
+            }
+        }
 
         private bool isPopulating { get; set; }
 
@@ -36,48 +51,32 @@ namespace POS
         {
             this.InitializeComponent();
             this.WindowState = windowState;
-            this.populateAgenda(DateTime.Now);
+           
+            if(new Empleado(empID).isAdmin)
+                this.populateNotificationPanel();
+
             this.Size = size;
            // this.AgendaEventsPanel.Parent =this.agendaBackgrountPictureBox;
             //this.AgendaHeaderPanel.Parent = this.agendaBackgrountPictureBox;
           //  this.AgendaEventsPanel.BackColor = Color.FromArgb(155, Color.White);
             //this.flowLayoutPanel1.BackColor = Color.FromArgb(180, 0, 130, 170);
             this.flowLayoutPanel1.HorizontalScroll.Maximum = 0;
-            this.flowLayoutPanel1.AutoScroll = false;
-            this.flowLayoutPanel1.VerticalScroll.Visible = true;
+            this.flowLayoutPanel1.AutoScroll = true;
+           // this.flowLayoutPanel1.VerticalScroll.Visible = true;
+
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            this.time = timer;
-            this.time.Interval = 1000;
-            this.time.Tick += new EventHandler(this.highlightEvents);
-            this.time.Enabled = true;
+            
+            
             this.endShiftBtn.Visible = Turno.shiftActive;
             this.startShiftBtn.Visible = !Turno.shiftActive;
             this.employeeID = empID;
             this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             this.date = DateTime.Now;
-            this.DateLbl.Text = this.date.ToShortDateString();
+            
             this.printDialog1.PrinterSettings.PrinterName = new PrinterTicket().printerName;
         }
-        ~Panel_Inicio()
-        {
-            this.time.Stop();
-            this.time.Dispose();
-        }
-
-        private void highlightEvents(object sender, EventArgs e)
-        {
-            if (!(this.date.Date == DateTime.Now.Date))
-                return;
-            foreach (Control control in (ArrangedElementCollection)this.flowLayoutPanel1.Controls)
-            {
-                Recordatorio recordatorio = new Recordatorio(Convert.ToInt32(control.Name));
-                TimeSpan timeSpan1 = recordatorio.StartTime - recordatorio.StartTime.Date;
-                TimeSpan timeSpan2 = recordatorio.EndTime - recordatorio.EndTime.Date;
-                TimeSpan timeSpan3 = DateTime.Now - DateTime.Now.Date;
-                control.BackColor = !(timeSpan1 <= timeSpan3) || !(timeSpan2 >= timeSpan3) ? Color.FromArgb(50, 64, 64, 64) : Color.FromArgb(90, Color.AliceBlue);
-            }
-        }
+    
 
         private void Panel_Inicio_Load(object sender, EventArgs e)
         {
@@ -85,8 +84,6 @@ namespace POS
             if (Turno.shiftActive)
                 this.setGroupBoxInfo();
             
-           
-
 
             //<<<step1>>>--Start
             //Use a Logical Device Name which has been set on the SetupPOS.
@@ -131,7 +128,7 @@ namespace POS
             this.dataGridView1.DataSource = (object)Turno.MoneyAddedToDrawer();
         }
 
-        private async void populateAgenda(DateTime time)
+        private async void populateNotificationPanel()
         {
             if (this.isPopulating)
                 return;
@@ -139,66 +136,63 @@ namespace POS
             {
                 int height = 0;
                 this.isPopulating = true;
-                this.agendaContainerPanel.Visible = false;
+                this.NotificationContainerPanel.Visible = false;
                 this.flowLayoutPanel1.Controls.Clear();
-                int[] reminderList = Recordatorio.getReminderIDsForDate(time); 
-                List<Panel> panelList = new List<Panel>();
-                foreach (int num in reminderList)
-                {
-                    int id = num;
 
+                DataTable products = Producto.getWrongProducts();
+                
+                foreach (DataRow row in products.Rows)
+                {
                     //PARECE SER QUE SE DIVIDIO EN DOS EL TASK. JUNTARLO SI LLEGA A FALLAR
-                    Func<Panel> function = (Func<Panel>)(() => this.createEventsForAgenda(id));
+                    Func<Panel> function = (Func<Panel>)(() => this.createEventsForAgenda(row));
                     Panel p = await Task.Run<Panel>(function);
                     
                     this.flowLayoutPanel1.Controls.Add(p);
                     p.Width = p.Parent.Width;
                     height += p.Height;
                 }
-                //Esto quien sabe que pex
-                //bool flag;
-                //int num1 = flag ? 1 : 0;
-                this.agendaContainerPanel.Visible = true;
+                this.NotificationContainerPanel.Visible = true;
                 this.isPopulating = false;
 
-                flowLayoutPanel1.VerticalScroll.Visible = reminderList.Length > 0 && height > flowLayoutPanel1.Height;
+                //flowLayoutPanel1.VerticalScroll.Visible = reminderList.Length > 0 && height > flowLayoutPanel1.Height;
 
             }
         }
 
-        private Panel createEventsForAgenda(int id)
+        private Panel createEventsForAgenda(DataRow row)
         {
-            Recordatorio reminder = new Recordatorio(id);
+            
             Panel containerPanel = new Panel();
-            containerPanel.Name = reminder.ID.ToString();
+            containerPanel.Name = row["Código de Barras"].ToString();
             containerPanel.BackColor = Color.Transparent;
-            containerPanel.Size = new Size(this.AgendaEventsPanel.Width, this.agendaContainerPanel.Height / 5);
+            containerPanel.Size = new Size(this.NotificationPanel.Width, this.NotificationContainerPanel.Height / 5);
             Panel panel1 = new Panel();
             panel1.BackColor = Color.Transparent;
             panel1.Dock = DockStyle.Left;
-            panel1.Size = new Size(this.agendaContainerPanel.Width / 4, this.agendaContainerPanel.Height / 4);
+            panel1.Size = new Size(this.NotificationContainerPanel.Width / 4, this.NotificationContainerPanel.Height / 4);
+            panel1.Padding = new Padding(5);
+
             BunifuSeparator bunifuSeparator = new BunifuSeparator();
             bunifuSeparator.LineThickness = 3;
             bunifuSeparator.Height = 3;
             bunifuSeparator.LineColor = Color.Yellow;
-            Label label1 = new Label();
-            label1.ForeColor = Color.White;
-            label1.Font = new Font("century gothic", 20f, FontStyle.Bold);
-            label1.AutoSize = false;
-            string str1 = string.Format("{0}:{1} {2}", (object)reminder.StartTime.Hour.ToString("D2"), (object)reminder.StartTime.Minute.ToString("D2"), reminder.StartTime.TimeOfDay > new TimeSpan(12, 0, 0) ? (object)"P.M." : (object)"A.M.");
-            string str2 = string.Format("{0}:{1} {2}", (object)reminder.EndTime.Hour.ToString("D2"), (object)reminder.EndTime.Minute.ToString("D2"), reminder.EndTime.TimeOfDay > new TimeSpan(12, 0, 0) ? (object)"P.M." : (object)"A.M.");
-            label1.Text = string.Format("{0}\n-\n{1}", (object)str1, (object)str2);
-            label1.TextAlign = ContentAlignment.MiddleCenter;
-            panel1.Controls.Add((Control)label1);
-            panel1.Controls.Add((Control)bunifuSeparator);
-            label1.Dock = DockStyle.Fill;
-            bunifuSeparator.Width = TextRenderer.MeasureText(label1.Text, label1.Font).Width;
-            Size stringSize = PrinterTicket.getStringSize(label1.Text, label1.Font);
-            bunifuSeparator.Location = new Point((bunifuSeparator.Parent.Width - bunifuSeparator.Width) / 2, label1.Height / 2 + stringSize.Height / 2 - 3);
+
+            var p = new Producto(row["Código de Barras"].ToString());
+            panel1.Controls.Add(new PictureBox()
+            {
+                Image = p.image,
+                Dock = DockStyle.Fill,
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BackColor = p.image != null ? Color.White : Color.Transparent
+            }) ;
+
             bunifuSeparator.BringToFront();
             Panel panel2 = new Panel();
+           
             panel2.BackColor = Color.Transparent;
             panel2.Dock = DockStyle.Fill;
+            
+
             Label label2 = new Label();
             label2.Dock = DockStyle.Top;
             label2.BackColor = Color.Transparent;
@@ -207,93 +201,103 @@ namespace POS
             label2.TextAlign = ContentAlignment.MiddleLeft;
             label2.AutoSize = false;
             label2.Size = new Size(100, panel2.Height / 2);
-            label2.Text = new Proveedor(reminder.ID_Supplier).NombreEmpresa;
+            label2.Text = row["Descripción"].ToString();
+            
             Label label3 = new Label();
             label3.Dock = DockStyle.Fill;
             label3.BackColor = Color.FromArgb(0, Color.White);
             label3.ForeColor = Color.White;
-            label3.Font = new Font("century gothic", 12f, FontStyle.Bold);
+            label3.Font = new Font("century gothic", 20f, FontStyle.Bold);
             label3.TextAlign = ContentAlignment.TopLeft;
             label3.AutoSize = false;
-            label3.Text = reminder.Message;
+            label3.Text = row["Marca"].ToString();
             panel2.Controls.Add((Control)label2);
             panel2.Controls.Add((Control)label3);
             label3.BringToFront();
+                       
+
             containerPanel.Controls.Add((Control)panel1);
             containerPanel.Controls.Add((Control)panel2);
+            
+            
             panel2.BringToFront();
-            label1.DoubleClick += (EventHandler)((s, e) =>
-            {
-                DarkForm darkForm = new DarkForm();
-                PanelProveedoresNuevoRecordatorio nuevoRecordatorio = new PanelProveedoresNuevoRecordatorio(containerPanel.BackColor, reminder.Erasable, new Empleado(this.employeeID).isAdmin, true);
-                nuevoRecordatorio.time = reminder.StartTime.Hour;
-                DateTime startTime = reminder.StartTime;
-                nuevoRecordatorio.HalfHour = startTime.Minute > 0;
-                nuevoRecordatorio.SupplierID = reminder.ID_Supplier;
-                nuevoRecordatorio.reminderID = reminder.ID;
-                nuevoRecordatorio.date = reminder.StartTime.Date;
-                nuevoRecordatorio.headerTitle = "Modificar Recordatorio";
-                nuevoRecordatorio.eventName = reminder.Message;
-                nuevoRecordatorio.endtime = reminder.EndTime.Hour;
-                nuevoRecordatorio.endDate = reminder.EndTime;
-                DateTime endTime = reminder.EndTime;
-                nuevoRecordatorio.EndTimeHalfHour = endTime.Minute > 0;
-                nuevoRecordatorio.repetingDays = reminder.RepeatingDays;
-                darkForm.Show();
-                if (nuevoRecordatorio.ShowDialog() == DialogResult.OK)
-                    this.populateAgenda(DateTime.Now);
-                darkForm.Close();
-            });
-            label2.DoubleClick += (EventHandler)((s, e) =>
-            {
-                DarkForm darkForm = new DarkForm();
-                PanelProveedoresNuevoRecordatorio nuevoRecordatorio = new PanelProveedoresNuevoRecordatorio(containerPanel.BackColor, reminder.Erasable, new Empleado(this.employeeID).isAdmin, true);
-                nuevoRecordatorio.time = reminder.StartTime.Hour;
-                DateTime startTime = reminder.StartTime;
-                nuevoRecordatorio.HalfHour = startTime.Minute > 0;
-                nuevoRecordatorio.SupplierID = reminder.ID_Supplier;
-                nuevoRecordatorio.reminderID = reminder.ID;
-                nuevoRecordatorio.date = reminder.StartTime.Date;
-                nuevoRecordatorio.headerTitle = "Modificar Recordatorio";
-                nuevoRecordatorio.eventName = reminder.Message;
-                nuevoRecordatorio.endtime = reminder.EndTime.Hour;
-                nuevoRecordatorio.endDate = reminder.EndTime;
-                DateTime endTime = reminder.EndTime;
-                nuevoRecordatorio.EndTimeHalfHour = endTime.Minute > 0;
-                nuevoRecordatorio.repetingDays = reminder.RepeatingDays;
-                darkForm.Show();
-                if (nuevoRecordatorio.ShowDialog() == DialogResult.OK)
-                    this.populateAgenda(DateTime.Now);
-                darkForm.Close();
-            });
-            label3.DoubleClick += (EventHandler)((s, e) =>
-            {
-                DarkForm darkForm = new DarkForm();
-                PanelProveedoresNuevoRecordatorio nuevoRecordatorio = new PanelProveedoresNuevoRecordatorio(containerPanel.BackColor, reminder.Erasable, new Empleado(this.employeeID).isAdmin, true);
-                nuevoRecordatorio.time = reminder.StartTime.Hour;
-                DateTime startTime = reminder.StartTime;
-                nuevoRecordatorio.HalfHour = startTime.Minute > 0;
-                nuevoRecordatorio.SupplierID = reminder.ID_Supplier;
-                nuevoRecordatorio.reminderID = reminder.ID;
-                nuevoRecordatorio.date = reminder.StartTime.Date;
-                nuevoRecordatorio.headerTitle = "Modificar Recordatorio";
-                nuevoRecordatorio.eventName = reminder.Message;
-                nuevoRecordatorio.endtime = reminder.EndTime.Hour;
-                nuevoRecordatorio.endDate = reminder.EndTime;
-                DateTime endTime = reminder.EndTime;
-                nuevoRecordatorio.EndTimeHalfHour = endTime.Minute > 0;
-                nuevoRecordatorio.repetingDays = reminder.RepeatingDays;
-                darkForm.Show();
-                if (nuevoRecordatorio.ShowDialog() == DialogResult.OK)
-                    this.populateAgenda(DateTime.Now);
-                darkForm.Close();
-            });
+
+
+
+            containerPanel.Controls.Add(bunifuSeparator);
+            bunifuSeparator.Dock = DockStyle.Bottom;
+
+            
+            label2.DoubleClick += (s, e) =>
+            openProduct((s as Label).Parent.Parent.Name);
+            
+            label3.DoubleClick += (s, e) =>
+            openProduct((s as Label).Parent.Parent.Name);
+            
+            containerPanel.DoubleClick += (s, e) => 
+            openProduct((s as Panel).Parent.Name); 
+
+            panel1.Controls[0].DoubleClick += (s, e) =>
+             openProduct((s as PictureBox).Parent.Parent.Name);
+
+
+            label2.MouseEnter += (s, e) =>
+         mouseEnter((s as Label).Parent.Parent);
+
+            label3.MouseEnter += (s, e) =>
+            mouseEnter((s as Label).Parent.Parent);
+
+            containerPanel.MouseEnter += (s, e) =>
+            mouseEnter((s as Panel).Parent);
+
+            panel1.Controls[0].MouseEnter += (s, e) =>
+             mouseEnter((s as PictureBox).Parent.Parent);
+
+
+            label2.MouseLeave += (s, e) =>
+     mouseLeave((s as Label).Parent.Parent);
+
+            label3.MouseLeave += (s, e) =>
+            mouseLeave((s as Label).Parent.Parent);
+
+            containerPanel.MouseLeave += (s, e) =>
+            mouseLeave((s as Panel).Parent);
+
+            panel1.Controls[0].MouseLeave += (s, e) =>
+             mouseLeave((s as PictureBox).Parent.Parent);
+
             return containerPanel;
+        }
+
+        private void mouseLeave(Control control)
+        {
+            control.BackColor = Color.FromArgb(0, 0, 0, 0);
+        }
+
+        private void mouseEnter(Control control)
+        {
+            control.BackColor = Color.FromArgb(50, 0, 0, 0);
+        }
+
+        private void openProduct( string barcode)
+        {
+            Form_Agregar form = new Form_Agregar(new Producto(barcode));
+            if(form.ShowDialog()== DialogResult.OK)
+            {
+                foreach (Control control in flowLayoutPanel1.Controls)
+                {
+                    if(control.Name==barcode)
+                    {
+                        flowLayoutPanel1.Controls.Remove(control);
+                        break;
+                    }
+                }
+            }
         }
 
         private void AgendaEventsPanel_Resize(object sender, EventArgs e)
         {
-            this.flowLayoutPanel1.Height = this.AgendaEventsPanel.Height;
+            this.flowLayoutPanel1.Height = this.NotificationPanel.Height;
         }
 
         private void startShiftBtn_Click(object sender, EventArgs e)
@@ -317,26 +321,31 @@ namespace POS
             darkForm.Close();
         }
 
-        private void endShiftBtn_Click(object sender, EventArgs e)
+        private async void endShiftBtn_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("¿Desea hacer el corte de caja?", "Corte de caja", MessageBoxButtons.YesNo) != DialogResult.Yes)
                 return;
-          
-            DataTable dt = Turno.endShift(this.employeeID);
+            endShiftBtn.Enabled = false;
+            button1.Enabled = false;
+            this.Cursor = Cursors.WaitCursor;
+
+            DataTable dt = await Task.Run(() => Turno.endShift(this.employeeID));
             
             this.printDocument1 = new PrintDocument();
-            
             printDocument1.PrintController = new StandardPrintController();
 
             this.printDocument1.PrintPage += (ss, ee) =>
             {
                 DataRow row = dt.Rows[0];
                 PrinterTicket printerTicket = new PrinterTicket();
+
                 this.printDocument1.PrinterSettings.PrinterName = printerTicket.printerName;
+
                 Graphics graphics = ee.Graphics;
                 graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
                 int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width; //this.printDocument1.DefaultPageSettings.PaperSize.Width;
-                int y = 10;
+                int y = 0;
                 if (printerTicket.logoDisplay && printerTicket.logo != null)
                 {
                     Bitmap bitmap = printerTicket.logo != null ? new Bitmap(printerTicket.logo, width, printerTicket.logoHeight) : (Bitmap)null;
@@ -346,37 +355,43 @@ namespace POS
                 }
                 if (printerTicket.headderDisplay)
                 {
-                    Size stringSize = PrinterTicket.getStringSize(printerTicket.header, printerTicket.headerFont);
-                    graphics.DrawString(printerTicket.header, printerTicket.headerFont, Brushes.Black, (float)((width - stringSize.Width) / 2), (float)y);
-                    y += stringSize.Height + 10;
+                    y += printingClass.printLine(printerTicket.header, printerTicket.headerFont,
+                        width, StringAlignment.Center, graphics, y) + 1;
                 }
-                string str1 = "Corte de Caja";
-                Font font1 = PrinterTicket.getFont(str1, width, FontStyle.Regular);
-                Size stringSize1 = PrinterTicket.getStringSize(str1, font1);
-                graphics.DrawString(str1, font1, Brushes.Black, (float)((width - stringSize1.Width) / 2), (float)y);
-                int num1 = y + (15 + stringSize1.Height);
-                string str2 = "Comenzó el turno: " + new Empleado(Convert.ToInt32(row["Empleado que Inició"])).name;
-                Font font2 = new Font("Times new roman", 6f, FontStyle.Bold);
-                Size stringSize2 = PrinterTicket.getStringSize(str2, font2);
-                graphics.DrawString(str2, font2, Brushes.Black, 0.0f, (float)num1);
-                int num2 = num1 + (stringSize2.Height + 1);
-                string str3 = "Realizó corte de caja: " + new Empleado(this.employeeID).name;
-                Size stringSize3 = PrinterTicket.getStringSize(str3, font2);
-                graphics.DrawString(str3, font2, Brushes.Black, 0.0f, (float)num2);
-                int num3 = num2 + (stringSize3.Height + 5);
-                Font font3 = new Font("Times new roman", 8f);
-                for (int index = 0; index < 8; ++index)
+                string str = "Corte de Caja";
+                Font font = new Font("times new roman", 20f, FontStyle.Bold);
+                y += printingClass.printLine(str, font, width, StringAlignment.Center, graphics, y) + 1;
+
+                str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.Date.ToShortTimeString());
+                font = new Font("Times new roman", 10f, FontStyle.Bold);
+                y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 3;
+
+                str = "Comenzó el turno: " + new Empleado(Convert.ToInt32(row["Empleado que Inició"])).name;
+                y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 1;
+
+                str = "Realizó corte de caja: " + new Empleado(this.employeeID).name;
+                y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 5;
+
+
+                for (int index = 0; index < 9; ++index)
                 {
-                    string str4 = Convert.ToDouble(row[index]) > 0.0 ? string.Format("{0}: \n${1}", (object)dt.Columns[index].ColumnName, (object)Convert.ToDouble(row[index]).ToString("n2")) : string.Format("{0}: \n-${1}", (object)dt.Columns[index].ColumnName, (object)Math.Abs(Convert.ToDouble(row[index])).ToString("n2"));
-                    Size stringSize4 = PrinterTicket.getStringSize(str4, font3);
-                    graphics.DrawString(str4, font3, Brushes.Black, 0.0f, (float)num3);
-                    num3 += stringSize4.Height + 2;
+                    font = new Font("Times new roman", 10f, FontStyle.Regular);
+                    str = dt.Columns[index].ColumnName;
+                    y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 1;
+
+                    font = new Font("Times new roman", 10f, FontStyle.Bold);
+                    str = Convert.ToDouble(row[index]) > 0.0 ? string.Format("${0}", Convert.ToDouble(row[index]).ToString("n2")) :
+                    string.Format("${0}", Math.Abs(Convert.ToDouble(row[index])).ToString("n2"));
+                    y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 5;
+
                 }
+            
+                
             };
             this.endShiftBtn.Hide();
             this.button2.Show();
             DarkForm darkForm = new DarkForm();
-            panelInicio_finDeTurno inicioFinDeTurno = new panelInicio_finDeTurno(Convert.ToDouble(dt.Rows[0]["Efectivo en Caja"]));
+            panelInicio_finDeTurno inicioFinDeTurno = new panelInicio_finDeTurno(Convert.ToDouble(dt.Rows[0]["Efectivo a Entregar"]));
             darkForm.Show();
             try
             {
@@ -386,10 +401,13 @@ namespace POS
             }
             catch (InvalidPrinterException)
             {
-                int num = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
+                MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
             }
-            int num4 = (int)inicioFinDeTurno.ShowDialog();
+            inicioFinDeTurno.ShowDialog();
+            
             darkForm.Close();
+
+            this.Cursor = Cursors.Default;
         }
 
         private void dataGridView1_DataSourceChanged(object sender, EventArgs e)
@@ -502,23 +520,6 @@ namespace POS
         private void pictureBox3_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-   
-
-        private void goBackBtn_Click(object sender, EventArgs e)
-        {
-            this.date = this.date.AddDays(-1.0);
-            this.DateLbl.Text = this.date.ToShortDateString();
-            this.populateAgenda(this.date);
-        }
-
-        private void goFurtherBtn_Click(object sender, EventArgs e)
-        {
-            this.date = this.date.AddDays(1.0);
-            this.DateLbl.Text = this.date.ToShortDateString();
-            this.populateAgenda(this.date);
-
         }
 
         private void Panel_Inicio_FormClosing(object sender, FormClosingEventArgs e)

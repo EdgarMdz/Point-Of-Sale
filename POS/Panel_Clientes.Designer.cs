@@ -71,9 +71,9 @@ namespace POS
             this.bunifuGradientPanel1 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.MimimizeBtn = new Bunifu.Framework.UI.BunifuImageButton();
-            this.printDocument1 = new System.Drawing.Printing.PrintDocument();
             this.customerPaymentDocument = new System.Drawing.Printing.PrintDocument();
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
+            this.deleteCustomer = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DetalleCompraDataGridView1)).BeginInit();
             this.bunifuGradientPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
@@ -642,9 +642,28 @@ namespace POS
             this.MimimizeBtn.Zoom = 10;
             this.MimimizeBtn.Click += new System.EventHandler(this.MimimizeBtn_Click);
             // 
-            // printDocument1
+            // customerPaymentDocument
             // 
-            this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
+            this.customerPaymentDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.customerPaymentDocument_PrintPage);
+            // 
+            // deleteCustomer
+            // 
+            this.deleteCustomer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.deleteCustomer.AutoSize = true;
+            this.deleteCustomer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
+            this.deleteCustomer.FlatAppearance.BorderSize = 0;
+            this.deleteCustomer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.deleteCustomer.Font = new System.Drawing.Font("Century Gothic", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.deleteCustomer.ForeColor = System.Drawing.Color.White;
+            this.deleteCustomer.Location = new System.Drawing.Point(617, 565);
+            this.deleteCustomer.Margin = new System.Windows.Forms.Padding(2);
+            this.deleteCustomer.Name = "deleteCustomer";
+            this.deleteCustomer.Size = new System.Drawing.Size(177, 36);
+            this.deleteCustomer.TabIndex = 47;
+            this.deleteCustomer.Text = "Borrar Cliente";
+            this.deleteCustomer.UseVisualStyleBackColor = false;
+            this.deleteCustomer.Visible = false;
+            this.deleteCustomer.Click += new System.EventHandler(this.deleteCustomer_Click);
             // 
             // Panel_Clientes
             // 
@@ -652,6 +671,7 @@ namespace POS
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(805, 626);
+            this.Controls.Add(this.deleteCustomer);
             this.Controls.Add(this.PagosBtn);
             this.Controls.Add(this.InfoLbl);
             this.Controls.Add(this.bunifuGradientPanel1);
@@ -734,8 +754,8 @@ namespace POS
         private Bunifu.Framework.UI.BunifuImageButton MimimizeBtn;
         private Bunifu.Framework.UI.BunifuElipse bunifuElipse2;
         private Bunifu.Framework.UI.BunifuElipse bunifuElipse3;
-        private System.Drawing.Printing.PrintDocument printDocument1;
         private System.Drawing.Printing.PrintDocument customerPaymentDocument;
         private System.Windows.Forms.PrintDialog printDialog1;
+        private Button deleteCustomer;
     }
 }

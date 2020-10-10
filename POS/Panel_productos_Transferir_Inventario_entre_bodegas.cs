@@ -326,11 +326,11 @@ namespace POS
 
         private void changeDonatingDepotStock()
         {
-            var stock = getCasesAndSingleProducts(product.PiecesPerCase, donatingDepot.getProductQuantity(product.Barcode));
-            var transfer = getCasesAndSingleProducts(product.PiecesPerCase, transferCount);
+            var stock = getCasesAndSingleProducts(product.PiecesPerCase, donatingDepot.getProductQuantity(product.Barcode)- transferCount);
+            //var transfer = getCasesAndSingleProducts(product.PiecesPerCase, );
 
-            var cases = stock.Item1 - transfer.Item1;
-            var pieces = stock.Item2 - transfer.Item2;
+            var cases = stock.Item1;// - transfer.Item1;
+            var pieces = stock.Item2;// - transfer.Item2;
             
             boxQuantLbl.Text = cases == 1 || cases == -1 ? cases.ToString() + " Caja" : cases.ToString() + " Cajas";
             pieceQuantLbl.Text = pieces == 1 || pieces == -1 ? pieces.ToString() + " Pieza" : pieces.ToString() + " Piezas";
@@ -338,11 +338,11 @@ namespace POS
 
         private void changeReveivedDepotStock()
         {
-            var stock = getCasesAndSingleProducts(product.PiecesPerCase, receiverDepot.getProductQuantity(product.Barcode));
-            var transfer = getCasesAndSingleProducts(product.PiecesPerCase, transferCount);
+            var stock = getCasesAndSingleProducts(product.PiecesPerCase, receiverDepot.getProductQuantity(product.Barcode)+transferCount);
+            // var transfer = getCasesAndSingleProducts(product.PiecesPerCase, transferCount);
 
-            var cases = stock.Item1 + transfer.Item1;
-            var pieces = stock.Item2 + transfer.Item2;
+            var cases = stock.Item1;// + transfer.Item1;
+            var pieces = stock.Item2;// + transfer.Item2;
 
             quantityLbl.Text = cases == 1 || cases == -1 ? cases.ToString() + " Caja" : cases.ToString() + " Cajas";
             quantityPcsLbl.Text = pieces == 1 || pieces == -1 ? pieces.ToString() + " Pieza" : pieces.ToString() + " Piezas";

@@ -111,6 +111,8 @@ namespace POS
             datos.Product_UpdateWholesaleCost(barcode, costID, discount, isByPercentage);
         }
 
+        public DataTable Products_getWrongProducts() => datos.Products_getWrongProducts();
+
         public DataTable DepotSetDepot(int depotID) =>
             this.datos.DepotSetDepot(depotID);
 
@@ -128,6 +130,11 @@ namespace POS
         public void DepotUpdateProductQuantity(int depotID, string barcode, double newQuant)
         {
             this.datos.DepotUpdateProductQuantity(depotID, barcode, newQuant);
+        }
+
+        public DataTable Supplier_searchForNewProduct(string text, int iD)
+        {
+            return datos.Supplier_searchForNewProduct(text, iD);
         }
 
         public void EditProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, double preciodeCompra, double Stock, double minStock, byte[] Foto, string CodigoBarras, string NuevoCodigoBarras, int depotID, string mainProductBarcode, bool isReturnable, bool displayAsKg, bool hideInTicket)
@@ -171,6 +178,11 @@ namespace POS
         public void Employee_UpdateDateOfBirth(DateTime newDate, int employeeID)
         {
             this.datos.Employee_UpdateDateOfBirth(newDate, employeeID);
+        }
+
+        public void employee_Delete(int iD)
+        {
+            datos.employee_Delete(iD);
         }
 
         public void Employee_UpdateDiscount(int employeeID, double discount, bool isPercentage)
@@ -232,7 +244,12 @@ namespace POS
 
         public bool Employee_userNameExist(string user) =>
             this.datos.Employee_userNameExist(user);
-       
+
+        public void customer_Delete(int iD)
+        {
+            datos.customer_Delete(iD);
+        }
+
         /// <summary>
         /// Get list of products
         /// </summary>
@@ -241,6 +258,11 @@ namespace POS
         /// <returns></returns>
         public DataTable fillTable(int offset, int fetchNext) =>
             this.datos.fillTable(offset,fetchNext);
+
+        public int customer_matchwithEmployee(int iD)
+        {
+            return datos.customer_matchwithEmployee(iD);
+        }
 
         public DataTable FilterSuppliers(string search) =>
             this.datos.filterSuppliers(search);
@@ -364,6 +386,11 @@ namespace POS
         public DataTable Supplier_getProductInfo(int iD, string barcode)
         {
             return datos.Supplier_getProductInfo(iD, barcode);
+        }
+
+        public DataTable Supplier_getPurchaseStatistics(int iD, DateTime date, Proveedor.PeriodOfTime mode)
+        {
+            return datos.Supplier_getPurchaseStatistics(iD, date, mode);
         }
 
         public void Supplier_delete(int supplierID)

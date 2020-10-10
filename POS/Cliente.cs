@@ -264,5 +264,23 @@ namespace POS
         {
             this.FindCustomerbyID(this.ID);
         }
+
+        public void Delete()
+        {
+            negocio.customer_Delete(ID);
+        }
+
+        public bool IsEmployee()
+        {
+            if (getEmployeeID() > -1)
+                return true;
+            else
+                return false;
+        }
+
+        public int getEmployeeID()
+        {
+            return negocio.customer_matchwithEmployee(ID);
+        }
     }
 }

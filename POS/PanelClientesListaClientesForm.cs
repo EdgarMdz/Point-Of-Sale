@@ -50,10 +50,13 @@ namespace POS
                 dataGridView1.CurrentCell = dataGridView1[dataGridView1.Columns["Nombre"].Index, 0];
         }
 
-        private void BuscarClientetxt_TextChanged(object sender, EventArgs e)
+        private async void BuscarClientetxt_TextChanged(object sender, EventArgs e)
         {;
-            DataTable dataTable2 = BuscarClientetxt.Text == "" ? this.cliente.GetCustomerList() : this.cliente.SearchCustomer(this.BuscarClientetxt.Text);
+            DataTable dataTable2 = BuscarClientetxt.Text == "" ? this.cliente.GetCustomerList() :
+                await Task.Run(() => this.cliente.SearchCustomer(this.BuscarClientetxt.Text));
+            
             dataTable2.Columns["Id_Cliente"].ColumnName = "Número de Cliente";
+            
             this.dataGridView1.DataSource = (object)dataTable2;
         }
 

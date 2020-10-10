@@ -49,11 +49,11 @@ namespace POS
             this.piecesperCaseTxt = new System.Windows.Forms.TextBox();
             this.bunifuElipse1 = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.panel = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.descriptionLbl = new System.Windows.Forms.Label();
             this.AcceptBtn = new System.Windows.Forms.Button();
             this.NextButton = new System.Windows.Forms.Button();
             this.bunifuImageButton1 = new Bunifu.Framework.UI.BunifuImageButton();
-            this.label1 = new System.Windows.Forms.Label();
-            this.descriptionLbl = new System.Windows.Forms.Label();
             this.panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).BeginInit();
             this.SuspendLayout();
@@ -234,51 +234,6 @@ namespace POS
             this.panel.TabIndex = 18;
             this.panel.Visible = false;
             // 
-            // AcceptBtn
-            // 
-            this.AcceptBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.AcceptBtn.FlatAppearance.BorderSize = 0;
-            this.AcceptBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.AcceptBtn.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold);
-            this.AcceptBtn.ForeColor = System.Drawing.Color.White;
-            this.AcceptBtn.Location = new System.Drawing.Point(157, 304);
-            this.AcceptBtn.Name = "AcceptBtn";
-            this.AcceptBtn.Size = new System.Drawing.Size(242, 61);
-            this.AcceptBtn.TabIndex = 28;
-            this.AcceptBtn.Text = "Aceptar";
-            this.AcceptBtn.UseVisualStyleBackColor = false;
-            this.AcceptBtn.Click += new System.EventHandler(this.AcceptBtn_Click);
-            // 
-            // NextButton
-            // 
-            this.NextButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.NextButton.FlatAppearance.BorderSize = 0;
-            this.NextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.NextButton.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold);
-            this.NextButton.ForeColor = System.Drawing.Color.White;
-            this.NextButton.Location = new System.Drawing.Point(169, 175);
-            this.NextButton.Name = "NextButton";
-            this.NextButton.Size = new System.Drawing.Size(242, 61);
-            this.NextButton.TabIndex = 19;
-            this.NextButton.Text = "Siguiente";
-            this.NextButton.UseVisualStyleBackColor = false;
-            this.NextButton.Click += new System.EventHandler(this.NextButton_Click);
-            // 
-            // bunifuImageButton1
-            // 
-            this.bunifuImageButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.bunifuImageButton1.BackColor = System.Drawing.Color.Transparent;
-            this.bunifuImageButton1.Image = global::POS.Properties.Resources.close;
-            this.bunifuImageButton1.ImageActive = null;
-            this.bunifuImageButton1.Location = new System.Drawing.Point(551, 11);
-            this.bunifuImageButton1.Name = "bunifuImageButton1";
-            this.bunifuImageButton1.Size = new System.Drawing.Size(19, 20);
-            this.bunifuImageButton1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.bunifuImageButton1.TabIndex = 20;
-            this.bunifuImageButton1.TabStop = false;
-            this.bunifuImageButton1.Zoom = 10;
-            this.bunifuImageButton1.Click += new System.EventHandler(this.pictureBox2_Click);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -301,11 +256,56 @@ namespace POS
             this.descriptionLbl.TabIndex = 30;
             this.descriptionLbl.Text = "Marca";
             // 
+            // AcceptBtn
+            // 
+            this.AcceptBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.AcceptBtn.FlatAppearance.BorderSize = 0;
+            this.AcceptBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.AcceptBtn.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold);
+            this.AcceptBtn.ForeColor = System.Drawing.Color.White;
+            this.AcceptBtn.Location = new System.Drawing.Point(157, 304);
+            this.AcceptBtn.Name = "AcceptBtn";
+            this.AcceptBtn.Size = new System.Drawing.Size(242, 61);
+            this.AcceptBtn.TabIndex = 28;
+            this.AcceptBtn.Text = "Aceptar";
+            this.AcceptBtn.UseVisualStyleBackColor = false;
+            this.AcceptBtn.Click += new System.EventHandler(this.AcceptBtn_Click);
+            // 
+            // NextButton
+            // 
+            this.NextButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.NextButton.FlatAppearance.BorderSize = 0;
+            this.NextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.NextButton.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold);
+            this.NextButton.ForeColor = System.Drawing.Color.White;
+            this.NextButton.Location = new System.Drawing.Point(169, 162);
+            this.NextButton.Name = "NextButton";
+            this.NextButton.Size = new System.Drawing.Size(242, 61);
+            this.NextButton.TabIndex = 19;
+            this.NextButton.Text = "Siguiente";
+            this.NextButton.UseVisualStyleBackColor = false;
+            this.NextButton.Click += new System.EventHandler(this.NextButton_Click);
+            // 
+            // bunifuImageButton1
+            // 
+            this.bunifuImageButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bunifuImageButton1.BackColor = System.Drawing.Color.Transparent;
+            this.bunifuImageButton1.Image = global::POS.Properties.Resources.close;
+            this.bunifuImageButton1.ImageActive = null;
+            this.bunifuImageButton1.Location = new System.Drawing.Point(551, 11);
+            this.bunifuImageButton1.Name = "bunifuImageButton1";
+            this.bunifuImageButton1.Size = new System.Drawing.Size(19, 20);
+            this.bunifuImageButton1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.bunifuImageButton1.TabIndex = 20;
+            this.bunifuImageButton1.TabStop = false;
+            this.bunifuImageButton1.Zoom = 10;
+            this.bunifuImageButton1.Click += new System.EventHandler(this.pictureBox2_Click);
+            // 
             // PanelPoveedoresNuevoProducto
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(581, 253);
+            this.ClientSize = new System.Drawing.Size(581, 235);
             this.Controls.Add(this.bunifuImageButton1);
             this.Controls.Add(this.NextButton);
             this.Controls.Add(this.BarCodeTxt);

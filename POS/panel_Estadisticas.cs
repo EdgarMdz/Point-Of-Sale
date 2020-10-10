@@ -6,20 +6,40 @@ using System.Windows.Forms;
 using LiveCharts;
 using LiveCharts.Definitions.Series;
 using LiveCharts.Wpf;
-using System.Windows.Forms.DataVisualization.Charting;
 
 namespace POS
 {
     public partial class panel_Estadisticas : Form
     {
         private Producto product;
+        string []scrapColor;
+        string []grayscaleColor;
+        string[] bestSellColors;
+
         public panel_Estadisticas()
         {
+
+            scrapColor = new string[] {
+                "#ff0000","#ff0000","#ed2939","#cd5c5c","#e60026","#960018","#e0115f",
+                "#dc143c","#da2c43","#ce2029"
+            };
+
+            grayscaleColor = new string[] {"#737b80","#82898e","#92989c","#a1a7aa",
+                "#b1b6b9","#b1b6b9","#d0d3d5","#e0e2e3","#eff0f1","	#ffffff"
+            };
+
+
+            bestSellColors = new string[] {"#0275d8","#5cb85c","#5bc0de","#f0ad4e",
+                "#d9534f","#292b2c","#017eff","#ff011d","#ff9a00","	#fd0794" };
+
             InitializeComponent();
 
-            this.periodTimeCombo.SelectedIndex = 1; 
+            this.periodTimeCombo.SelectedIndex = 1;
             this.datePicker.MaxDate = DateTime.Today.Date;
             this.datePicker.Value = DateTime.Today.Date;
+
+            
+
 
 
             ScrapCard();
@@ -60,8 +80,7 @@ namespace POS
 
 
                 pieChart2.Series.Clear();
-
-
+                               
                 for (int index = 0; index < 10 && index < scrap.Rows.Count; ++index)
                 {
                     DataRow row = scrap.Rows[index];
@@ -70,12 +89,14 @@ namespace POS
                     {
                         Title = row["Descripción"].ToString() + ", " + row["marca"],
                         Values = new ChartValues<double> { Convert.ToDouble(row["cantidad"]) },
-                        DataLabels = true
+                        DataLabels = true,
+                        
                     };
+
+                    series.Fill = (System.Windows.Media.Brush)new System.Windows.Media.BrushConverter().ConvertFromString(scrapColor[index]);
                     pieChart2.Series.Add(series);
                     pieChart2.Font = new Font("century gothic", 8f, FontStyle.Regular);
                 }
-
                 pieChart2.LegendLocation = LegendLocation.Bottom;
 
                 this.scrapGridView.DataSource = scrap;
@@ -88,6 +109,12 @@ namespace POS
                 this.scrapGridView.BackgroundColor = Color.DimGray;
                 this.scrapGridView.DefaultCellStyle.ForeColor = Color.DimGray;
                 this.scrapGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.DimGray;
+
+                int i = 0;
+                foreach (PieSeries item in pieChart2.Series)
+                {
+                    item.Fill= (System.Windows.Media.Brush)new System.Windows.Media.BrushConverter().ConvertFromString(grayscaleColor[i]);
+                }
             }
         }
 
@@ -164,15 +191,17 @@ namespace POS
                 for (int index = 0; index < 10 && index < bestSellProducts.Rows.Count; ++index)
                 {
                     DataRow row = bestSellProducts.Rows[index];
-                  
+
                     var series = new PieSeries
                     {
                         Title = row["Descripción"].ToString() + ", " + row["marca"],
                         Values = new ChartValues<double> { Convert.ToDouble(row["cantidad"]) },
                         DataLabels = true,
-                    };
+                        Fill = (System.Windows.Media.Brush)new System.Windows.Media.BrushConverter().ConvertFromString(bestSellColors[index])
+                };
                     pieChart1.Series.Add(series);
                     pieChart1.Font = new Font("century gothic", 8f, FontStyle.Regular);
+
                 }
 
                 pieChart1.LegendLocation = LegendLocation.Bottom;
@@ -190,6 +219,12 @@ namespace POS
                 this.bestSellGridView.DefaultCellStyle.ForeColor = Color.DimGray;
                 this.bestSellGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.DimGray;
                 this.bestSellGridView.Enabled = false;
+
+                int i = 0;
+                foreach (PieSeries item in pieChart1.Series)
+                {
+                    item.Fill = (System.Windows.Media.Brush)new System.Windows.Media.BrushConverter().ConvertFromString(grayscaleColor[i]);
+                }
             }
         }
 
@@ -263,18 +298,23 @@ namespace POS
         private  void profitInvestmentCard()
         {
             DataTable investProfitData = Venta.getSalesInvestProfitData(this.periodTimeCombo.SelectedIndex, this.datePicker.Value);
+           
             this.investmentProfitChart.Series.Clear();
             this.investmentProfitChart.AxisX.Clear();
             this.investmentProfitChart.AxisY.Clear();
             this.investmentProfitChart.Zoom = ZoomingOptions.X;
             this.investmentProfitChart.Pan = PanningOptions.Unset;
+            
             ChartValues<double> chartValues1 = new ChartValues<double>();
             ChartValues<double> chartValues2 = new ChartValues<double>();
             ChartValues<double> chartValues3 = new ChartValues<double>();
             ChartValues<double> chartValues4 = new ChartValues<double>();
             ChartValues<double> chartValues5 = new ChartValues<double>();
             ChartValues<double> chartValues6 = new ChartValues<double>();
+         
+            
             List<string> stringList = new List<string>();
+            
             foreach (DataRow row in (InternalDataCollectionBase)investProfitData.Rows)
             {
                 chartValues1.Add(Convert.ToDouble(row["Ventas"]));
@@ -285,6 +325,7 @@ namespace POS
                 chartValues6.Add(Convert.ToDouble(row["Pago de Empleados"]));
                 stringList.Add(row["Fecha"].ToString());
             }
+          
             LiveCharts.SeriesCollection series1 = this.investmentProfitChart.Series;
             ColumnSeries columnSeries1 = new ColumnSeries();
             columnSeries1.Title = "Venta";
@@ -355,13 +396,17 @@ namespace POS
             LineSeries lineSeries1 = new LineSeries();
             lineSeries1.Title = "Venta";
             lineSeries1.Values = (IChartValues)chartValues1;
+
             LineSeries lineSeries2 = lineSeries1;
             series1.Add((ISeriesView)lineSeries2);
             LiveCharts.SeriesCollection series2 = this.productStatisticsChart.Series;
+            
             LineSeries lineSeries3 = new LineSeries();
             lineSeries3.Title = "Compra";
             lineSeries3.Values = (IChartValues)chartValues2;
+            
             LineSeries lineSeries4 = lineSeries3;
+            
             series2.Add((ISeriesView)lineSeries4);
             this.productStatisticsChart.AxisX.Add(new LiveCharts.Wpf.Axis()
             {
@@ -430,7 +475,7 @@ namespace POS
 
         private void statisticsProductsProductLbl_TextChanged(object sender, EventArgs e)
         {
-            this.CenterToParent(this.statisticsProductsProductLbl);
+          //  this.CenterToParent(this.statisticsProductsProductLbl);
         }
 
         private void ProductStatisticsCard_Resize(object sender, EventArgs e)

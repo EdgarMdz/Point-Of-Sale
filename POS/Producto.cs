@@ -130,6 +130,8 @@ namespace POS
             negocio.Product_UpdateWholesaleCost(Barcode, costID, discount, isByPercentage);
         }
 
+        public static DataTable getWrongProducts() => new Capa_de_Negocio().Products_getWrongProducts();
+
         public bool SearchProduct()
         {
             DataTable dataTable2 = this.negocio.SearchProduct(this.Barcode);

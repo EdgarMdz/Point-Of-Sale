@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.PointOfService;
@@ -50,7 +46,7 @@ namespace POS
             DarkForm darkForm = new DarkForm();
             if (employeeList.Rows.Count == 0)
             {
-                int num = (int)MessageBox.Show("No se encontraron empleados");
+                MessageBox.Show("No se encontraron empleados");
             }
             else if (employeeList.Rows.Count == 1)
             {
@@ -92,6 +88,7 @@ namespace POS
             this.searchEmployeeTxt.Text = "";
             this.EmployeePanel.Visible = true;
             this.changingEmployee = false;
+            deleteEmployeeBtn.Visible = employee.ID != 1;
         }
 
         private void dayLabel_click(object sender, EventArgs e)
@@ -358,7 +355,7 @@ namespace POS
             DarkForm darkForm = new DarkForm();
             Form_Login formLogin = new Form_Login(string.Format("Verificación De\nUsuario"));
             darkForm.Show();
-            int num1 = (int)formLogin.ShowDialog();
+            formLogin.ShowDialog();
             Empleado empleado = new Empleado(formLogin.ID);
             if (formLogin.DialogResult == DialogResult.OK)
             {
@@ -418,13 +415,35 @@ namespace POS
                 }
                 catch (Exception)
                 {
+                    useNativePrinter();
                 }
             }
+            else
+            {
+                useNativePrinter();
+            }
         }
-
-        private void paymentDebtBtn_Click(object sender, EventArgs e)
+        private void useNativePrinter()
         {
-            Cliente customer = new Cliente(this.employee.CustomerID);
+            try
+            {
+
+                var printDialog = new PrintDialog();
+                var printDocument = new PrintDocument() { PrintController = new StandardPrintController() };
+                printDialog.PrinterSettings.PrinterName = new PrinterTicket().printerName;
+                printDialog.Document = printDocument;
+
+                printDocument.Print();
+            }
+            catch (InvalidPrinterException)
+            {
+                MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
+            }
+        }
+        private async void paymentDebtBtn_Click(object sender, EventArgs e)
+        {
+            paymentDebtBtn.Enabled = false;
+            Cliente customer = await Task.Run(() => new Cliente(this.employee.CustomerID));
             if (customer.Debt <= 0.0)
                 return;
             FormPagar form = new FormPagar("$" + customer.Debt.ToString("n2"), false, 0.0);
@@ -455,74 +474,65 @@ namespace POS
 
                     this.customerPaymentDocument.PrintPage += (PrintPageEventHandler)((ss, ee) =>
                     {
-                        PrinterTicket printerTicket = new PrinterTicket();
                         Graphics graphics = ee.Graphics;
+                        var ticket = new PrinterTicket();
+                        this.customerPaymentDocument.PrinterSettings.PrinterName = ticket.printerName;
                         this.customerPaymentDocument.DefaultPageSettings.PaperSize = new PaperSize("Custom", 200, 200);
                         int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
-                        int y1 = 10;
-                        Size size1 = printerTicket.printLogo(graphics, y1);
-                        int y2 = size1.Height == 0 ? y1 : y1 + size1.Height + 10;
-                        Size size2 = printerTicket.printHeader(graphics, y2);
-                        int y3 = size2.Height == 0 ? y2 : y2 + size2.Height + 10;
-                        Size size3 = printerTicket.printAddress(graphics, y3);
-                        int y4 = size3.Height == 0 ? y3 : y3 + size3.Height + 10;
-                        Size size4 = printerTicket.printPhone(graphics, y4);
-                        int num1 = size4.Height == 0 ? y4 : y4 + size4.Height + 10;
-                        graphics.DrawLine(Pens.Black, 10, num1, width - 10, num1);
-                        int num2 = num1 + 5;
-                        string str1 = "Pago de Cliente";
-                        Font font1 = this.getFont(str1, width, FontStyle.Regular);
-                        Size stringSize1 = this.getStringSize(str1, font1);
-                        graphics.DrawString(str1, font1, Brushes.Black, (float)((width - stringSize1.Width) / 2), (float)num2);
-                        int num3 = num2 + (15 + stringSize1.Height);
+
+                        int y1 = 0;
+                        Size stringSize = ticket.printLogo(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        stringSize = ticket.printHeader(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        stringSize = ticket.printAddress(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        stringSize = ticket.printPhone(graphics, y1);
+                        y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
+
+                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 5;
+
+                        string str = "Pago de Cliente";
+                        Font font = new Font("times new roman", 20f, FontStyle.Bold);//this.getFont(str1, width, FontStyle.Regular);
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1) + 1;
+
+                        font = new Font("Times new Roman", 10f, FontStyle.Regular);
+
                         if (customer.ID != 0)
                         {
-                            Font font2 = new Font("Times new Roman", 8f, FontStyle.Bold);
-                            Size stringSize2 = this.getStringSize("Cliente: " + customer.Name, font2);
-                            graphics.DrawString("Cliente: " + customer.Name, font2, Brushes.Black, 0.0f, (float)num3);
-                            num3 += stringSize2.Height + 10;
+                            str = "Cliente: " + customer.Name;
+                            y1 += printingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
                         }
-                        string str2 = string.Format("Fecha: {0}\t{1}", (object)DateTime.Now.Date.ToShortDateString(), (object)DateTime.Now.Date.ToShortTimeString());
-                        Font font3 = new Font("Times new Roman", 8f, FontStyle.Bold);
-                        Size stringSize3 = this.getStringSize(str2, font3);
-                        int num4;
-                        if (stringSize3.Width + 10 < width)
-                        {
-                            graphics.DrawString(str2, font3, Brushes.Black, 0.0f, (float)num3);
-                            num4 = num3 + (stringSize3.Height + 5);
-                        }
-                        else
-                        {
-                            this.Font = this.getFont(str2, width - 10, FontStyle.Bold);
-                            Size stringSize2 = this.getStringSize(str2, font3);
-                            graphics.DrawString(str2, font3, Brushes.Black, 10f, (float)num3);
-                            num4 = num3 + (stringSize2.Height + 5);
-                        }
+
+                        str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.Date.ToShortTimeString());
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
+
+
+                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+
                         customerPayment = Convert.ToDouble(form.Pay);
-                        string str3 = string.Format("Adeudo Previo: ${0}", (object)(customer.Debt + customerPayment).ToString("n2"));
-                        Font font4 = this.getFont(str3, width * 5 / 8, FontStyle.Regular);
-                        Size stringSize4 = this.getStringSize(str3, font4);
-                        graphics.DrawString(str3, font4, Brushes.Black, 0.0f, (float)num4);
-                        int num5 = num4 + (stringSize4.Height + 3);
-                        string str4 = string.Format("Monto a pagar: ${0}", (object)customerPayment.ToString("n2"));
-                        Size stringSize5 = this.getStringSize(str4, font4);
-                        graphics.DrawString(str4, font4, Brushes.Black, 0.0f, (float)num5);
-                        int num6 = num5 + (stringSize5.Height + 3);
-                        string str5 = string.Format("Adeudo Actualizado: ${0}", (object)customer.Debt.ToString("n2"));
-                        Font font5 = this.getFont(str5, width * 3 / 4, FontStyle.Bold);
-                        Size stringSize6 = this.getStringSize(str3, font5);
-                        graphics.DrawString(str5, font5, Brushes.Black, 0.0f, (float)num6);
-                        int num7 = num6 + (stringSize6.Height + 8);
-                        string str6 = string.Format("Efectivo: ${0}", (object)cash.ToString("n2"));
-                        Size stringSize7 = this.getStringSize(str6, font4);
-                        graphics.DrawString(str6, font4, Brushes.Black, (float)(width - stringSize7.Width), (float)num7);
-                        int num8 = num7 + (stringSize7.Height + 3);
-                        string str7 = string.Format("Cambio: ${0}", (object)change.ToString("n2"));
-                        Size stringSize8 = this.getStringSize(str7, font4);
-                        graphics.DrawString(str7, font4, Brushes.Black, (float)(width - stringSize8.Width), (float)num8);
-                        int y5 = num8 + (8 + stringSize8.Height);
-                        Size size5 = printerTicket.printFooter(graphics, y5);
-                        int num9 = size5.Height == 0 ? y5 : y5 + size5.Height + 10;
+                        str = string.Format("Adeudo Previo: ${0}", (customer.Debt + customerPayment).ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+
+                        str = string.Format("Monto a pagar: ${0}", customerPayment.ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+
+                        str = string.Format("Adeudo Actualizado: ${0}", customer.Debt.ToString("n2"));
+                        y1 += printingClass.printLine(str, new Font("times new roman", 10f, FontStyle.Bold), width, StringAlignment.Near, graphics, y1);
+
+                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+
+                        str = string.Format("Efectivo: ${0}", cash.ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+
+                        str = string.Format("Cambio: ${0}", change.ToString("n2"));
+                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+
+                        if (ticket.footerDisplay)
+                            printingClass.printLine(ticket.footer, ticket.footerFont, width, StringAlignment.Center, graphics, y1);
                     });
                     try
                     {
@@ -537,12 +547,14 @@ namespace POS
                     int num10 = (int)formCambio.ShowDialog();
                     customer.RefreshInfo();
                     this.debtLbl.Text = "$" + customer.Debt.ToString("n2");
+
                 }
                 else
                 {
                     int num11 = (int)MessageBox.Show("El Cliente no genera ningun adeudo");
                 }
             }
+            paymentDebtBtn.Enabled = true;
             darkForm.Close();
         }
 
@@ -581,7 +593,7 @@ namespace POS
             return TextRenderer.MeasureText(text, font);
         }
 
-        private void loanBtn_Click(object sender, EventArgs e)
+        private async void loanBtn_Click(object sender, EventArgs e)
         {
             FormPrestamo formPrestamo = new FormPrestamo();
             DarkForm darkForm = new DarkForm();
@@ -593,18 +605,9 @@ namespace POS
                 Venta venta = new Venta();
                 double Payment = 0.0;
                 double num1 = loan;
-                venta.newSale(this.User_employeeID, cliente.ID, loan, Payment, null, num1);
+                await Task.Run(() => venta.newSale(this.User_employeeID, cliente.ID, loan, Payment, null, num1));
                 FormCambio formCambio = new FormCambio(num1);
-                /*try
-                {
-                    this.printDocument1.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
-                    this.printDialog1.Document = this.printDocument1;
-                    this.printDocument1.Print();
-                }
-                catch (InvalidPrinterException ex)
-                {
-                    int num2 = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-                }*/
+               
                 openDrawer();
                 formCambio.ShowDialog();
                 this.debtLbl.Text = "$" + (cliente.Debt + loan).ToString("n2");
@@ -781,6 +784,21 @@ namespace POS
                 }
             }
             //<<<step1>>>--End
+        }
+
+        private void deleteEmployeeBtn_Click(object sender, EventArgs e)
+        {
+            Form_Login formLogin = new Form_Login(string.Format("Verificación De\nUsuario"));
+
+            if (MessageBox.Show("¿Desea borrar la información del empleado seleccionado?.\n La información como cliente no será borrada al " +
+                "realizar esta acción", "Borrar Empleado", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.OK)
+            {
+                if (formLogin.ShowDialog() == DialogResult.OK)
+                {
+                    employee.delete();
+                    EmployeePanel.Hide();
+                }
+            }
         }
     }
 }

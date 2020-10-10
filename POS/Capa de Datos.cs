@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Security.AccessControl;
+
 namespace POS
 {
     class Capa_de_Datos
@@ -99,6 +101,22 @@ namespace POS
 
         }
 
+        public DataTable Products_getWrongProducts()
+        {
+            SqlCommand command = new SqlCommand("products_CheckProductsToFix", OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout = 120
+            };
+
+            DataTable dt = new DataTable();
+
+            dt.Load(command.ExecuteReader());
+
+            CloseSqlConnection();
+            return dt;
+        }
+
         public DataTable Sale_getUnfinishedSalesIDs()
         {
             SqlCommand com = new SqlCommand("Sale_GetUnfinishedSellIDs", OpenSqlConnection());
@@ -108,6 +126,27 @@ namespace POS
             dt.Load(com.ExecuteReader());
             CloseSqlConnection();
             return dt;
+        }
+
+        public DataTable Supplier_searchForNewProduct(string text, int iD)
+        {
+            SqlCommand com = new SqlCommand("suplier_searchForNewProduct", OpenSqlConnection())
+            {
+                CommandType= CommandType.StoredProcedure,
+                CommandTimeout=120
+            };
+
+            DataTable dt = new DataTable();
+
+            com.Parameters.AddWithValue("@value", text);
+            com.Parameters.AddWithValue("@SupplierId", iD);
+
+            dt.Load(com.ExecuteReader());
+
+            CloseSqlConnection();
+
+            return dt;
+
         }
 
         public void Product_UpdateWholesaleCost(string barcode, int costID, double discount, bool isByPercentage)
@@ -151,6 +190,20 @@ namespace POS
                 }
             }
             return list;
+        }
+
+        public void employee_Delete(int iD)
+        {
+            SqlCommand com = new SqlCommand("employee_Delete", OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            com.Parameters.AddWithValue("@employeeID", iD);
+
+            com.ExecuteNonQuery();
+            CloseSqlConnection();
+
         }
 
         public DataTable Customer_GetAcountsReceivable(int customerID)
@@ -220,6 +273,36 @@ namespace POS
             return dt;
         }
 
+        public void customer_Delete(int iD)
+        {
+            SqlCommand com = new SqlCommand("customer_delete", OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout = 120
+            };
+
+            com.Parameters.AddWithValue("@customerID", iD);
+
+            com.ExecuteNonQuery();
+            CloseSqlConnection();
+        }
+
+        public int customer_matchwithEmployee(int iD)
+        {
+            SqlCommand com = new SqlCommand("customer_matchWithEmployee", OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout = 120
+            };
+
+            com.Parameters.AddWithValue("@customerID", iD);
+
+            object result = com.ExecuteScalar();
+            CloseSqlConnection();
+
+            return result == null ? -1 : (int)result;
+        }
+
         public void deleteReminder(int reminderID)
         {
             SqlCommand command = new SqlCommand("ReminderDelete", this.OpenSqlConnection())
@@ -267,7 +350,8 @@ namespace POS
         {
             SqlCommand command = new SqlCommand("sale_RefoundSomeProducts", OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout=120
             };
             command.Parameters.AddWithValue("@saleID", iD);
             command.Parameters.AddWithValue("@products", barcodesToBeRefounded);
@@ -375,6 +459,25 @@ namespace POS
             com.Parameters.AddWithValue("@supplierID", supplierID);
             com.ExecuteNonQuery();
             CloseSqlConnection();
+        }
+
+        public DataTable Supplier_getPurchaseStatistics(int iD, DateTime date, Proveedor.PeriodOfTime mode)
+        {
+            SqlCommand com = new SqlCommand("Supplier_PurchaseStatistics", OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout=120
+            };
+
+            com.Parameters.AddWithValue("@supplierID", iD);
+            com.Parameters.AddWithValue("@periodOfTime", mode);
+            com.Parameters.AddWithValue("@date", date);
+
+            DataTable data = new DataTable();
+            data.Load(com.ExecuteReader());
+
+            CloseSqlConnection();
+            return data;
         }
 
         public void depotScrap(int depotID, int employeeID, string barcode, double quantity)
@@ -1615,7 +1718,8 @@ namespace POS
             DataSet dataSet = new DataSet();
             SqlCommand selectCommand = new SqlCommand("Sale_Initialize", this.OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout=120
             };
             selectCommand.Parameters.AddWithValue("@saleID", saleID);
             new SqlDataAdapter(selectCommand).Fill(dataSet);
@@ -1641,7 +1745,8 @@ namespace POS
         {
             SqlCommand command = new SqlCommand("Sale_New", this.OpenSqlConnection())
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout=120
             };
             command.Parameters.AddWithValue("@date", time.Date);
             command.Parameters.AddWithValue("@time", time.TimeOfDay);
