@@ -20,8 +20,7 @@ namespace POS
         {
 
             scrapColor = new string[] {
-                "#ff0000","#ff0000","#ed2939","#cd5c5c","#e60026","#960018","#e0115f",
-                "#dc143c","#da2c43","#ce2029"
+               "#da1b55","#f74343","#f73131","#f61f1f","#ed4a19","#e67214","#df9b0f","#dcaf0c","#d5d707","#d2eb04"
             };
 
             grayscaleColor = new string[] {"#737b80","#82898e","#92989c","#a1a7aa",
@@ -205,8 +204,9 @@ namespace POS
                 }
 
                 pieChart1.LegendLocation = LegendLocation.Bottom;
-                
-               
+
+
+                this.splitContainer2.Enabled = true;
                 this.bestSellGridView.DataSource = (object)bestSellProducts;
             }
             else
@@ -377,7 +377,7 @@ namespace POS
         private void ProductStatistics()
         {
             DataTable dataTable = Producto.ProductStatistics(this.product.Barcode, this.periodTimeCombo.SelectedIndex, this.datePicker.Value);
-            this.statisticsProductsProductLbl.Text = string.Format("{0} {1}", (object)this.product.Description, (object)this.product.Brand);
+            this.splitContainer2.Text = string.Format("{0} {1}", (object)this.product.Description, (object)this.product.Brand);
             this.productStatisticsChart.Series.Clear();
             this.productStatisticsChart.AxisX.Clear();
             this.productStatisticsChart.AxisY.Clear();
@@ -480,7 +480,7 @@ namespace POS
 
         private void ProductStatisticsCard_Resize(object sender, EventArgs e)
         {
-            this.CenterToParent(this.statisticsProductsProductLbl);
+           // this.CenterToParent(this.statisticsProductsProductLbl);
         }
 
         private void CenterToParent(Label statisticsProductsProductLbl)
@@ -503,7 +503,7 @@ namespace POS
 
         private void investmentProfitStatisticsCard_SizeChanged(object sender, EventArgs e)
         {
-            this.CenterToParent(this.InvestmentProfitLbl);
+           // this.CenterToParent(this.InvestmentProfitLbl);
         }
 
     }

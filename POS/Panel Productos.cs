@@ -12,6 +12,7 @@ namespace POS
     {
         private int selectedrow;
         private bool editingCell;
+        private delegate void setEmployeeDelegate(int employeeID);
 
         protected override CreateParams CreateParams
         {
@@ -412,8 +413,6 @@ namespace POS
                 }
             }
         }
-
-        private delegate void setEmployeeDelegate(int employeeID);
 
         public void setEmployee(int employeeID)
         {
