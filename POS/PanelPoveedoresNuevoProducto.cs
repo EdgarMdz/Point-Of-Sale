@@ -176,7 +176,8 @@ namespace POS
         {
             if (!isNumber(BarCodeTxt.Text))
             {
-                var results = new Proveedor(SupplierID).searchForNewProduct(BarCodeTxt.Text);
+                var supplier = new Proveedor(SupplierID);
+                var results = supplier.searchForNewProduct(BarCodeTxt.Text);
 
                 if (results.Rows.Count == 1)
                 {
@@ -196,7 +197,13 @@ namespace POS
                         precioTxt.Select();
                     }
                     else
-                        MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
+                    {
+                        var barcode = Producto.SearchValueGetTable(BarCodeTxt.Text);
+                        if (barcode.Rows.Count == 0)
+                            MessageBox.Show("No se encontraron productos");
+                        else
+                            MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
+                    }
                 }
                 else if (results.Rows.Count > 1)
                 {
@@ -220,13 +227,17 @@ namespace POS
                 }
                 else
                 {
-                    MessageBox.Show("No se encontraron productos");
-                    barcode = "";
+                    var barcode = Producto.SearchValueGetTable(BarCodeTxt.Text);
+                    if (barcode.Rows.Count == 0)
+                        MessageBox.Show("No se encontraron productos");
+                    else
+                        MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
+                    BarCodeTxt.Text = "";
                 }
             }
             else
             {
-                if (Producto.SearchProduct(BarCodeTxt.Text)&&  new Proveedor(SupplierID).getProductInfo(BarCodeTxt.Text).Rows.Count == 0 || editingMode)
+                if (Producto.SearchProduct(BarCodeTxt.Text) && new Proveedor(SupplierID).getProductInfo(BarCodeTxt.Text).Rows.Count == 0 || editingMode)
                 {
                     barcode = BarCodeTxt.Text;
                     var p = new Producto(barcode);
@@ -241,7 +252,13 @@ namespace POS
                     precioTxt.Select();
                 }
                 else
-                    MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
+                {
+                    var barcode = Producto.SearchValueGetTable(BarCodeTxt.Text);
+                    if (barcode.Rows.Count == 0)
+                        MessageBox.Show("No se encontraron productos");
+                    else
+                        MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
+                }
             }
         }
 

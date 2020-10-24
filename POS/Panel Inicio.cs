@@ -380,8 +380,10 @@ namespace POS
                     y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 1;
 
                     font = new Font("Times new roman", 10f, FontStyle.Bold);
-                    str = Convert.ToDouble(row[index]) > 0.0 ? string.Format("${0}", Convert.ToDouble(row[index]).ToString("n2")) :
-                    string.Format("${0}", Math.Abs(Convert.ToDouble(row[index])).ToString("n2"));
+                    str = row[index].ToString();
+                    str = index > 0 ? str.Substring(1) : str;
+                    str = Convert.ToDouble(str) > 0.0 ? string.Format("{0}", row[index]) :
+                    string.Format("{0}", row[index]);
                     y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 5;
 
                 }
@@ -391,7 +393,7 @@ namespace POS
             this.endShiftBtn.Hide();
             this.button2.Show();
             DarkForm darkForm = new DarkForm();
-            panelInicio_finDeTurno inicioFinDeTurno = new panelInicio_finDeTurno(Convert.ToDouble(dt.Rows[0]["Efectivo a Entregar"]));
+            panelInicio_finDeTurno inicioFinDeTurno = new panelInicio_finDeTurno(Convert.ToDouble(dt.Rows[0]["Efectivo a Entregar"].ToString().Substring(1)));
             darkForm.Show();
             try
             {

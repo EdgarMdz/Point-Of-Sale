@@ -100,7 +100,7 @@ namespace POS
             return this.negocio.GetPriceList(Customer_ID);
         }
 
-        public void Pay(double cash, int ticketNumber)
+        public void Pay(double cash, long ticketNumber)
         {
             this.negocio.Pay(cash, this.ID, ticketNumber);
             this.FindCustomerbyID(this.ID);
@@ -187,7 +187,7 @@ namespace POS
             this.ProductsWithDiscount = customerbyId.Tables[1];
         }
 
-        public void RegisterPayment(int PurchaseID, DateTime DateAndTime, double cash, int employeeID)
+        public void RegisterPayment(long PurchaseID, DateTime DateAndTime, double cash, int employeeID)
         {
             this.negocio.RegisterPayment(this.ID, PurchaseID, DateAndTime, cash, employeeID);
         }

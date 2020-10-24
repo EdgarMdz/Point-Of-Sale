@@ -88,6 +88,7 @@ namespace POS
             this.DataGridView1.Size = new System.Drawing.Size(1320, 482);
             this.DataGridView1.TabIndex = 28;
             this.DataGridView1.DataSourceChanged += new System.EventHandler(this.DataGridView1_DataSourceChanged);
+            this.DataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
             this.DataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellDoubleClick);
             this.DataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DataGridView1_CellFormatting);
             this.DataGridView1.SizeChanged += new System.EventHandler(this.DataGridView1_SizeChanged);

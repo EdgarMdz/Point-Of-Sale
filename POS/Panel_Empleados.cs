@@ -463,8 +463,8 @@ namespace POS
                         if (customerPayment > 0.0)
                         {
                             double cash1 = customerPayment - Convert.ToDouble(row["Resto"]) <= 0.0 ? customerPayment : Convert.ToDouble(row["Resto"]);
-                            customer.RegisterPayment(Convert.ToInt32(row["id_ventas"]), DateTime.Now, cash1, this.User_employeeID);
-                            customer.Pay(cash1, Convert.ToInt32(row["id_ventas"]));
+                            customer.RegisterPayment(Convert.ToInt64(row["id_ventas"]), DateTime.Now, cash1, this.User_employeeID);
+                            customer.Pay(cash1, Convert.ToInt64(row["id_ventas"]));
                             customerPayment -= cash1;
                         }
                     }
@@ -791,7 +791,7 @@ namespace POS
             Form_Login formLogin = new Form_Login(string.Format("Verificación De\nUsuario"));
 
             if (MessageBox.Show("¿Desea borrar la información del empleado seleccionado?.\n La información como cliente no será borrada al " +
-                "realizar esta acción", "Borrar Empleado", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.OK)
+                "realizar esta acción", "Borrar Empleado", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
                 if (formLogin.ShowDialog() == DialogResult.OK)
                 {

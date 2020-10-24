@@ -638,5 +638,10 @@ namespace POS
         {
             e.Row.Height += 5;
         }
+
+        private void dataGridView1_Leave(object sender, EventArgs e)
+        {
+            dataGridView1.CancelEdit();
+        }
     }
 }

@@ -143,7 +143,6 @@ namespace POS
         public DataTable GetSupplierProductList()
         {
             DataTable dt= negocio.GetSupplierProductList(ID);
-            
             foreach (DataColumn item in dt.Columns)
                 item.ReadOnly = false;
             
@@ -397,6 +396,17 @@ namespace POS
                 dt.AcceptChanges();
             }
             return dt;
+
+        }
+
+        public DataTable getBestSellers(DateTime date, PeriodOfTime mode)
+        {
+           return negocio.Supplier_getBestSellers(ID, date, (int)mode);
+
+        }
+        public DataTable getWorstSellers(DateTime date, PeriodOfTime mode)
+        {
+           return negocio.Supplier_getWorstSellers(ID, date,(int) mode);
 
         }
     }

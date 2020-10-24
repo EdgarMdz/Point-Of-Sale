@@ -53,5 +53,11 @@ namespace POS
             pen.Width = 5f;
             graphics.DrawRectangle(pen, new Rectangle(0, 0, this.Width - 1, this.Height - 1));
         }
+
+
+        private void FormCambio_Deactivate(object sender, EventArgs e)
+        {
+            
+        }
     }
 }

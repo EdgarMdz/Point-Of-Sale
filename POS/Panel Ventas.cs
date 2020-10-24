@@ -588,6 +588,7 @@ namespace POS
 
         private async void CancelSaleBtn_Click(object sender, EventArgs e)
         {
+            CancelSaleBtn.Enabled = false;
             if (this.sale != null) //&& this.sale.Date > DateTime.Now.AddDays(-2.0))
             {
                 DialogResult userSelection = new DialogResult();
@@ -610,16 +611,23 @@ namespace POS
                 }
                 try
                 {
-                    openCashDrawer();
+                    if (printer != null)
+                        openCashDrawer();
+                    else
+                        printNothing();
                 }
                 catch (Exception)
                 {
                     if (printer.State != ControlState.Closed)
                     {
-                        cashDrawer.Release();
+                        try
+                        {
+                            cashDrawer.Release();
+                        }
+                        catch (PosControlException) { }
                     }
 
-                    printDefaultPrinter(saleCancelledDocument);
+                    printNothing();
                 }
             
 
@@ -637,7 +645,7 @@ namespace POS
                             alreadyReturned += getTotalFromRow(row.Index);
                     }
 
-                    MoneyToBeRefounded = (double)sale.Total - alreadyReturned > (double)sale.Payment ? 0 : (double)sale.Total - alreadyReturned;
+                    MoneyToBeRefounded = (double)sale.Total - alreadyReturned > (double)sale.Payment ? (double)sale.Payment : (double)sale.Total - alreadyReturned;
                 }
 
                 else
@@ -668,14 +676,33 @@ namespace POS
                 darkForm.Show();
                 formCambio.ShowDialog();
                 darkForm.Close();
-                /* this.CanceledLbl.Show();
-                 this.CancelSaleBtn.Enabled = false;
-                 this.CanceledLbl.Show();*/
             }
             else
             {
                 MessageBox.Show(string.Format("La compra excede el lapso permitido de {0} días para realizar la devolución.\n\nFecha de la venta: {1} de {2} del {3}", (object)2, (object)this.sale.Date.Day, (object)new CultureInfo("es-MX").DateTimeFormat.GetMonthName(this.sale.Date.Month), (object)this.sale.Date.Year), "No se puede cancelar");
             }
+            CancelSaleBtn.Enabled = true;
+        }
+
+        private void printNothing()
+        {
+            try
+            {
+                var document = new PrintDocument() { PrintController = new StandardPrintController() };
+                printDialog1.Document = document;
+                document.Print();
+            }
+            catch (InvalidPrinterException)
+            {
+                MessageBox.Show("No se encontró la impreora");
+            }
+            catch(AccessViolationException)
+            {
+                var document = new PrintDocument();
+                printDialog1.Document = document;
+                document.Print();
+            }
+
         }
 
         private double calculateRefound()
@@ -818,6 +845,7 @@ namespace POS
             dataGridView2.Columns["depot"].Visible = true;
             previousTicketBtn.Hide();
             nextTicketBtn.Hide();
+            dataGridView2.RowTemplate.MinimumHeight = 2;
         }
 
         private int getDepotIDFromRow(int rowindex)
@@ -949,7 +977,10 @@ namespace POS
                 else
                 {
                     if (Convert.ToDouble(formPagar.Pay) > 0)
-                        openCashDrawer();
+                        if (cashDrawer != null)
+                            openCashDrawer();
+                      // else
+                        //    printNothing();
                 }
 
                 this.ClearSale();
@@ -958,7 +989,7 @@ namespace POS
             darkForm.Close();
         }
 
-        private void printTicket(int saleID, string products, double discount)
+        private void printTicket(long saleID, string products, double discount)
         {
             if (printer != null)
             {
@@ -1053,7 +1084,11 @@ namespace POS
                     MessageBox.Show(e.Message);
                     if (printer.State != ControlState.Closed)
                     {
-                        printer.Release();
+                        try
+                        {
+                            printer.Release();
+                        }
+                        catch (PosControlException) { }
                     }
 
                     if (MessageBox.Show("Ocurrió un error al imprimir el Ticket.\n ¿Desea intentar imprimirlo nuevamente?", "Error de Impresión", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
@@ -1070,7 +1105,7 @@ namespace POS
 
         }
 
-        private async void prepareData(int saleID)
+        private async void prepareData(long saleID)
         {
             Venta lastSale = await Task.Run(() => new Venta(saleID));
             int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
@@ -1317,7 +1352,7 @@ namespace POS
             }
         }
 
-        private void printTicket(int saleID)
+        private void printTicket(long saleID)
         {
             Venta lastSale = new Venta(saleID);
 
@@ -1484,39 +1519,23 @@ namespace POS
                 catch (PosException)
                 {
                     if (printer != null && printer.State != ControlState.Closed)
-                        printer.Release();
+                        try
+                        {
+                            printer.Release();
+                        }
+                        catch (PosControlException) { }
 
-
-                    if (MessageBox.Show("Ocurrió un error al imprimir el Ticket.\n ¿Desea intentar imprimirlo nuevamente?", "Error de Impresión", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                    if (MessageBox.Show("Ocurrió un error al imprimir el Ticket.\n ¿Desea intentar imprimirlo nuevamente?", "Error de Impresión",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
                         prepareData(saleID);
                 }
+                catch (Exception) { prepareData(saleID); }
             }
             else
             {
                 prepareData(sale.ID);
             }
             
-        }
-
-        private void printDefaultPrinter(PrintDocument printDocument)
-        {
-            try
-            {
-                printDocument.PrintController = new StandardPrintController();
-                printDocument.PrinterSettings.PrinterName = printDialog1.PrinterSettings.PrinterName;
-                printDialog1.Document = printDocument;
-                printDocument.Print();
-            }
-            catch (InvalidPrinterException)
-            {
-                MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-            }
-            catch(Exception){
-
-            }
-            printDocument = new PrintDocument();
-            printDocument.PrintController = new StandardPrintController();
-            printDocument.PrintPage += new PrintPageEventHandler(saleCancelledDocument_PrintPage);
         }
 
         private void openCashDrawer()
@@ -1542,18 +1561,16 @@ namespace POS
                 }
                 catch (PosControlException)
                 {
-                    if (cashDrawer != null && cashDrawer.State != ControlState.Closed)
-                        cashDrawer.Release();
                 }
                 catch (Exception)
                 {
                     if (cashDrawer != null && cashDrawer.State != ControlState.Closed)
-                        cashDrawer.Release();
+                        try
+                        {
+                            cashDrawer.Release();
+                        }
+                        catch (PosControlException) { }
                 }
-            }
-            else
-            {
-                printDefaultPrinter(saleCancelledDocument);
             }
         }
 
@@ -1618,8 +1635,8 @@ namespace POS
                         if (customerPayment > 0.0)
                         {
                             double cash1 = customerPayment - Convert.ToDouble(row["Resto"]) <= 0.0 ? customerPayment : Convert.ToDouble(row["Resto"]);
-                            this.customer.RegisterPayment(Convert.ToInt32(row["id_ventas"]), DateTime.Now, cash1, this.EmployeeID);
-                            this.customer.Pay(cash1, Convert.ToInt32(row["id_ventas"]));
+                            this.customer.RegisterPayment(Convert.ToInt64(row["id_ventas"]), DateTime.Now, cash1, this.EmployeeID);
+                            this.customer.Pay(cash1, Convert.ToInt64(row["id_ventas"]));
                             customerPayment -= cash1;
                         }
                     }
@@ -2121,7 +2138,7 @@ namespace POS
             }
             else
             {
-                int num = (int)MessageBox.Show("No se encontró información");
+                MessageBox.Show("No se encontró información");
             }
         }
 
@@ -2413,7 +2430,14 @@ namespace POS
                     printer.DeviceEnabled = false;
                     printer.Release();
                 }
-                catch (Exception) { }
+                catch (Exception)
+                {
+                    try
+                    {
+                        printer.Release();
+                    }
+                    catch (PosControlException) { }
+                }
 
 
             }
@@ -2422,6 +2446,7 @@ namespace POS
                 //Nothing can be used.
                 MessageBox.Show("No se tuvo acceso a la impresora o al cajon");
             }
+            catch (Exception) { }
         }
 
         private async void setimage()
@@ -2430,28 +2455,32 @@ namespace POS
             {
 
                 PrinterTicket printerTicket = new PrinterTicket();
-                Bitmap bmp = (Bitmap)printerTicket.logo;
 
-
-                Rectangle newRec = new Rectangle(0, 0, 300, 114);
-                Bitmap resize = new Bitmap(300, 114);
-
-                resize.SetResolution(bmp.HorizontalResolution, bmp.VerticalResolution);
-                using (var g = Graphics.FromImage(resize))
+                if (printerTicket.logo != null)
                 {
-                    g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
-                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                    using (var wrap = new ImageAttributes())
-                    {
-                        wrap.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
-                        g.DrawImage(bmp, newRec, 0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, wrap);
-                    }
-                }
+                    Bitmap bmp = (Bitmap)printerTicket.logo;
 
-                resize.Save("new logo.bmp");
+
+                    Rectangle newRec = new Rectangle(0, 0, 300, 114);
+                    Bitmap resize = new Bitmap(300, 114);
+
+                    resize.SetResolution(bmp.HorizontalResolution, bmp.VerticalResolution);
+                    using (var g = Graphics.FromImage(resize))
+                    {
+                        g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                        g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                        g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                        using (var wrap = new ImageAttributes())
+                        {
+                            wrap.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
+                            g.DrawImage(bmp, newRec, 0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, wrap);
+                        }
+                    }
+
+                    resize.Save("new logo.bmp");
+                }
             });
         }
 
@@ -2593,12 +2622,12 @@ namespace POS
         {
             string barcode = this.dataGridView2.SelectedRows[0].Cells["barcode"].Value.ToString();
                        
-            if (this.sale.Date.Date < DateTime.Today.Date.AddDays(-7.0))
+           /* if (this.sale.Date.Date < DateTime.Today.Date.AddDays(-7.0))
             {
                 MessageBox.Show(string.Format("No se pueden retornar más envases. La fecha de compra excede los {0} días permitidos para la devolución.\n\nFecha de compra: {1} de {2} del {3}\n", (object)7, (object)this.sale.Date.Day, (object)new CultureInfo("es-MX").DateTimeFormat.GetMonthName(this.sale.Date.Month), (object)this.sale.Date.Year), "Lapso excedido");
             }
             
-            else if (arePendingPackages() && !this.sale.isSaleCanceled)
+            else*/ if (arePendingPackages() && !this.sale.isSaleCanceled)
             {
                 DarkForm darkForm = new DarkForm();
                 PanelVentas_RetornarEnvasesForm returnForm = new PanelVentas_RetornarEnvasesForm(sale.ID, EmployeeID);
@@ -2610,114 +2639,11 @@ namespace POS
                     double change = returnForm.MoneyToRefound; //(double)(this.sale.getSingleCost(barcode) * (Decimal)returnForm.AmountOfPackagesToReturn);
                     FormCambio formCambio = new FormCambio(change);
                     ReturnPackagesBtn.Enabled = arePendingPackages();
-                    /*this.packageReturnedDocument = new PrintDocument();
-                    packageReturnedDocument.PrintController = new StandardPrintController();
-                    this.packageReturnedDocument.PrintPage += (PrintPageEventHandler)((s, ee) =>
-                    {
-                        Graphics graphics = ee.Graphics;
-                        this.packageReturnedDocument.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
-                        int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
-                        int y1 = 10;
-                        Size size1 = this.ticket.printLogo(graphics, y1);
-                        int y2 = size1.Height == 0 ? y1 : y1 + size1.Height + 10;
-                        Size size2 = this.ticket.printHeader(graphics, y2);
-                        int y3 = size2.Height == 0 ? y2 : y2 + size2.Height + 10;
-                        Size size3 = this.ticket.printAddress(graphics, y3);
-                        int y4 = size3.Height == 0 ? y3 : y3 + size3.Height + 10;
-                        Size size4 = this.ticket.printPhone(graphics, y4);
-                        int num2 = size4.Height == 0 ? y4 : y4 + size4.Height + 10;
-                        graphics.DrawLine(Pens.Black, 10, num2, width - 10, num2);
-                        int num3 = num2 + 5;
-                        string str1 = "Retorno de Envases";
-                        Font font1 = this.getFont(str1, width, FontStyle.Bold);
-                        Size stringSize1 = this.getStringSize(str1, font1);
-                        graphics.DrawString(str1, font1, Brushes.Black, 0.0f, (float)num3);
-                        int num4 = num3 + (stringSize1.Height + 5);
-                        Font font2 = new Font("times new roman", 10f, FontStyle.Regular);
-                        string str2 = string.Format("Folio: {0}", (object)this.sale.ID.ToString("X"));
-                        Font font3 = font2;
-                        Size stringSize2 = this.getStringSize(str2, font3);
-                        if (stringSize2.Width > width)
-                        {
-                            font3 = this.getFont(str2, width, FontStyle.Regular);
-                            stringSize2 = this.getStringSize(str2, font3);
-                        }
-                        graphics.DrawString(str2, font3, Brushes.Black, 0.0f, (float)num4);
-                        int num5 = num4 + (stringSize2.Height + 3);
-                        string str3 = string.Format("Fecha: {0} {1}", (object)DateTime.Now.ToShortDateString(), (object)DateTime.Now.ToShortTimeString());
-                        Font font4 = font2;
-                        Size stringSize3 = this.getStringSize(str3, font4);
-                        if (stringSize3.Width > width)
-                        {
-                            font4 = this.getFont(str3, width, FontStyle.Regular);
-                            stringSize3 = this.getStringSize(str3, font4);
-                        }
-                        graphics.DrawString(str3, font4, Brushes.Black, 0.0f, (float)num5);
-                        int num6 = num5 + (stringSize3.Height + 3);
-                        if (this.sale.CustomerID != 0)
-                        {
-                            string str4 = string.Format("Cliente: {0}", (object)new Cliente(this.sale.CustomerID).Name);
-                            Font font5 = font2;
-                            Size stringSize4 = this.getStringSize(str4, font5);
-                            if (stringSize4.Width > width - 10)
-                            {
-                                this.getFont(str4, width - 10, FontStyle.Bold);
-                                stringSize4 = this.getStringSize(str4, font5);
-                            }
-                            graphics.DrawString(str4, font5, Brushes.Black, 0.0f, (float)num6);
-                            num6 += stringSize4.Height + 3;
-                        }
-                        graphics.DrawLine(Pens.Black, 10, num6, width - 10, num6);
-                        int num7 = num6 + 10;
-                        Producto producto = new Producto(barcode);
-                        string str5 = string.Format("{0}, {1}", (object)producto.Description, (object)producto.Brand);
-                        Font font6 = new Font("times new roman", 12f);
-                        Size stringSize5 = this.getStringSize(str5, font6);
-                        if (stringSize5.Width > width)
-                        {
-                            int letterByMeasuring = this.getLastLetterByMeasuring(str5, font6, width);
-                            str5 = str5.Insert(letterByMeasuring, str5[letterByMeasuring] == ' ' ? "\n" : "-\n");
-                            stringSize5 = this.getStringSize(str5, font6);
-                        }
-                        graphics.DrawString(str5, font6, Brushes.Black, 0.0f, (float)num7);
-                        int num8 = num7 + (stringSize5.Height + 10);
-                        string str6 = string.Format("Envases retornados: {0}", (object)returnForm.AmountOfPackagesToReturn);
-                        Font font7 = this.getFont(str6, width * 5 / 8, FontStyle.Regular);
-                        Size stringSize6 = this.getStringSize(str6, font7);
-                        graphics.DrawString(str6, font7, Brushes.Black, 0.0f, (float)num8);
-                        int num9 = num8 + (stringSize6.Height + 2);
-                        string str7 = string.Format("Envases pendientes: {0}", (object)(pendingPackages - returnForm.AmountOfPackagesToReturn));
-                        Font font8 = new Font(font7.Name, font7.Size, FontStyle.Bold);
-                        Size stringSize7 = this.getStringSize(str7, font8);
-                        if (stringSize7.Width > width - 10)
-                        {
-                            font8 = this.getFont(str7, width - 10, FontStyle.Bold);
-                            stringSize7 = this.getStringSize(str7, font8);
-                        }
-                        graphics.DrawString(str7, font8, Brushes.Black, 0.0f, (float)num9);
-                        int num10 = num9 + (stringSize7.Height + 9);
-                        string str8 = string.Format("Cambio: ${0}", (object)change.ToString("n2"));
-                        Font font9 = new Font("times new roman", 10f, FontStyle.Regular);
-                        Size stringSize8 = this.getStringSize(str8, font9);
-                        graphics.DrawString(str8, font9, Brushes.Black, (float)(width - stringSize8.Width), (float)num10);
-                        int y5 = num10 + (stringSize8.Height + 10);
-                        Size size5 = this.ticket.printFooter(graphics, y5);
-                        int y6 = size5.Height == 0 ? y5 : y5 + size5.Height + 10;
-                        Image image = BarcodeDrawFactory.Code128WithChecksum.Draw(this.sale.ID.ToString("X8"), 50);
-                        graphics.DrawImage(image, 10, y6, width - 10, 20);
-                    });
-                    try
-                    {
-                        this.packageReturnedDocument.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
-                        this.printDialog1.Document = this.packageReturnedDocument;
-                        this.packageReturnedDocument.Print();
-                    }
-                    catch (InvalidPrinterException ex)
-                    {
-                        int num2 = (int)MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
-                    }
-                    */
-                    openCashDrawer();
+
+                    if (printer != null)
+                        openCashDrawer();
+                    else
+                        printNothing();
 
                     formCambio.ShowDialog();
                 }
@@ -2725,7 +2651,7 @@ namespace POS
             }
             else
             {
-                int num12 = (int)MessageBox.Show("No se deben envases de este producto.");
+                MessageBox.Show("No se deben envases de este producto.");
             }
         }
 
@@ -2747,7 +2673,7 @@ namespace POS
             }
         }
 
-        private void setSale(int SaleID)
+        private void setSale(long SaleID)
         {
             ClearSale();
             sale = new Venta(SaleID);
@@ -3034,7 +2960,7 @@ namespace POS
 
             if (dataGridView2.RowCount > 1)
             {
-                if (keyData == Keys.Down)
+                if (keyData == Keys.Down&& !dataGridView2.IsCurrentCellInEditMode)
                 {
                     try
                     {
@@ -3044,7 +2970,7 @@ namespace POS
                     }
                     catch (ArgumentOutOfRangeException) { dataGridView2.Rows[dataGridView2.CurrentCell.RowIndex].Selected = true; }
                 }
-                else if (keyData == Keys.Up)
+                else if (keyData == Keys.Up && !dataGridView2.IsCurrentCellInEditMode)
                 {
                     try
                     {
@@ -3108,7 +3034,10 @@ namespace POS
             }
             if (keyData == (Keys.Alt | Keys.O))
             {
-                openCashDrawer();
+                if (cashDrawer != null)
+                    openCashDrawer();
+                else
+                    printNothing();
                 return true;
             }
 
@@ -3169,6 +3098,14 @@ namespace POS
                 return true;
             }
 
+            if(keyData== Keys.F3 && dataGridView2.RowCount>0 && isNewSale)
+            {
+                dataGridView2.CurrentCell = dataGridView2.CurrentRow.Cells["depot"];
+                ProductTxt.Leave -= ProductTxt_Leave;
+                ActiveControl = dataGridView2;
+                dataGridView2.BeginEdit(true);
+                return true;
+            }
             if (keyData != (Keys.F4 | Keys.Alt))
                 return base.ProcessCmdKey(ref msg, keyData);
             this.closeWindow();
@@ -3539,7 +3476,7 @@ namespace POS
             var data = sale.getNextSaleID();
 
             if (data.Tables[1].Rows.Count > 0)
-                setSale(Convert.ToInt32(data.Tables[1].Rows[0][0]));
+                setSale(Convert.ToInt64(data.Tables[1].Rows[0][0]));
         }
 
         private void previousTicketBtn_Click(object sender, EventArgs e)
@@ -3547,7 +3484,7 @@ namespace POS
             var data = sale.getNextSaleID();
 
             if (data.Tables[0].Rows.Count > 0)
-                setSale(Convert.ToInt32(data.Tables[0].Rows[0][0]));
+                setSale(Convert.ToInt64(data.Tables[0].Rows[0][0]));
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -3595,9 +3532,23 @@ namespace POS
             dataGridView2.RowTemplate.MinimumHeight = height;
         }
 
-        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView2_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.ColumnIndex == dataGridView2.Columns["depot"].Index)
+            {
+                ProductTxt.Leave += ProductTxt_Leave;
+                ProductTxt.Select();
+            }
+        }
 
+        private void Panel_Ventas_Deactivate(object sender, EventArgs e)
+        {
+            ProductTxt.Leave -= ProductTxt_Leave;
+        }
+
+        private void Panel_Ventas_Activated(object sender, EventArgs e)
+        {
+            ProductTxt.Leave += ProductTxt_Leave;
         }
     }
 
@@ -3607,14 +3558,24 @@ namespace POS
         {
             try
             {
-                Size stringSize = g.MeasureString(text, font, width - 10).ToSize();
+                Size stringSize;
+                try
+                {
+                    stringSize = g.MeasureString(text, font, width - 10).ToSize();
+                }
+                catch (ArgumentException)
+                {
+                    font = new Font(font.Name, (float)font.Size, font.Style);
+                    stringSize = g.MeasureString(text, font, width - 10).ToSize();
+                }
                 g.DrawString(text, font, Brushes.Black, new RectangleF(0, yOffset, width, stringSize.Height),
                     new StringFormat { Alignment = alignment });
 
                 return (int)stringSize.Height;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return 0;
             }
         }

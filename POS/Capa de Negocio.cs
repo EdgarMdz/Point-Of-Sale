@@ -195,7 +195,7 @@ namespace POS
             this.datos.Employee_UpdateHirementDate(newDate, employeeID);
         }
 
-        public DataTable Sale_getReurnableProducts(int saleID) => datos.Sale_getReurnableProducts(saleID);
+        public DataTable Sale_getReurnableProducts(long saleID) => datos.Sale_getReurnableProducts(saleID);
 
         public DataTable getInfoUnfinishedSell(int savedWindowID, int newWindowID)
         {
@@ -217,12 +217,12 @@ namespace POS
             this.datos.Employee_updatePaymentDay(str, employeeID);
         }
 
-        public void Sale_RefoundProductsToCustomer(int iD, DataTable barcodesToBeRefounded)
+        public void Sale_RefoundProductsToCustomer(long iD, DataTable barcodesToBeRefounded)
         {
             datos.Sale_RefoundProductsToCustomer(iD, barcodesToBeRefounded);
         }
 
-        internal DataSet getNextSaleID(int ID)
+        public DataSet getNextSaleID(long ID)
         {
             return datos.getNextSaleID(ID);
         }
@@ -291,7 +291,7 @@ namespace POS
             this.datos.GetPriceList(Customer_ID);
 
         public DataTable getPurchase(string TicketNumber) =>
-            this.datos.getPurchase(Convert.ToInt32(TicketNumber, 0x10));
+            this.datos.getPurchase(Convert.ToInt64(TicketNumber, 0x10));
 
         public DataTable getPurchaseChart(string CodigoBarras) =>
             this.datos.getPurchaseChart(CodigoBarras);
@@ -327,7 +327,7 @@ namespace POS
             this.datos.newPrice(Customer_ID, barcode, discount, isPercentage, MinAmount, sellByCase);
         }
 
-        public void Pay(double cash, int Customer_ID, int TicketNumber)
+        public void Pay(double cash, int Customer_ID, long TicketNumber)
         {
             this.datos.Pay(cash, Customer_ID, TicketNumber);
         }
@@ -386,6 +386,15 @@ namespace POS
         public DataTable Supplier_getProductInfo(int iD, string barcode)
         {
             return datos.Supplier_getProductInfo(iD, barcode);
+        }
+
+        public DataTable Supplier_getBestSellers(int iD, DateTime date, int mode)
+        {
+            return datos.Supplier_getBestSellers(iD, date, mode);
+        } 
+        public DataTable Supplier_getWorstSellers(int iD, DateTime date, int mode)
+        {
+            return datos.Supplier_getWorstSellers(iD, date, mode);
         }
 
         public DataTable Supplier_getPurchaseStatistics(int iD, DateTime date, Proveedor.PeriodOfTime mode)
@@ -525,7 +534,7 @@ namespace POS
         public bool RegisteredPrice(int CustomerID, string Barcode, double minAmount, bool sellByCase) =>
             this.datos.RegisteredPrice(CustomerID, Barcode, minAmount, sellByCase);
 
-        public void RegisterPayment(int Customer_ID, int PurchaseID, DateTime DateAndTime, double cash, int employeeID)
+        public void RegisterPayment(int Customer_ID, long PurchaseID, DateTime DateAndTime, double cash, int employeeID)
         {
             this.datos.RegisterPayment(Customer_ID, DateAndTime, PurchaseID, cash, employeeID);
         }
@@ -593,27 +602,27 @@ namespace POS
             this.datos.Reminder_reset();
         }
 
-        public void Sale_Cancel(int saleID, int employeeID)
+        public void Sale_Cancel(long saleID, int employeeID)
         {
             this.datos.Sale_Cancel(saleID, employeeID);
         }
 
-        public bool Sale_doesPurchaseExist(int saleID) =>
+        public bool Sale_doesPurchaseExist(long saleID) =>
             (this.datos.Sale_find(saleID).Rows.Count == 1);
 
-        public DataTable Sale_find(int SaleID) =>
+        public DataTable Sale_find(long SaleID) =>
             this.datos.Sale_find(SaleID);
 
-        public int Sale_getLastSaleID() =>
+        public long Sale_getLastSaleID() =>
             this.datos.Sale_getLastSaleID();
 
-        public DataSet Sale_Initialize(int saleID) =>
+        public DataSet Sale_Initialize(long saleID) =>
             this.datos.Sale_Initialize(saleID);
 
         public DataTable Sale_InvestmentSellsProfit(int periodOfTimeValue, DateTime date) =>
             this.datos.Sale_InvestmentSellsProfit(periodOfTimeValue, date);
 
-        public int Sale_newSale(int EmployeeID, int CustomerID, double total, double payment, Tuple<string,double, double, double,int>[] ListofProducts, double cash)
+        public long Sale_newSale(int EmployeeID, int CustomerID, double total, double payment, Tuple<string,double, double, double,int>[] ListofProducts, double cash)
         {
             DataTable listOfProducts = new DataTable();
             DataColumn[] columns = new DataColumn[] { new DataColumn("barcode"), new DataColumn("cost"), new DataColumn("amount"), new DataColumn("discount"),new DataColumn ( "No.") ,new DataColumn("depotID")};
@@ -623,6 +632,7 @@ namespace POS
                 int i = 1;
                 foreach (var product in ListofProducts)
                 {
+
                     DataRow row = listOfProducts.NewRow();
                     row[0] = product.Item1;
                     row[1] = product.Item2;
@@ -636,7 +646,7 @@ namespace POS
             return this.datos.Sale_newSale(DateTime.Now, EmployeeID, CustomerID, total, payment, listOfProducts, cash);
         }
 
-        public void Sale_ReturnPackage(int saleID, string barcode, decimal Amount, int employeeID)
+        public void Sale_ReturnPackage(long saleID, string barcode, decimal Amount, int employeeID)
         {
             this.datos.Sale_ReturnPackage(saleID, barcode, Amount, employeeID);
         }

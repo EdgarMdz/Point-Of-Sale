@@ -13,9 +13,9 @@ namespace POS
 {
     public partial class panelVentas_getTicketForm : Form
     {
-        private int _ticketNumber;
+        private long _ticketNumber;
 
-        public int ticketNumber
+        public long ticketNumber
         {
             get
             {
@@ -42,16 +42,16 @@ namespace POS
 
         private void validateTicket()
         {
-            int int32 = Convert.ToInt32(this.textBox1.Text, 16);
-            if (Venta.doesSaleExist(int32))
+            long int64 = Convert.ToInt64(this.textBox1.Text, 16);
+            if (Venta.doesSaleExist(int64))
             {
-                this._ticketNumber = int32;
+                this._ticketNumber = int64;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             else
             {
-                int num = (int)MessageBox.Show("No se encontró la venta en la base de datos. Revise que el valor sea correcto");
+                MessageBox.Show("No se encontró la venta en la base de datos. Revise que el valor sea correcto");
                 this.textBox1.Focus();
                 this.textBox1.SelectAll();
             }

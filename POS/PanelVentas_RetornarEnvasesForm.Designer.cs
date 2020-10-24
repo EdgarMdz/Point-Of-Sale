@@ -48,6 +48,7 @@ namespace POS
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Century Gothic", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.label1.Location = new System.Drawing.Point(190, 30);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(566, 56);

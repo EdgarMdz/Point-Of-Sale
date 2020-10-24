@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 
@@ -29,6 +30,12 @@ namespace POS
             this.barcodeTxt.Enabled = false;
             this.ShowInTaskbar = false;
             wholesaleCostsBtn.Show();
+            pictureBox1.Controls.Add(panel5);
+            panel5.BringToFront();
+            panel5.Location = new Point((pictureBox1.Width - panel5.Width) / 2, (pictureBox1.Height - panel5.Height) / 2);
+
+            bunifuImageButton2.Parent = pictureBox1;
+            bunifuImageButton2.Location = new Point(3, 3);
         }
 
         private void getDepots()
@@ -86,15 +93,23 @@ namespace POS
             try
             {
                 var retail = Convert.ToDouble(retailCostTxt.Text);
-                var caseCost = Convert.ToDouble(costbyCaseTxt.Text);
-                var purchase = Convert.ToDouble(PurchaseCostTxt.Text);
+
+                var purchase = purchaseCostLbl.Text == "" ? 0 : Convert.ToDouble(PurchaseCostTxt.Text);
                 var pieces = Convert.ToDouble(piecesByCaseTxt.Text);
+                var caseCost = costbyCaseTxt.Text == "" ? retail * pieces : Convert.ToDouble(costbyCaseTxt.Text);
 
                 if (purchase <= caseCost)
                 {
                     if (caseCost <= pieces * retail)
+                    {
+                        costbyCaseTxt.ForeColor = Color.FromArgb(0, 130, 170);
                         return true;
+                    }
+                    else
+                        costbyCaseTxt.ForeColor = Color.Tomato;
                 }
+                else
+                    costbyCaseTxt.ForeColor = Color.Tomato;
             }
             catch(FormatException){}
             return false;
@@ -701,6 +716,53 @@ namespace POS
             pictureBox1.Image = null;
             pictureBox1.BorderStyle = BorderStyle.FixedSingle;
             bunifuImageButton2.Hide();
+        }
+
+        private void pictureBox1_MouseLeave(object sender, EventArgs e)
+        {
+            var pictureLocation = this.PointToScreen(pictureBox1.Location);
+            var pictureSize = this.PointToScreen(new Point(pictureBox1.Width, pictureBox1.Height));
+            var mouselocation = Cursor.Position;
+
+            //if (pictureLocation.X < mouselocation.X && pictureLocation.X + pictureSize.X < mouselocation.X && pictureLocation.Y < mouselocation.Y && pictureLocation.Y + pictureSize.Y < mouselocation.Y)
+
+            if (mouselocation.X > pictureLocation.X && mouselocation.X < pictureLocation.X + pictureBox1.Width && mouselocation.Y > pictureLocation.Y && mouselocation.Y < pictureLocation.Y + pictureBox1.Height)
+                return;
+            else
+                bunifuFlatButton1.Visible = false;
+        }
+
+        private void bunifuFlatButton1_MouseHover(object sender, EventArgs e)
+        {
+            bunifuFlatButton1.Visible = true;
+        }
+
+        private void pictureBox1_MouseEnter(object sender, EventArgs e)
+        {
+            if (editingMode && pictureBox1.Image != null)
+            {
+                bunifuFlatButton1.Visible = true;
+            }
+            else
+            {
+                bunifuFlatButton1.Visible = false;
+            }
+        }
+
+        private void bunifuFlatButton1_Click(object sender, EventArgs e)
+        {
+            var explorer = new SaveFileDialog();
+
+            if(explorer.ShowDialog()== DialogResult.OK)
+            {
+
+                pictureBox1.Image.Save(explorer.FileName+".png");
+            }
+        }
+
+        private void Form_Agregar_Deactivate(object sender, EventArgs e)
+        {
+            bunifuFlatButton1.Visible = false;
         }
     }
 }

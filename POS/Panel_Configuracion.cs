@@ -38,10 +38,13 @@ namespace POS
 
         private void setTicketSize()
         {
-            this.ticketPanelLeft.Width = (this.ticketPanel.Width - this.pd.PrinterSettings.DefaultPageSettings.PaperSize.Width) / 2;
-            this.ticketPanelRight.Width = (this.ticketPanel.Width - this.pd.PrinterSettings.DefaultPageSettings.PaperSize.Width) / 2;
-            foreach (Control control in this.splitContainer1.Panel2.Controls)
-                this.centerToParent(control);
+            if (printerExist(printer.printerName))
+            {
+                this.ticketPanelLeft.Width = (this.ticketPanel.Width - this.pd.PrinterSettings.DefaultPageSettings.PaperSize.Width) / 2;
+                this.ticketPanelRight.Width = (this.ticketPanel.Width - this.pd.PrinterSettings.DefaultPageSettings.PaperSize.Width) / 2;
+                foreach (Control control in this.splitContainer1.Panel2.Controls)
+                    this.centerToParent(control);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -72,13 +75,35 @@ namespace POS
         private void Panel_Configuracion_Load(object sender, EventArgs e)
         {
             this.printer = new PrinterTicket();
-            if (printer.printerName == "")
+            if ( printer.printerName == ""||!printerExist(printer.printerName))
                 return;
             this.pd = new PrintDialog();
             this.pd.PrinterSettings.PrinterName = this.printer.printerName;
             this.setTicketSize();
             this.ticketPanel.Enabled = true;
             this.ticketPanel.Show();
+        }
+
+        private bool printerExist(string name = "")
+        {
+            if (name != null)
+            {
+                name = name.ToLower();
+                foreach (string item in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
+                {
+                    if (name == item.ToLower())
+                        return true;
+                }
+                this.printer.saveConfiguration("", printer.logo, printer.logoHeight, printer.logoDisplay,
+                    printer.header, printer.headerFont, printer.headderDisplay,
+                    printer.address, printer.addressFont, true,
+                    printer.phone, printer.phoneFont, printer.phoneDisplay,
+                    printer.footer, printer.footerFont, printer.footerDisplay);
+
+                return false;
+            }
+
+            else return false;
         }
 
         private void headderTxt_TextChanged(object sender, EventArgs e)
@@ -252,7 +277,7 @@ namespace POS
             }
             catch (ArgumentException ex)
             {
-                int num = (int)MessageBox.Show("Formato no válido");
+                MessageBox.Show("Formato no válido");
                 this.phoneFontTxt.Text = new FontConverter().ConvertToString((object)this.phoneLbl.Font);
             }
         }
@@ -289,39 +314,40 @@ namespace POS
 
         private async void getFitString(Control control, string text)
         {
-            control.Text = await Task.Run<string>((Func<string>)(() =>
-            {
-                string str1 = "";
-                int width = this.pd.PrinterSettings.DefaultPageSettings.PaperSize.Width;
-                string str2 = "\r\n";
-                int length = text.IndexOf(str2) > -1 ? text.IndexOf(str2) : text.Length;
-                int startIndex = 0;
-                do
+            if (pd != null)
+                control.Text = await Task.Run<string>((Func<string>)(() =>
                 {
-                    string text1 = text.Substring(startIndex, length).Trim();
-                    for (Size stringSize = PrinterTicket.getStringSize(text1, control.Font); stringSize.Width > width; stringSize = PrinterTicket.getStringSize(text1, control.Font))
+                    string str1 = "";
+                    int width = this.pd.PrinterSettings.DefaultPageSettings.PaperSize.Width;
+                    string str2 = "\r\n";
+                    int length = text.IndexOf(str2) > -1 ? text.IndexOf(str2) : text.Length;
+                    int startIndex = 0;
+                    do
                     {
-                        int letterByMeasuring = PrinterTicket.getLastLetterByMeasuring(text1, control.Font, width);
-                        text1 = text1.Insert(letterByMeasuring, text1[letterByMeasuring] == ' ' || text1[letterByMeasuring] != ' ' && text1[letterByMeasuring - 1] == ' ' ? str2 : "-" + str2);
+                        string text1 = text.Substring(startIndex, length).Trim();
+                        for (Size stringSize = PrinterTicket.getStringSize(text1, control.Font); stringSize.Width > width; stringSize = PrinterTicket.getStringSize(text1, control.Font))
+                        {
+                            int letterByMeasuring = PrinterTicket.getLastLetterByMeasuring(text1, control.Font, width);
+                            text1 = text1.Insert(letterByMeasuring, text1[letterByMeasuring] == ' ' || text1[letterByMeasuring] != ' ' && text1[letterByMeasuring - 1] == ' ' ? str2 : "-" + str2);
+                        }
+                        str1 = str1 + text1 + str2;
+                        startIndex += length + str2.Length;
+                        if (startIndex >= text.Length)
+                        {
+                            length = -1;
+                        }
+                        else
+                        {
+                            while (text.Substring(startIndex).IndexOf(str2) > -1 && text.Substring(startIndex).IndexOf(str2) == 0)
+                                startIndex += str2.Length;
+                            string str3 = text.Substring(startIndex);
+                            string str4 = str3.IndexOf(str2) > -1 ? str3.Substring(0, str3.IndexOf(str2)) : str3.Substring(0, str3.Length);
+                            length = str4.Length > 0 ? str4.Length : -1;
+                        }
                     }
-                    str1 = str1 + text1 + str2;
-                    startIndex += length + str2.Length;
-                    if (startIndex >= text.Length)
-                    {
-                        length = -1;
-                    }
-                    else
-                    {
-                        while (text.Substring(startIndex).IndexOf(str2) > -1 && text.Substring(startIndex).IndexOf(str2) == 0)
-                            startIndex += str2.Length;
-                        string str3 = text.Substring(startIndex);
-                        string str4 = str3.IndexOf(str2) > -1 ? str3.Substring(0, str3.IndexOf(str2)) : str3.Substring(0, str3.Length);
-                        length = str4.Length > 0 ? str4.Length : -1;
-                    }
-                }
-                while (length > -1 && length < text.Length);
-                return str1.Trim();
-            }));
+                    while (length > -1 && length < text.Length);
+                    return str1.Trim();
+                }));
         }
 
         private void footerLbl_SizeChanged(object sender, EventArgs e)
@@ -463,6 +489,7 @@ namespace POS
         {
             if (MessageBox.Show("¿Desea guradar la configuración?", "Guardar Configuración", MessageBoxButtons.YesNo) != DialogResult.Yes)
                 return;
+            
             this.printer.saveConfiguration(this.printerNameLbl.Text, this.logoPictureBox.Image, this.splitContainer1.SplitterDistance, this.LogoCheckbox.Checked, this.headderTxt.Text, this.headderLbl.Font, this.headerCheckBox.Checked, this.addressTxt.Text, this.addressLbl.Font, true, this.phoneTxt.Text, this.phoneLbl.Font, this.phoneCheckBox.Checked, this.footerTxt.Text, this.footerLbl.Font, this.footerCheckBox.Checked);
             int num = (int)MessageBox.Show("Operación exitosa.");
         }

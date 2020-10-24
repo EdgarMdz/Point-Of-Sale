@@ -285,15 +285,11 @@ namespace POS
             this.ListaClientesBtn_Click((object)this, (EventArgs)null);
         }
 
-        private void listView1_Click(object sender, EventArgs e)
-        {
-        }
-
         private  void fillGridView(int index)
         {
             string idHex = listView1.Items[index].SubItems[1].Text;
 
-            Venta venta = new Venta(Convert.ToInt32(idHex, 16));
+            Venta venta = new Venta(Convert.ToInt64(idHex, 16));
             DataTable purchase = cliente.getPurchase(idHex);
 
             purchase.Columns["Importe"].ReadOnly = false;
@@ -398,8 +394,8 @@ namespace POS
                         if (listViewItem.SubItems[4].Text == "Pendiente" && num1 > 0.0)
                         {
                             double cash1 = num1 - Convert.ToDouble(listViewItem.SubItems[2].Text) + Convert.ToDouble(listViewItem.SubItems[3].Text) <= 0.0 ? num1 : Convert.ToDouble(listViewItem.SubItems[2].Text) - Convert.ToDouble(listViewItem.SubItems[3].Text);
-                            this.cliente.RegisterPayment(Convert.ToInt32(listViewItem.SubItems[1].Text, 16), DateTime.Now, cash1, this.EmployeeID);
-                            this.cliente.Pay(cash1, Convert.ToInt32(listViewItem.SubItems[1].Text, 16));
+                            this.cliente.RegisterPayment(Convert.ToInt64(listViewItem.SubItems[1].Text, 16), DateTime.Now, cash1, this.EmployeeID);
+                            this.cliente.Pay(cash1, Convert.ToInt64(listViewItem.SubItems[1].Text, 16));
                             num1 -= cash1;
                         }
                     }
@@ -839,7 +835,7 @@ namespace POS
                 return;
             try
             {
-                prepareData(Convert.ToInt32(listView1.SelectedItems[0].SubItems[1].Text, 16));
+                prepareData(Convert.ToInt64(listView1.SelectedItems[0].SubItems[1].Text, 16));
             }
             catch (InvalidPrinterException)
             {
@@ -847,7 +843,7 @@ namespace POS
             }
         }
 
-        private async void prepareData(int saleID)
+        private async void prepareData(long saleID)
         {
             int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
             string data;
@@ -1055,12 +1051,12 @@ namespace POS
                 dataTable.Columns.Add("Total");
                 foreach (ListViewItem selectedItem in this.listView1.SelectedItems)
                 {
-                    Venta venta = await Task.Run(() => new Venta(Convert.ToInt32(selectedItem.SubItems[1].Text, 16)));
+                    Venta venta = await Task.Run(() => new Venta(Convert.ToInt64(selectedItem.SubItems[1].Text, 16)));
 
                     if (!venta.isSaleCanceled)
                     {
                         accumulatedTotal += (double)venta.Payment;
-                        foreach (DataRow row in (InternalDataCollectionBase)venta.getSoldProducts.Rows)
+                        foreach (DataRow row in venta.getSoldProducts.Rows)
                             this.addItemToTable(row, dataTable);
                     }
                     else

@@ -7,7 +7,7 @@ namespace POS
     class Venta
     {
         private Capa_de_Negocio negocio = new Capa_de_Negocio();
-        private int _ID;
+        private long _ID;
         private int _EmployeeID;
         private int _EmployeeWhoCanceledTheSale;
         private int _CustomerID;
@@ -20,109 +20,35 @@ namespace POS
         private bool _isCanceled;
         private DataTable _saleDetail;
 
-        public int ID
-        {
-            get
-            {
-                return this._ID;
-            }
-        }
+        public long ID { get { return _ID; } }
 
-        public DateTime Date
-        {
-            get
-            {
-                return this._date;
-            }
-        }
+        public DateTime Date { get { return this._date; } }
 
-        public DateTime cancellationDate
-        {
-            get
-            {
-                return this._cancellationdate;
-            }
-        }
+        public DateTime cancellationDate { get { return this._cancellationdate; } }
 
-       
+        public int EmployeeID { get { return this._EmployeeID; } }
 
-        public int EmployeeID
-        {
-            get
-            {
-                return this._EmployeeID;
-            }
-        }
+        public int EmployeeWhoCanceledTheSale { get { return this._EmployeeWhoCanceledTheSale; } }
 
-        public int EmployeeWhoCanceledTheSale
-        {
-            get
-            {
-                return this._EmployeeWhoCanceledTheSale;
-            }
-        }
+        public int CustomerID { get { return this._CustomerID; } }
 
-        public int CustomerID
-        {
-            get
-            {
-                return this._CustomerID;
-            }
-        }
+        public Decimal Total { get { return this._Total; } }
 
-        public Decimal Total
-        {
-            get
-            {
-                return this._Total;
-            }
-        }
+        public Decimal Payment { get { return this._payment; } }
 
-        public Decimal Payment
-        {
-            get
-            {
-                return this._payment;
-            }
-        }
+        public Decimal Cash { get { return this._Cash; } }
 
-        public Decimal Cash
-        {
-            get
-            {
-                return this._Cash;
-            }
-        }
+        public bool isPaid { get { return this._paymentStatus; } }
 
-        public bool isPaid
-        {
-            get
-            {
-                return this._paymentStatus;
-            }
-        }
+        public bool isSaleCanceled { get { return this._isCanceled; } }
 
-        public bool isSaleCanceled
-        {
-            get
-            {
-                return this._isCanceled;
-            }
-        }
-
-        public DataTable getSoldProducts
-        {
-            get
-            {
-                return this._saleDetail;
-            }
-        }
+        public DataTable getSoldProducts { get { return this._saleDetail; } }
 
         public Venta()
         {
         }
 
-        public Venta(int id)
+        public Venta(long id)
         {
             this._ID = id;
             this.initialize();
@@ -155,7 +81,7 @@ namespace POS
             return new Capa_de_Negocio().Sale_getUnfinishedSalesIDs();
         }
 
-        public int newSale(
+        public long newSale(
           int EmployeeID,
           int customerID,
           double Total,
@@ -170,7 +96,7 @@ namespace POS
 
         public static Venta getLastSale()
         {
-            int lastSaleId = new Capa_de_Negocio().Sale_getLastSaleID();
+            long lastSaleId = new Capa_de_Negocio().Sale_getLastSaleID();
             return lastSaleId > 0 ? new Venta(lastSaleId) : (Venta)null;
         }
 
@@ -200,7 +126,7 @@ namespace POS
             return 0;
         }
 
-        public static bool doesSaleExist(int ID)
+        public static bool doesSaleExist(long ID)
         {
             return new Capa_de_Negocio().Sale_doesPurchaseExist(ID);
         }
@@ -247,7 +173,7 @@ namespace POS
             return n.getInfoUnfinishedSell(savedWindowID, newWindowID);
         }
 
-        public static DataTable getReturnableProducts(int saleID)
+        public static DataTable getReturnableProducts(long saleID)
         {
             return new Capa_de_Negocio().Sale_getReurnableProducts(saleID);
         }

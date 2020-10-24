@@ -1,19 +1,15 @@
 ﻿using Bunifu.Framework.UI;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.PointOfService;
+
 
 namespace POS
 {
@@ -28,7 +24,7 @@ namespace POS
         private CurrencyManager cm;
         CashDrawer m_Drawer;
         private bool inASearch;
-
+        Control currentControl ;
 
         public PanelCompras(int employeeid, FormWindowState windowState = FormWindowState.Normal)
         {
@@ -108,24 +104,185 @@ namespace POS
             this.request = new Queue<bool>();
             this.PopulateLayout(allPo);
         }
-
+        
+        private bool toggleFlag = false;
+        private bool ToggleFlag
+        {
+            get
+            {
+                bool aux = toggleFlag;
+                toggleFlag = !aux;
+                return aux;
+            }
+        }
         private async void PopulateLayout(DataTable purchases)
         {
-            this.flowLayoutPanel1.Controls.Clear();
+            bool myFlag = ToggleFlag;
+
+            flowLayoutPanel1.Controls.Clear();
+            
             bool previousDays = false;
             bool currentDay = false;
-            this.flowLayoutPanel1.Controls.AddRange((Control[])await Task.Run<BunifuCards[]>((Func<BunifuCards[]>)(() => this.createCard(purchases))));
-            foreach (Control control in this.flowLayoutPanel1.Controls)
+
+            try
             {
-                DateTime dateTime = Convert.ToDateTime(control.Name.Substring(0, control.Name.IndexOf(',')));
-                if (dateTime.Date == DateTime.Now.Date)
-                    currentDay = true;
-                if (dateTime.Date != DateTime.Now.Date && !previousDays && currentDay)
+                foreach (DataRow row in purchases.Rows)
                 {
-                    this.flowLayoutPanel1.SetFlowBreak(control, true);
-                    previousDays = true;
+                    if (myFlag == toggleFlag)
+                        throw new IndexOutOfRangeException();
+
+                    var card = await Task.Run(() => this.createCard(row));
+
+                    try
+                    {
+                        flowLayoutPanel1.Controls.Add(card);
+                    }
+                    catch (Exception) { return; }
+                    DateTime dateTime = Convert.ToDateTime(card.Name.Substring(0, card.Name.IndexOf(',')));
+                    if (dateTime.Date == DateTime.Now.Date)
+                        currentDay = true;
+                    if (dateTime.Date != DateTime.Now.Date && !previousDays && currentDay)
+                    {
+                        this.flowLayoutPanel1.SetFlowBreak(card, true);
+                        previousDays = true;
+                    }
                 }
             }
+            catch (IndexOutOfRangeException) { flowLayoutPanel1.Controls.Clear(); }
+        }
+
+        private BunifuCards createCard(DataRow row1)
+        {
+
+            BunifuCards bunifuCards = new BunifuCards();
+            bunifuCards.Size = new Size(420, 380);
+            bunifuCards.BackColor = Color.White;
+            bunifuCards.BorderRadius = 35;
+            bunifuCards.Margin = new Padding(20, 0, 20, 20);
+            this.toolTip1.SetToolTip((Control)bunifuCards, "Orden #" + row1["ID_PO"].ToString());
+            if (!Convert.ToBoolean(row1["Estado de Pago"]) && !Convert.ToBoolean(row1["Mercancia Recibida"]) && DateTime.Today.Date <= Convert.ToDateTime(row1["Fecha de Llegada"]).Date)
+                bunifuCards.color = Color.FromArgb(0, 130, 170);
+            else if (!Convert.ToBoolean(row1["Estado de Pago"]) && !Convert.ToBoolean(row1["Mercancia Recibida"]))
+                bunifuCards.color = Color.Orange;
+            else if (!Convert.ToBoolean(row1["Estado de Pago"]) && Convert.ToBoolean(row1["Mercancia Recibida"]))
+                bunifuCards.color = Color.Red;
+            else if (Convert.ToBoolean(row1["Estado de Pago"]) && Convert.ToBoolean(row1["Mercancia Recibida"]))
+                bunifuCards.color = Color.LimeGreen;
+            Label label1 = new Label();
+            label1.Font = new Font("Century Gothic", 22f, FontStyle.Bold);
+            label1.Text = row1["Nombre de la Empresa"].ToString();
+            label1.BackColor = Color.Transparent;
+            label1.AutoSize = true;
+            this.toolTip1.SetToolTip((Control)label1, "Orden #" + row1["ID_PO"].ToString());
+            BunifuGradientPanel bunifuGradientPanel = new BunifuGradientPanel();
+            bunifuGradientPanel.Dock = DockStyle.Top;
+            bunifuGradientPanel.Controls.Add((Control)label1);
+            bunifuGradientPanel.Height = 50;
+            bunifuGradientPanel.Width = bunifuCards.Width;
+            this.toolTip1.SetToolTip((Control)bunifuGradientPanel, "Orden #" + row1["ID_PO"].ToString());
+            bunifuGradientPanel.GradientBottomLeft = Color.White;
+            bunifuGradientPanel.GradientBottomRight = Color.White;
+            bunifuGradientPanel.GradientTopLeft = Color.White;
+            bunifuGradientPanel.GradientTopRight = Color.White;
+            label1.Location = new Point((label1.Parent.Width - label1.Width) / 2, (label1.Parent.Height - label1.Height) / 2);
+            bunifuCards.Controls.Add((Control)bunifuGradientPanel);
+            DataGridView dataGridView = new DataGridView();
+            dataGridView.BackgroundColor = Color.White;
+            dataGridView.BorderStyle = BorderStyle.None;
+            dataGridView.ScrollBars = ScrollBars.Both;
+            dataGridView.AllowUserToAddRows = false;
+            dataGridView.RowHeadersVisible = false;
+            dataGridView.EnableHeadersVisualStyles = false;
+            dataGridView.ReadOnly = true;
+            dataGridView.Location = new Point(0, bunifuGradientPanel.Height);
+            dataGridView.Width = bunifuCards.Width;
+            dataGridView.Height = 217;
+            bunifuCards.Controls.Add((Control)dataGridView);
+            dataGridView.Columns.Add("Descripción", "Descripción");
+            dataGridView.Columns.Add("Cantidad", "Cantidad");
+            dataGridView.Columns.Add("Precio Unitario", "Precio Unitario");
+            dataGridView.Columns.Add("Total", "Total");
+            dataGridView.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridView.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(0, 130, 170);
+            dataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.WhiteSmoke;
+            dataGridView.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 12f, FontStyle.Bold);
+            dataGridView.DefaultCellStyle.Font = new Font("Century Gothic", 12f);
+            dataGridView.DefaultCellStyle.ForeColor = Color.Black;
+            dataGridView.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            foreach (DataGridViewColumn column in dataGridView.Columns)
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DataTable poDetails = OrdenCompra.GetPODetails(Convert.ToInt32(row1["ID_PO"]));
+            for (int index = 0; index < poDetails.Rows.Count; ++index)
+            {
+                dataGridView.Rows.Add();
+                DataRow row2 = poDetails.Rows[index];
+                dataGridView[0, index].Value = row2["Descripción"];
+                dataGridView[1, index].Value = row2["Cantidad"];
+                dataGridView[2, index].Value = row2["Precio por Caja"];
+                dataGridView[3, index].Value = row2["Total"];
+            }
+            dataGridView.DefaultCellStyle.SelectionBackColor = Color.White;
+            dataGridView.DefaultCellStyle.SelectionForeColor = Color.Black;
+            Label label2 = new Label();
+            label2.AutoSize = true;
+            label2.ForeColor = Color.FromArgb(0, 130, 170);
+            label2.Font = new Font("Century Gothic", 12f, FontStyle.Bold);
+            DateTime dateTime = Convert.ToDateTime(row1["Fecha de Llegada"]);
+            if (dateTime.Date > DateTime.Now.Date && !Convert.ToBoolean(row1["Mercancia Recibida"]))
+            {
+                string monthName = new CultureInfo("es-MX").DateTimeFormat.GetMonthName(dateTime.Month);
+                string str = monthName[0].ToString().ToUpper() + monthName.Substring(1);
+                label2.Text = "Fecha de Llegada: " + dateTime.Day.ToString() + " de " + str;
+            }
+            else if (dateTime.Date == DateTime.Now.Date && !Convert.ToBoolean(row1["Mercancia Recibida"]))
+            {
+                string monthName = new CultureInfo("es-MX").DateTimeFormat.GetMonthName(dateTime.Month);
+                string str = monthName[0].ToString().ToUpper() + monthName.Substring(1);
+                label2.Text = "Fecha de Llegada: \nHoy";
+                label2.TextAlign = ContentAlignment.MiddleCenter;
+            }
+            else if (dateTime.Date == DateTime.Now.Date && Convert.ToBoolean(row1["Mercancia Recibida"]))
+            {
+                label2.Text = "Recibido";
+                label2.TextAlign = ContentAlignment.MiddleCenter;
+            }
+            else if (dateTime < DateTime.Now.Date && !Convert.ToBoolean(row1["Mercancia Recibida"]))
+            {
+                label2.Text = "No se recibió el pedido";
+                label2.ForeColor = Color.Orange;
+            }
+            else if (!Convert.ToBoolean(row1["Estado de Pago"]))
+            {
+                label2.Text = "Pago Pendiente";
+                label2.ForeColor = Color.Red;
+            }
+            else if (Convert.ToBoolean(row1["Mercancia Recibida"]))
+            {
+                label2.Text = "Completado";
+                label2.ForeColor = Color.Green;
+            }
+            bunifuCards.Controls.Add((Control)label2);
+            label2.Location = new Point((bunifuCards.Width - label2.Width) / 2, dataGridView.Location.Y + dataGridView.Height + 20);
+            BunifuThinButton2 bunifuThinButton2 = new BunifuThinButton2();
+            bunifuThinButton2.Size = new Size(180, 40);
+            bunifuThinButton2.ForeColor = Color.FromArgb(0, 130, 170);
+            bunifuThinButton2.Font = new Font("Century Gothic", 12f, FontStyle.Bold);
+            bunifuThinButton2.ActiveFillColor = Color.FromArgb(0, 110, 150);
+            bunifuThinButton2.ActiveForecolor = Color.White;
+            bunifuThinButton2.ActiveLineColor = Color.FromArgb(0, 110, 150);
+            bunifuThinButton2.IdleFillColor = Color.White;
+            bunifuThinButton2.IdleForecolor = Color.FromArgb(0, 110, 150);
+            bunifuThinButton2.IdleLineColor = Color.FromArgb(0, 110, 150);
+            bunifuCards.Controls.Add((Control)bunifuThinButton2);
+            int num1 = label2.Location.Y + label2.Height;
+            int num2 = bunifuCards.Height - num1;
+            bunifuThinButton2.Location = new Point((bunifuCards.Width - bunifuThinButton2.Width) / 2, (num2 - bunifuThinButton2.Height) / 2 + num1);
+            bunifuThinButton2.ButtonText = "Abrir";
+            bunifuThinButton2.Click += new EventHandler(this.OpenPO);
+            bunifuThinButton2.Name = row1["ID_PO"].ToString();
+            bunifuCards.Name = dateTime.Date.ToShortDateString() + "," + row1["Nombre de la Empresa"];
+            
+            return bunifuCards;
         }
 
         private BunifuCards[] createCard(DataTable POs)
@@ -270,12 +427,15 @@ namespace POS
             if (!(this.BrowserTxt.Text == ""))
                 return;
             this.PopulateLayout(OrdenCompra.getAllPO(DateTime.Now.Date));
+            inASearch = false;
         }
 
         private void BrowserTxt_KeyDown(object sender, KeyEventArgs e)
         {
             if (this.BrowserTxt.Text != "" && e.KeyCode == Keys.Return)
-                this.PopulateLayout(OrdenCompra.SearchByCoincidence(this.BrowserTxt.Text));
+            {
+                searchPO();
+            }
             if (e.KeyCode != Keys.Escape)
                 return;
             this.BrowserTxt.Text = "";
@@ -310,6 +470,7 @@ namespace POS
 
             if (dataGridView1.CurrentCell != null)
                 dataGridView1.BeginEdit(true);
+            currentControl = (sender as Control).Parent;
         }
 
         private void updateValues()
@@ -446,9 +607,7 @@ namespace POS
                 else
                     this.dataGridView1.Rows[RowIndex].DefaultCellStyle.ForeColor = Color.LimeGreen;
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception) { }
         }
 
         private int getCorrespondingIndex(int RowIndex)
@@ -516,8 +675,14 @@ namespace POS
 
         private void backButton_Click(object sender, EventArgs e)
         {
+            try
+            {
+                flowLayoutPanel1.ScrollControlIntoView(currentControl);
+            }
+            catch (Exception) { }
+
             this.goBack();
-        }
+            }
 
         private void goBack()
         {
@@ -526,6 +691,7 @@ namespace POS
             this.POsContainerPanel.Dock = DockStyle.Fill;
             this.POsContainerPanel.Visible = true;
             this.paymentDateLbl.ForeColor = Color.FromArgb(0, 130, 170);
+            currentControl = null;
         }
 
         private void pdfFileBtn_Click(object sender, EventArgs e)
@@ -536,7 +702,7 @@ namespace POS
             }
             catch (Exception)
             {
-                int num = (int)MessageBox.Show("No se encontró el archivo");
+                MessageBox.Show("No se encontró el archivo");
             }
         }
 
@@ -625,7 +791,12 @@ namespace POS
                 if (MessageBox.Show("¿Desea cancelar la orden de compra?.\n Los productos comprados serán descontados de su respectiva bodega por defecto.", "Cancelar Compra", MessageBoxButtons.YesNo) != DialogResult.Yes)
                     return;
                 this.PO.delete();
-                this.PopulateLayout(OrdenCompra.getAllPO(DateTime.Now.Date));
+
+                if (inASearch)
+                    searchPO();
+                else
+                    this.loadPurchases();
+                
                 this.goBack();
             }
             catch (Exception ex)
@@ -704,7 +875,11 @@ namespace POS
                 this.PO.updateDeliveryStatus();
                 this.updateValues();
                 this.PO = new OrdenCompra(this.PO.ID);
-                this.PopulateLayout(OrdenCompra.getAllPO(DateTime.Now.Date));
+
+                if (inASearch)
+                    searchPO();
+                else
+                    this.loadPurchases();
             }
             darkForm.Close();
         }

@@ -37,10 +37,6 @@ namespace POS
             this.datePicker.MaxDate = DateTime.Today.Date;
             this.datePicker.Value = DateTime.Today.Date;
 
-            
-
-
-
             ScrapCard();
             bestSellCard();
             profitInvestmentCard();
@@ -52,8 +48,10 @@ namespace POS
             this.ScrapCard();
             this.bestSellCard();
             this.profitInvestmentCard();
+            
             if (this.product == null)
                 return;
+            
             this.ProductStatistics();
         }
 
@@ -62,8 +60,10 @@ namespace POS
             this.ScrapCard();
             this.bestSellCard();
             this.profitInvestmentCard();
+           
             if (this.product == null)
                 return;
+            
             this.ProductStatistics();
         }
 
@@ -197,7 +197,7 @@ namespace POS
                         Values = new ChartValues<double> { Convert.ToDouble(row["cantidad"]) },
                         DataLabels = true,
                         Fill = (System.Windows.Media.Brush)new System.Windows.Media.BrushConverter().ConvertFromString(bestSellColors[index])
-                };
+                     };
                     pieChart1.Series.Add(series);
                     pieChart1.Font = new Font("century gothic", 8f, FontStyle.Regular);
 
@@ -251,6 +251,7 @@ namespace POS
             {
                 this.product = new Producto(this.bestSellGridView.Rows[0].Cells["id_producto"].Value.ToString());
                 this.ProductStatistics();
+                statisticsProductsProductLbl.Text = string.Format("{0}, {1}", product.Description, product.Brand);  
             }
         }
 
@@ -431,6 +432,7 @@ namespace POS
                 this.product = new Producto(table.Rows[0]["Código de Barras"].ToString());
                 this.ProductStatistics();
                 this.StatisticsProductTxt.Text = "";
+                statisticsProductsProductLbl.Text = string.Format("{0}, {1}", product.Description, product.Brand);
             }
             else if (table.Rows.Count > 1)
             {
@@ -442,6 +444,7 @@ namespace POS
                     this.product = new Producto(chooseProductForm.selectedItem[0]);
                     this.ProductStatistics();
                     this.StatisticsProductTxt.Text = "";
+                    statisticsProductsProductLbl.Text = string.Format("{0}, {1}", product.Description, product.Brand);
                 }
                 darkForm.Close();
             }

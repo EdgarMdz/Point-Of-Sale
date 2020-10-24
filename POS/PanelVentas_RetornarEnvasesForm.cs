@@ -19,7 +19,7 @@ namespace POS
 
         public double MoneyToRefound { get { return refoundMoney; } }
 
-        public PanelVentas_RetornarEnvasesForm(int saleID, int employeeID)
+        public PanelVentas_RetornarEnvasesForm(long saleID, int employeeID)
         {
             this.InitializeComponent();
             this.ShowInTaskbar = false;
@@ -39,10 +39,9 @@ namespace POS
 
             FillTable(saleID);
 
-
         }
-
-        private void FillTable(int saleID) => dataGridView1.DataSource = Venta.getReturnableProducts(saleID);
+        
+        private void FillTable(long saleID) => dataGridView1.DataSource = Venta.getReturnableProducts(saleID);
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -162,12 +161,13 @@ namespace POS
 
         private void PanelVentas_RetornarEnvasesForm_Load(object sender, EventArgs e)
         {
-            try
-            {
-                dataGridView1.CurrentCell = dataGridView1[5, 0];
+            try {
+                dataGridView1.CurrentCell = dataGridView1.Rows[0].Cells["tobeReturned"];
                 dataGridView1.BeginEdit(true);
+                dataGridView1.Select();
+                dataGridView1.Columns[dataGridView1.CurrentCell.ColumnIndex].HeaderCell.Style.BackColor = Color.FromArgb(0, 192, 0);
             }
-            catch (Exception) { }
-        }
+            catch (Exception){ }
+         }
     }
 }

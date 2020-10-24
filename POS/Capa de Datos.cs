@@ -241,7 +241,7 @@ namespace POS
             this.CloseSqlConnection();
         }
 
-        public DataTable Sale_getReurnableProducts(int saleID)
+        public DataTable Sale_getReurnableProducts(long saleID)
         {
             DataTable dt = new DataTable();
             SqlCommand com = new SqlCommand("Sale_getPendingReturnablePackagesfromSale", OpenSqlConnection())
@@ -253,9 +253,9 @@ namespace POS
 
             dt.Load(com.ExecuteReader());
 
-                CloseSqlConnection();
+            CloseSqlConnection();
 
-            return dt;            
+            return dt;
         }
 
         public DataTable getInfoUnfinishedSell(int savedWindowID, int newWindowID)
@@ -346,7 +346,7 @@ namespace POS
             this.CloseSqlConnection();
         }
 
-        public void Sale_RefoundProductsToCustomer(int iD, DataTable barcodesToBeRefounded)
+        public void Sale_RefoundProductsToCustomer(long iD, DataTable barcodesToBeRefounded)
         {
             SqlCommand command = new SqlCommand("sale_RefoundSomeProducts", OpenSqlConnection())
             {
@@ -361,7 +361,7 @@ namespace POS
         
         }
 
-        internal DataSet getNextSaleID(int ID)
+        public DataSet getNextSaleID(long ID)
         {
             SqlCommand com = new SqlCommand("sale_getNextAndPreviousTicket", OpenSqlConnection()) { CommandType = CommandType.StoredProcedure };
             com.Parameters.AddWithValue("@saleID", ID);
@@ -405,6 +405,38 @@ namespace POS
             command.Parameters.AddWithValue("@depotID", DepotID);
             command.ExecuteNonQuery();
             this.CloseSqlConnection();
+        }
+
+        public DataTable Supplier_getBestSellers(int iD, DateTime date, int mode)
+        {
+            SqlCommand com = new SqlCommand("Supplier_GetBestSellers", OpenSqlConnection())
+            { CommandType= CommandType.StoredProcedure, CommandTimeout= 120};
+
+            com.Parameters.AddWithValue("@supplierId", iD);
+            com.Parameters.AddWithValue("@periodOfTime", mode);
+            com.Parameters.AddWithValue("@date", date);
+
+            DataTable dt = new DataTable();
+                dt.Load(com.ExecuteReader());
+
+            CloseSqlConnection();
+            return dt;
+        }
+
+        public DataTable Supplier_getWorstSellers(int iD, DateTime date, int mode)
+        {
+            SqlCommand com = new SqlCommand("Supplier_GetWorstSellers", OpenSqlConnection())
+            { CommandType = CommandType.StoredProcedure, CommandTimeout = 120 };
+
+            com.Parameters.AddWithValue("@supplierId", iD);
+            com.Parameters.AddWithValue("@periodOfTime", mode);
+            com.Parameters.AddWithValue("@date", date);
+
+            DataTable dt = new DataTable();
+            dt.Load(com.ExecuteReader());
+
+            CloseSqlConnection();
+            return dt;
         }
 
         public DataTable DepotGetInventory()
@@ -1017,7 +1049,7 @@ namespace POS
             return table;
         }
 
-        public DataTable getPurchase(int TicketNumber)
+        public DataTable getPurchase(long TicketNumber)
         {
             DataTable table = new DataTable();
             SqlCommand command = new SqlCommand("GetPurchase", this.OpenSqlConnection())
@@ -1184,7 +1216,7 @@ namespace POS
             return this.con;
         }
 
-        public void Pay(double cash, int Customer_ID, int TicketNumber)
+        public void Pay(double cash, int Customer_ID, long TicketNumber)
         {
             SqlCommand command = new SqlCommand("[Payment]", this.OpenSqlConnection())
             {
@@ -1604,7 +1636,7 @@ namespace POS
             return (count != 0);
         }
 
-        public void RegisterPayment(int Customer_ID, DateTime DateAndTime, int PurchaseID, double cash, int employeeID)
+        public void RegisterPayment(int Customer_ID, DateTime DateAndTime, double PurchaseID, double cash, int employeeID)
         {
             SqlCommand command = new SqlCommand("CustomerPaymentRecordAdd", this.OpenSqlConnection())
             {
@@ -1678,7 +1710,7 @@ namespace POS
             this.CloseSqlConnection();
         }
 
-        public void Sale_Cancel(int saleID, int EmployeeID)
+        public void Sale_Cancel(long saleID, int EmployeeID)
         {
             SqlCommand command = new SqlCommand("Sale_Cancel", this.OpenSqlConnection())
             {
@@ -1691,7 +1723,7 @@ namespace POS
             this.CloseSqlConnection();
         }
 
-        public DataTable Sale_find(int SaleID)
+        public DataTable Sale_find(long SaleID)
         {
             DataTable table = new DataTable();
             SqlCommand command = new SqlCommand("Sale_find", this.OpenSqlConnection())
@@ -1704,16 +1736,16 @@ namespace POS
             return table;
         }
 
-        public int Sale_getLastSaleID()
+        public long Sale_getLastSaleID()
         {
-            int num = -1;
+            long num = -1;
             object obj2 = new SqlCommand("Sale_getLastSale", this.OpenSqlConnection()) { CommandType = CommandType.StoredProcedure }.ExecuteScalar();
-            num = Convert.ToInt32((obj2 == DBNull.Value) ? null : obj2);
+            num = Convert.ToInt64((obj2 == DBNull.Value) ? null : obj2);
             this.CloseSqlConnection();
             return num;
         }
 
-        public DataSet Sale_Initialize(int saleID)
+        public DataSet Sale_Initialize(long saleID)
         {
             DataSet dataSet = new DataSet();
             SqlCommand selectCommand = new SqlCommand("Sale_Initialize", this.OpenSqlConnection())
@@ -1741,7 +1773,7 @@ namespace POS
             return table;
         }
 
-        public int Sale_newSale(DateTime time, int Id_Employee, int CustomerID, double total, double payment, DataTable listOfProducts, double cash)
+        public long Sale_newSale(DateTime time, int Id_Employee, int CustomerID, double total, double payment, DataTable listOfProducts, double cash)
         {
             SqlCommand command = new SqlCommand("Sale_New", this.OpenSqlConnection())
             {
@@ -1757,12 +1789,12 @@ namespace POS
             command.Parameters.AddWithValue("@saleDetail", listOfProducts);
             command.Parameters.AddWithValue("@cash", cash);
             object obj2 = command.ExecuteScalar();
-            int num = Convert.ToInt32((obj2 == DBNull.Value) ? null : obj2);
+            long num = Convert.ToInt64((obj2 == DBNull.Value) ? null : obj2);
             this.CloseSqlConnection();
             return num;
         }
 
-        public void Sale_ReturnPackage(int saleID, string barcode, decimal Amount, int employeeID)
+        public void Sale_ReturnPackage(long saleID, string barcode, decimal Amount, int employeeID)
         {
             SqlCommand command = new SqlCommand("sale_PackageRetuern", this.OpenSqlConnection())
             {

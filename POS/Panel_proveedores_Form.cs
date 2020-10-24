@@ -13,10 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
 using Microsoft.PointOfService;
-using LiveCharts;
-using LiveCharts.Definitions.Series;
-using LiveCharts.Wpf;
-using LiveCharts.WinForms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace POS
 {
@@ -30,7 +27,7 @@ namespace POS
         CashDrawer m_Drawer;
         supplierProductsToolTip tip = new supplierProductsToolTip();
         private int currentSupplierButon = 0;
-        
+
 
         private enum Direction
         {
@@ -68,6 +65,21 @@ namespace POS
             this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
 
+
+            this.dataGridView2.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            this.dataGridView2.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+
+
+            this.dataGridView3.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            this.dataGridView3.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+
+
+            this.dataGridView4.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            this.dataGridView4.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+
+            dataGridView3.DefaultCellStyle.Font = dataGridView4.DefaultCellStyle.Font = new Font("century gothic", 10f, FontStyle.Bold);
+            dataGridView3.ColumnHeadersDefaultCellStyle.Font= dataGridView4.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", 12f, FontStyle.Bold);
+
             SearchSupplierTxt.Focus();
 
             var comboColumn = dataGridView2.Columns["depot"] as DataGridViewComboBoxColumn;
@@ -77,11 +89,6 @@ namespace POS
             comboColumn.ValueMember = "ID_Bodega";
 
             dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 15.75f, FontStyle.Bold);
-
-            purchaseChart = new LiveCharts.WinForms.CartesianChart() { Visible = false };
-            panel2.Controls.Add(purchaseChart);
-            purchaseChart.Visible = true;
-            purchaseChart.Dock = DockStyle.Fill;
         }
 
         private void Panel_proveedores_Form_Load(object sender, EventArgs e)
@@ -193,7 +200,7 @@ namespace POS
             Control[] controlArray = new Control[supplierList.Rows.Count];
 
             int index = 0;
-            
+
             foreach (DataRow row in supplierList.Rows)
             {
                 BunifuImageButton bunifuImageButton = new BunifuImageButton();
@@ -205,8 +212,8 @@ namespace POS
                 bunifuImageButton.GotFocus += (s, e) =>
                 {
                     var button = s as BunifuImageButton;
-                    button.Size = new Size(275,165);
-                }; 
+                    button.Size = new Size(275, 165);
+                };
 
                 bunifuImageButton.LostFocus += (s, e) =>
                   {
@@ -217,7 +224,7 @@ namespace POS
                 bunifuImageButton.MouseEnter += (s, e) =>
                 {
                     var button = s as BunifuImageButton;
-                    button.Size = new Size(275,165);
+                    button.Size = new Size(275, 165);
                 };
 
 
@@ -244,7 +251,7 @@ namespace POS
                         bunifuImageButton.Image = image;
                         image.Save(Directory.GetCurrentDirectory() + @"\Suppliers\" + row[1].ToString() + row[0].ToString() + ".bmp");
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                     }
                 }
@@ -974,16 +981,16 @@ namespace POS
             if (TextRenderer.MeasureText(this.AdeudoLbl.Text, this.AdeudoLbl.Font).Width > this.AdeudoLbl.Parent.Width - 10)
                 AdeudoLbl.Font = PrinterTicket.getFont(AdeudoLbl.Text, AdeudoLbl.Parent.Width - 20,
                 FontStyle.Regular, AdeudoLbl.Font.FontFamily.ToString());
-            
+
             this.dataGridView1.DataSource = this.proveedor.GetSupplierProductList();
-                       
+
 
             for (int index = 0; index < this.dataGridView1.Columns.Count; ++index)
                 this.OriginalColumnHeaderIndexes.Add(this.dataGridView1.Columns[index].Name.ToString());
             this.ProductTableBtn_Click((object)this, (EventArgs)null);
-            
-            
-            
+
+
+
             this.FilteringTextbox.Text = "";
             FilteringTextbox.Select();
 
@@ -993,14 +1000,15 @@ namespace POS
 
             comboBox1.SelectedIndex = 1;
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
-            
+
 
             dateTimePicker1.Value = DateTime.Today;
 
+            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
+            dateTimePicker1.ValueChanged += dateTimePicker1_ValueChanged;
 
+            setPurchaseStatistics();
 
-
-            
             this.setPanelWidth(this.BasicSupplierInformationPanel, this.BasicInformationCard, 0.26);
             this.setPanelWidth(this.VisitingDaysPanel, this.BasicInformationCard, 0.25);
             this.setPanelWidth(this.DebtPannel, this.BasicInformationCard, 0.24);
@@ -1084,17 +1092,17 @@ namespace POS
         }
 
         private void showProductInformation()
-        {           
+        {
             Producto product = new Producto(dataGridView1.SelectedRows[0].Cells["Código de Barras"].Value.ToString());
-            
+
             if (!(product.Barcode != ""))
                 return;
-            
+
             Form_Agregar formAgregar = new Form_Agregar(product);
             DarkForm darkForm = new DarkForm();
-            
+
             darkForm.Show();
-            
+
             if (formAgregar.ShowDialog() == DialogResult.OK)
             {
                 product = new Producto(product.Barcode);
@@ -1117,16 +1125,16 @@ namespace POS
             darkForm.Close();
         }
 
-        private void AddRowBtn_Click(object sender, EventArgs e)
+        private async void AddRowBtn_Click(object sender, EventArgs e)
         {
             DarkForm darkForm = new DarkForm();
 
-           PanelPoveedoresNuevoProducto poveedoresNuevoProducto = new PanelPoveedoresNuevoProducto(this.proveedor.ID);
+            PanelPoveedoresNuevoProducto poveedoresNuevoProducto = new PanelPoveedoresNuevoProducto(this.proveedor.ID);
             darkForm.Show();
 
             if (poveedoresNuevoProducto.ShowDialog() == DialogResult.OK)
             {
-                this.dataGridView1.DataSource = this.proveedor.GetSupplierProductList();
+                this.dataGridView1.DataSource = await Task.Run(() => this.proveedor.GetSupplierProductList());
                 foreach (DataGridViewRow row in dataGridView1.Rows)
                 {
                     if (row.Cells["Código de Barras"].Value.ToString() == poveedoresNuevoProducto.barcode)
@@ -1138,6 +1146,7 @@ namespace POS
                 }
 
                 proveedor = new Proveedor(proveedor.ID);
+                setPurchaseStatistics();
                 //this.PrepareNextPurhcase();
             }
 
@@ -1186,13 +1195,15 @@ namespace POS
                     dataGridView2.EndEdit();
                 }
 
-                this.dataGridView1.DataSource = this.proveedor.GetSupplierProductList();
+               // this.dataGridView1.DataSource = this.proveedor.GetSupplierProductList();
                 foreach (DataGridViewRow row in dataGridView1.Rows)
                 {
                     if (row.Cells["Código de Barras"].Value.ToString() == poveedoresNuevoProducto.barcode)
                     {
                         row.Selected = true;
                         dataGridView1.FirstDisplayedScrollingRowIndex = row.Index;
+                        row.Cells["Piezas por caja"].Value = poveedoresNuevoProducto.piecesPerCase.ToString("n2");
+                        row.Cells["Precio de Proveedor"].Value = poveedoresNuevoProducto.price.ToString("n2");
                         break;
                     }
                 }
@@ -1418,7 +1429,7 @@ namespace POS
                 this.grandTotalLbl.Text = "Total = $" + calculateNextPurchaseTotal().ToString("n2");
 
                 this.AdeudoLbl.Text = "$" + this.proveedor.Adeudo.ToString("n2");
-
+                setPurchaseStatistics();
             }
             load.Close();
             dk.Close();
@@ -1477,8 +1488,8 @@ namespace POS
             try
             {
 
-                var printDialog = new PrintDialog();               
-                var printDocument = new PrintDocument() { PrintController = new StandardPrintController()};
+                var printDialog = new PrintDialog();
+                var printDocument = new PrintDocument() { PrintController = new StandardPrintController() };
                 printDialog.PrinterSettings.PrinterName = new PrinterTicket().printerName;
                 printDialog.Document = printDocument;
 
@@ -1867,9 +1878,9 @@ namespace POS
             e.Handled = true;
         }
 
-     
 
-    
+
+
         private void centerControlInTablePanel(Control l)
         {
             l.Anchor = AnchorStyles.Left | AnchorStyles.Right;
@@ -2267,7 +2278,7 @@ namespace POS
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
                 x += Convert.ToDouble(row.Cells["amount"].Value);
-                
+
             }
             return x;
         }
@@ -2460,7 +2471,7 @@ namespace POS
                         flow1.Controls[++currentSupplierButon].Select();
 
                     }
-                    catch (Exception) 
+                    catch (Exception)
                     {
                         if (flow1.Controls.Count > 0 && currentSupplierButon >= flow1.Controls.Count)
                         {
@@ -2477,14 +2488,14 @@ namespace POS
                     }
                     catch (Exception)
                     {
-                        if(flow1.Controls.Count>0 && currentSupplierButon<0)
+                        if (flow1.Controls.Count > 0 && currentSupplierButon < 0)
                         {
                             currentSupplierButon = flow1.Controls.Count - 1;
                             flow1.Controls[currentSupplierButon].Select();
                         }
                     }
                 }
-                if (keyData == (Keys.Enter|Keys.Alt) && flow1.Controls.Count > 0)
+                if (keyData == (Keys.Enter | Keys.Alt) && flow1.Controls.Count > 0)
                     SupplierbuttonClick(flow1.Controls[currentSupplierButon], null);
             }
 
@@ -2592,7 +2603,7 @@ namespace POS
 
         private void SearchSupplierTxt_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode== Keys.Enter && SearchSupplierTxt.Text.Trim()!="")
+            if (e.KeyCode == Keys.Enter && SearchSupplierTxt.Text.Trim() != "")
             {
                 SearchSupplier();
             }
@@ -2651,12 +2662,15 @@ namespace POS
 
         private void setPurchaseStatistics()
         {
+            setBestSellers();
+            setWorstSellers();
             setPurchaseChart();
         }
 
         private void setPurchaseChart()
         {
             Proveedor.PeriodOfTime period;
+
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
@@ -2675,56 +2689,91 @@ namespace POS
             }
 
             DataTable dt = proveedor.getPurchaseStatistics(dateTimePicker1.Value, period);
-           
-            this.purchaseChart.Series.Clear();
-            this.purchaseChart.AxisX.Clear();
-            this.purchaseChart.AxisY.Clear();
-            this.purchaseChart.Zoom = ZoomingOptions.X;
-            this.purchaseChart.Pan = PanningOptions.Unset;
 
-            ChartValues<double> chartValues1 = new ChartValues<double>();
-            ChartValues<double> chartValues2 = new ChartValues<double>();
-            List<string> stringList = new List<string>();
-            foreach (DataRow row in dt.Rows)
+            SeriesChartType type;
+            if (dt.Rows.Count > 3)
+                type = SeriesChartType.Spline;
+
+            else
+                type = SeriesChartType.Column;
+
+
+
+            Series purchases = new Series("Compra") { ChartType = type, Font = new Font("century gothic", 10f, FontStyle.Regular), BorderWidth = 4 , IsValueShownAsLabel =true};
+            Series payment = new Series("Pago") { ChartType = type, Font = new Font("century gothic", 10f, FontStyle.Regular), BorderWidth = 4, IsValueShownAsLabel = true };
+
+            for (int i = 0; i < dt.Rows.Count; i++)
             {
-                chartValues1.Add(Convert.ToDouble(row["Total"]));
-                chartValues2.Add(Convert.ToDouble(row["Abono"]));
-                stringList.Add(row["Fecha"].ToString());
+                var row = dt.Rows[i];
+                purchases.Points.AddXY(row[0].ToString(), Convert.ToDouble(row["Total"]));
+                payment.Points.AddXY(row[0].ToString(), Convert.ToDouble(row["Abono"]));
             }
-            LiveCharts.SeriesCollection series1 = this.purchaseChart.Series;
-            LineSeries lineSeries1 = new LineSeries();
-            lineSeries1.Title = "Compra";
-            lineSeries1.Values = chartValues1;
 
-            LineSeries lineSeries2 = lineSeries1;
-            series1.Add(lineSeries2);
-            SeriesCollection series2 = this.purchaseChart.Series;
+            chart1.Series.Clear();
+            chart1.Series.Add(purchases);
+            chart1.Series.Add(payment);
 
-            LineSeries lineSeries3 = new LineSeries();
-            lineSeries3.Title = "Pago realizado";
-            lineSeries3.Values = chartValues2;
-
-            LineSeries lineSeries4 = lineSeries3;
-
-            series2.Add((ISeriesView)lineSeries4);
-            this.purchaseChart.AxisX.Add(new Axis()
-            {
-                Title = "Fecha",
-                Labels = (IList<string>)stringList
-            });
-            this.purchaseChart.AxisY.Add(new Axis()
-            {
-                Title = "Cantidad",
-                LabelFormatter = (Func<double, string>)(value => value.ToString("N")),
-                MinValue = 0.0
-            });
-
-
+            chart1.ChartAreas[0].RecalculateAxesScale();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            setPurchaseChart();
+            setPurchaseStatistics();
+        }
+
+
+        private void setBestSellers()
+        {
+            Proveedor.PeriodOfTime period;
+
+            switch (comboBox1.SelectedIndex)
+            {
+                case 0:
+                    period = Proveedor.PeriodOfTime.ByDays;
+                    break;
+                case 1:
+                    period = Proveedor.PeriodOfTime.ByMonth;
+                    break;
+                case 2:
+                    period = Proveedor.PeriodOfTime.ByYear;
+                    break;
+
+                default:
+                    period = Proveedor.PeriodOfTime.ByDays;
+                    break;
+            }
+
+            dataGridView3.DataSource = proveedor.getBestSellers(dateTimePicker1.Value, period);
+        }
+
+        private void setWorstSellers()
+        {
+            Proveedor.PeriodOfTime period;
+
+            switch (comboBox1.SelectedIndex)
+            {
+                case 0:
+                    period = Proveedor.PeriodOfTime.ByDays;
+                    break;
+                case 1:
+                    period = Proveedor.PeriodOfTime.ByMonth;
+                    break;
+                case 2:
+                    period = Proveedor.PeriodOfTime.ByYear;
+                    break;
+
+                default:
+                    period = Proveedor.PeriodOfTime.ByDays;
+                    break;
+            }
+
+            dataGridView4.DataSource = proveedor.getWorstSellers(dateTimePicker1.Value, period);
+        }
+
+        private void dataGridView3_DataSourceChanged(object sender, EventArgs e)
+        {
+            (sender as DataGridView).AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            (sender as DataGridView).Columns["Producto"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
     }
 

@@ -55,13 +55,13 @@
       <HintPath>..\..\..\..\Desktop\Point Of Sale\Bunifu_UI_v1.5.3.dll</HintPath>
     </Reference>
     <Reference Include="LiveCharts">
-      <HintPath>..\..\..\..\Desktop\Point Of Sale\LiveCharts.dll</HintPath>
+      <HintPath>..\..\..\source\repos\printing thing\printing thing\bin\Debug\LiveCharts.dll</HintPath>
     </Reference>
     <Reference Include="LiveCharts.WinForms">
-      <HintPath>..\..\..\..\Desktop\Point Of Sale\LiveCharts.WinForms.dll</HintPath>
+      <HintPath>..\..\..\source\repos\printing thing\printing thing\bin\Debug\LiveCharts.WinForms.dll</HintPath>
     </Reference>
     <Reference Include="LiveCharts.Wpf">
-      <HintPath>..\..\..\..\Desktop\Point Of Sale\LiveCharts.Wpf.dll</HintPath>
+      <HintPath>..\..\..\source\repos\printing thing\printing thing\bin\Debug\LiveCharts.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.PointOfService, Version=1.14.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -601,6 +601,7 @@
     <None Include="dataBaseDataSet.xss">
       <DependentUpon>dataBaseDataSet.xsd</DependentUpon>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
