@@ -48,9 +48,9 @@ namespace POS
             return new Capa_de_Negocio().Shift_End(employee_id);
         }
 
-        public static void AddCashToDrawer(int employeeID, double cash)
+        public static void AddCashToDrawer(int employeeID, double cash, string reason)
         {
-            new Capa_de_Negocio().shift_AddCashToDrawer(employeeID, cash);
+            new Capa_de_Negocio().shift_AddCashToDrawer(employeeID, cash,reason);
         }
 
         public static void SetFirsUsage(DateTime time)

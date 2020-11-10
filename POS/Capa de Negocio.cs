@@ -8,9 +8,11 @@ namespace POS
     {
         private Capa_de_Datos datos = new Capa_de_Datos();
 
-        public void AddProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, double PreciodeCompra, double Stock, double minStock, byte[] Foto, string CodigoBarras, int depotID, string mainProductBarcode, bool isReturnable, bool displayAsKilogram, bool HideInTicket)
+        public void AddProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, double PreciodeCompra, double Stock, double minStock, byte[] Foto,
+            string CodigoBarras, int depotID, string mainProductBarcode, bool isReturnable, bool displayAsKilogram, bool HideInTicket,double PiecesToMakeOneMainProduct)
         {
-            this.datos.AddProduct(Marca, Descripcion, PrecioMinoreo, PrecioPorCaja, PiezasPorCaja, PreciodeCompra, Stock, minStock, Foto, CodigoBarras, depotID, mainProductBarcode, isReturnable, displayAsKilogram, HideInTicket);
+            this.datos.AddProduct(Marca, Descripcion, PrecioMinoreo, PrecioPorCaja, PiezasPorCaja, PreciodeCompra, Stock, 
+                minStock, Foto, CodigoBarras, depotID, mainProductBarcode, isReturnable, displayAsKilogram, HideInTicket,PiecesToMakeOneMainProduct);
         }
 
         public void addReminder(int SupplierID, DateTime startTime, DateTime endTime, bool[] repetitionDays, string message, bool canDelete)
@@ -111,6 +113,9 @@ namespace POS
             datos.Product_UpdateWholesaleCost(barcode, costID, discount, isByPercentage);
         }
 
+        public void product_DeletePurchaseCostRecordValue(string barcode, DateTime date, double remainingPieces, double purchaseCost)
+     => datos.product_DeletePurchaseCostRecordValue(barcode, date, remainingPieces, purchaseCost);
+
         public DataTable Products_getWrongProducts() => datos.Products_getWrongProducts();
 
         public DataTable DepotSetDepot(int depotID) =>
@@ -137,9 +142,9 @@ namespace POS
             return datos.Supplier_searchForNewProduct(text, iD);
         }
 
-        public void EditProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, double preciodeCompra, double Stock, double minStock, byte[] Foto, string CodigoBarras, string NuevoCodigoBarras, int depotID, string mainProductBarcode, bool isReturnable, bool displayAsKg, bool hideInTicket)
+        public void EditProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, double preciodeCompra, double Stock, double minStock, byte[] Foto, string CodigoBarras, string NuevoCodigoBarras, int depotID, string mainProductBarcode, bool isReturnable, bool displayAsKg, bool hideInTicket,double piecesTomakeOneMainProduct)
         {
-            this.datos.EditProduct(Marca, Descripcion, PrecioMinoreo, PrecioPorCaja, PiezasPorCaja, preciodeCompra, Stock, minStock, Foto, CodigoBarras, NuevoCodigoBarras, depotID, mainProductBarcode, isReturnable, displayAsKg, hideInTicket);
+            this.datos.EditProduct(Marca, Descripcion, PrecioMinoreo, PrecioPorCaja, PiezasPorCaja, preciodeCompra, Stock, minStock, Foto, CodigoBarras, NuevoCodigoBarras, depotID, mainProductBarcode, isReturnable, displayAsKg, hideInTicket,piecesTomakeOneMainProduct);
         }
 
         public void Employee_changePassword(int employeeID, string newPassword)
@@ -215,6 +220,11 @@ namespace POS
                 str = !flag ? (str + "0") : (str + "1");
             }
             this.datos.Employee_updatePaymentDay(str, employeeID);
+        }
+
+        public DataTable Product_checkForStoredPurchaseCosts(string barcode)
+        {
+           return datos.Product_checkForStoredPurchaseCosts(barcode);
         }
 
         public void Sale_RefoundProductsToCustomer(long iD, DataTable barcodesToBeRefounded)
@@ -388,6 +398,11 @@ namespace POS
             return datos.Supplier_getProductInfo(iD, barcode);
         }
 
+        public DataTable Supplier_getProductBoughtQuant(int iD, DateTime date, int mode, string barcode)
+        {
+            return datos.Supplier_getProductBoughtQuant(iD, date, mode, barcode);
+        }
+
         public DataTable Supplier_getBestSellers(int iD, DateTime date, int mode)
         {
             return datos.Supplier_getBestSellers(iD, date, mode);
@@ -396,6 +411,9 @@ namespace POS
         {
             return datos.Supplier_getWorstSellers(iD, date, mode);
         }
+
+        public DataTable getDerivedProductsList(string barcode)
+     => datos.getDerivedProductsList(barcode);
 
         public DataTable Supplier_getPurchaseStatistics(int iD, DateTime date, Proveedor.PeriodOfTime mode)
         {
@@ -663,9 +681,9 @@ namespace POS
         public DataTable SearchValue(string Search) =>
             this.datos.SearchValue(Search);
 
-        public void shift_AddCashToDrawer(int employeeID, double cash)
+        public void shift_AddCashToDrawer(int employeeID, double cash,string reason)
         {
-            this.datos.shift_AddCashToDrawer(employeeID, cash);
+            this.datos.shift_AddCashToDrawer(employeeID, cash,reason);
         }
 
         public DataTable Shift_End(int employeeID) =>
@@ -716,7 +734,7 @@ namespace POS
             this.datos.SupplierEditProduct(SupplierID, Barcode, NewPrice, piecesPerCase);
         }
 
-        internal DataTable Supplier_SearchValueGetTable(string text, int ID)
+        public DataTable Supplier_SearchValueGetTable(string text, int ID)
         => datos.Supplier_SearchValueGetTable(text, ID);
         public DataTable SupplierFilterProducts(string search, int supplierID) =>
             this.datos.SupplierFilterProducts(search, supplierID);

@@ -13,8 +13,8 @@ namespace POS
     public partial class FormCambio : Form
     {
         private double change { get; set; }
-
-        protected override CreateParams CreateParams
+        
+      /* protected override CreateParams CreateParams
         {
             get
             {
@@ -22,7 +22,7 @@ namespace POS
                 createParams.ExStyle |= 33554432;
                 return createParams;
             }
-        }
+        }*/
 
         public FormCambio(double change)
         {

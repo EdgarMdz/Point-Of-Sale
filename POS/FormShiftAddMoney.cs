@@ -13,13 +13,11 @@ namespace POS
     public partial class FormShiftAddMoney : Form
     {
         private double _cash;
-        public double cash
-        {
-            get
-            {
-                return this._cash;
-            }
-        }
+        private string _reason;
+
+        public double cash { get { return this._cash; } }
+
+        public string reason { get { return _reason; } }
 
         public FormShiftAddMoney()
         {
@@ -81,6 +79,7 @@ namespace POS
         private void saveData()
         {
             this._cash = Convert.ToDouble(this.textBox1.Text);
+            _reason = textBox2.Text;
             this.Close();
             this.DialogResult = DialogResult.OK;
         }

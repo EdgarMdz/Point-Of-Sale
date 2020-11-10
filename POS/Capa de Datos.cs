@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Security.AccessControl;
 
 namespace POS
 {
     class Capa_de_Datos
     {
         private SqlConnection con;
+        private const string connectionString = @"Data Source=localhost\SQLEXPRESS;Initial Catalog=C:\USERS\TIENDA\SOURCE\REPOS\POS\POS\DATA\FINALDB.MDF;Integrated Security=True";
 
-        public void AddProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, double PreciodeCompra, double Stock, double minStock, byte[] Foto, string CodigoBarras, int depotID, string mainProductBarcode, bool isReturnable, bool displayAsKg, bool HideInTicket)
+        public void AddProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, 
+            double PreciodeCompra, double Stock, double minStock, byte[] Foto, string CodigoBarras, int depotID, string mainProductBarcode,
+            bool isReturnable, bool displayAsKg, bool HideInTicket,double PiecesToMakeOneMainProduct)
         {
             SqlCommand command = new SqlCommand("AddProduct", this.OpenSqlConnection())
             {
@@ -31,7 +33,10 @@ namespace POS
             command.Parameters.AddWithValue("@isReturnable", isReturnable);
             command.Parameters.AddWithValue("@displayAsKilogram", displayAsKg);
             command.Parameters.AddWithValue("@HideInTicket", HideInTicket);
+            command.Parameters.AddWithValue("@piecesToMakeOneMainProduct", PiecesToMakeOneMainProduct);
+
             command.ExecuteNonQuery();
+
             this.CloseSqlConnection();
         }
 
@@ -99,6 +104,23 @@ namespace POS
             command.ExecuteNonQuery();
             CloseSqlConnection();
 
+        }
+
+        public void product_DeletePurchaseCostRecordValue(string barcode, DateTime date, double remainingPieces, double purchaseCost)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                connection.InfoMessage += new SqlInfoMessageEventHandler(this.getINfo);
+                SqlCommand command = new SqlCommand("Product_Delete_PurchaseCost_record", connection) { CommandType = CommandType.StoredProcedure };
+                command.Parameters.AddWithValue("@date", date);
+                command.Parameters.AddWithValue("@barcode", barcode);
+                command.Parameters.AddWithValue("@remaininPieces", remainingPieces);
+                command.Parameters.AddWithValue("@purchaseCost", purchaseCost);
+
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
         }
 
         public DataTable Products_getWrongProducts()
@@ -217,6 +239,24 @@ namespace POS
             table.Load(command.ExecuteReader());
             this.CloseSqlConnection();
             return table;
+        }
+
+        public DataTable Product_checkForStoredPurchaseCosts(string barcode)
+        {
+            SqlCommand com = new SqlCommand("Product_getPurchaseCostsRecord", OpenSqlConnection())
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            com.Parameters.AddWithValue("@barcode", barcode);
+
+            DataTable dt = new DataTable();
+
+            dt.Load(com.ExecuteReader());
+
+            CloseSqlConnection();
+
+            return dt;
         }
 
         public void deleteCustomerPrice(int disountID)
@@ -375,6 +415,27 @@ namespace POS
             return ds;
         }
 
+        public DataTable getDerivedProductsList(string barcode)
+        {
+            DataTable dt = new DataTable();
+
+            using(SqlConnection connection =new SqlConnection(connectionString))
+            {
+                connection.InfoMessage += new SqlInfoMessageEventHandler(getINfo);
+                connection.Open();
+
+                SqlCommand com = new SqlCommand("Product_GetListOfDerivedProducts", connection) { CommandType = CommandType.StoredProcedure };
+
+                com.Parameters.AddWithValue("@mainBarcode", barcode);
+
+                dt.Load(com.ExecuteReader());
+
+                connection.Close();
+            }
+
+            return dt;
+        }
+
         /// <summary>
         /// Updates the check status of each product in the depot to be displayed as indicated in the info table the next time 
         /// the user want to check the missing products list
@@ -407,19 +468,45 @@ namespace POS
             this.CloseSqlConnection();
         }
 
-        public DataTable Supplier_getBestSellers(int iD, DateTime date, int mode)
+        public DataTable Supplier_getProductBoughtQuant(int iD, DateTime date, int mode, string barcode)
         {
-            SqlCommand com = new SqlCommand("Supplier_GetBestSellers", OpenSqlConnection())
-            { CommandType= CommandType.StoredProcedure, CommandTimeout= 120};
+            var con = new SqlConnection(connectionString) ;
+            con.Open();
+            SqlCommand com = new SqlCommand("Supplier_getProductBoughtQuant", con)
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout = 120
+            };
 
-            com.Parameters.AddWithValue("@supplierId", iD);
+            com.Parameters.AddWithValue("@supplierID", iD);
             com.Parameters.AddWithValue("@periodOfTime", mode);
             com.Parameters.AddWithValue("@date", date);
+            com.Parameters.AddWithValue("@barcode", barcode);
+            DataTable data = new DataTable();
+            data.Load(com.ExecuteReader());
 
+            con.Close();
+            return data;
+        }
+
+        public DataTable Supplier_getBestSellers(int iD, DateTime date, int mode)
+        {
             DataTable dt = new DataTable();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+               connection.Open();
+                SqlCommand com = new SqlCommand("Supplier_GetBestSellers", connection)
+                { CommandType = CommandType.StoredProcedure, CommandTimeout = 120 };
+
+                com.Parameters.AddWithValue("@supplierId", iD);
+                com.Parameters.AddWithValue("@periodOfTime", mode);
+                com.Parameters.AddWithValue("@date", date);
+
+
                 dt.Load(com.ExecuteReader());
 
-            CloseSqlConnection();
+                connection.Close();
+            }
             return dt;
         }
 
@@ -495,20 +582,25 @@ namespace POS
 
         public DataTable Supplier_getPurchaseStatistics(int iD, DateTime date, Proveedor.PeriodOfTime mode)
         {
-            SqlCommand com = new SqlCommand("Supplier_PurchaseStatistics", OpenSqlConnection())
-            {
-                CommandType = CommandType.StoredProcedure,
-                CommandTimeout=120
-            };
-
-            com.Parameters.AddWithValue("@supplierID", iD);
-            com.Parameters.AddWithValue("@periodOfTime", mode);
-            com.Parameters.AddWithValue("@date", date);
-
             DataTable data = new DataTable();
-            data.Load(com.ExecuteReader());
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand com = new SqlCommand("Supplier_PurchaseStatistics",connection)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = 120
+                };
 
-            CloseSqlConnection();
+                com.Parameters.AddWithValue("@supplierID", iD);
+                com.Parameters.AddWithValue("@periodOfTime", mode);
+                com.Parameters.AddWithValue("@date", date);
+
+                
+                data.Load(com.ExecuteReader());
+
+                connection.Close();
+            }
             return data;
         }
 
@@ -609,7 +701,7 @@ namespace POS
             this.CloseSqlConnection();
         }
 
-        public void EditProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, double preciodeCompra, double Stock, double minStock, byte[] Foto, string NuevoCodigoBarras, string CodigoBarras, int depotID, string mainProductBarcode, bool isReturnable, bool displayAsKg, bool hideInTicket)
+        public void EditProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, double preciodeCompra, double Stock, double minStock, byte[] Foto, string NuevoCodigoBarras, string CodigoBarras, int depotID, string mainProductBarcode, bool isReturnable, bool displayAsKg, bool hideInTicket, double piecesTomakeOneMainProduct)
         {
             SqlCommand command = new SqlCommand("EditProduct", this.OpenSqlConnection())
             {
@@ -631,6 +723,7 @@ namespace POS
             command.Parameters.AddWithValue("@isReturnable", isReturnable);
             command.Parameters.AddWithValue("@displayAsKg", displayAsKg);
             command.Parameters.AddWithValue("@hideInTicket", hideInTicket);
+            command.Parameters.AddWithValue("@piecesToMakeOneMainProduct", piecesTomakeOneMainProduct);
             command.ExecuteNonQuery();
             this.CloseSqlConnection();
         }
@@ -1206,7 +1299,6 @@ namespace POS
         {
             this.con = new SqlConnection()
             {
-                // ConnectionString = @"Data Source = localhost\SQLEXPRESS; Initial Catalog = C:\USERS\TIENDA\SOURCE\REPOS\POS\POS\DATA\FINALDB.MDF; Integrated Security = True"
                 ConnectionString = @"Data Source=localhost\SQLEXPRESS;Initial Catalog=C:\USERS\TIENDA\SOURCE\REPOS\POS\POS\DATA\FINALDB.MDF;Integrated Security=True"
             };
            
@@ -1860,7 +1952,7 @@ namespace POS
             return table;
         }
 
-        public void shift_AddCashToDrawer(int employeeID, double cash)
+        public void shift_AddCashToDrawer(int employeeID, double cash,string reason)
         {
             SqlCommand command = new SqlCommand("shift_AddMoneyToDrawer", this.OpenSqlConnection())
             {
@@ -1868,6 +1960,8 @@ namespace POS
             };
             command.Parameters.AddWithValue("@cash", cash);
             command.Parameters.AddWithValue("@employeeID", employeeID);
+            command.Parameters.AddWithValue("@reason", reason);
+
             command.ExecuteNonQuery();
             this.CloseSqlConnection();
         }

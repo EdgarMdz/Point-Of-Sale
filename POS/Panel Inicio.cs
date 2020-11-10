@@ -75,6 +75,9 @@ namespace POS
             this.date = DateTime.Now;
             
             this.printDialog1.PrinterSettings.PrinterName = new PrinterTicket().printerName;
+
+            this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
         }
     
 
@@ -316,6 +319,7 @@ namespace POS
                 this.startShiftBtn.Hide();
                 this.button2.Hide();
                 this.endShiftBtn.Show();
+                endShiftBtn.Enabled = true;
                 this.setGroupBoxInfo();
             }
             darkForm.Close();
@@ -359,27 +363,30 @@ namespace POS
                         width, StringAlignment.Center, graphics, y) + 1;
                 }
                 string str = "Corte de Caja";
-                Font font = new Font("times new roman", 20f, FontStyle.Bold);
+                Font font = new Font("times new roman", 18f, FontStyle.Bold);
                 y += printingClass.printLine(str, font, width, StringAlignment.Center, graphics, y) + 1;
 
-                str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.Date.ToShortTimeString());
-                font = new Font("Times new roman", 10f, FontStyle.Bold);
+                var startingTime = Turno.startingDate;
+                str = string.Format("Periodo del Turno: {0} {1} - {2} {3}", startingTime.Date.ToShortDateString(), startingTime.ToShortTimeString(),
+                    DateTime.Now.Date.ToShortDateString(), DateTime.Now.ToShortTimeString());
+
+                font = width > 200 ? new Font("Times new Roman", 9.9f, FontStyle.Bold) : new Font("Times new Roman", 7f, FontStyle.Bold);
                 y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 3;
 
                 str = "Comenzó el turno: " + new Empleado(Convert.ToInt32(row["Empleado que Inició"])).name;
                 y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 1;
 
                 str = "Realizó corte de caja: " + new Empleado(this.employeeID).name;
-                y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 5;
+                y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 15;
 
 
                 for (int index = 0; index < 9; ++index)
                 {
-                    font = new Font("Times new roman", 10f, FontStyle.Regular);
+                    font = width > 200 ? new Font("Times new Roman", 9.9f) : new Font("Times new Roman", 7f);
                     str = dt.Columns[index].ColumnName;
                     y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 1;
 
-                    font = new Font("Times new roman", 10f, FontStyle.Bold);
+                    font = width > 200 ? new Font("Times new Roman", 9.9f, FontStyle.Bold) : new Font("Times new Roman", 7f, FontStyle.Bold);
                     str = row[index].ToString();
                     str = index > 0 ? str.Substring(1) : str;
                     str = Convert.ToDouble(str) > 0.0 ? string.Format("{0}", row[index]) :
@@ -387,9 +394,8 @@ namespace POS
                     y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 5;
 
                 }
-            
-                
             };
+
             this.endShiftBtn.Hide();
             this.button2.Show();
             DarkForm darkForm = new DarkForm();
@@ -414,17 +420,21 @@ namespace POS
 
         private void dataGridView1_DataSourceChanged(object sender, EventArgs e)
         {
-            this.resizeColumns();
-            dataGridView1.Sort(dataGridView1.Columns["Fecha"], ListSortDirection.Ascending);
+            resizeColumns();
+            //dataGridView1.Sort(dataGridView1.Columns["Fecha"], ListSortDirection.Ascending);
+
         }
 
         private void resizeColumns()
         {
             if (this.dataGridView1.Rows.Count == 0)
                 return;
-            this.dataGridView1.Columns["Nombre"].Width = (int)((double)this.dataGridView1.Width * 0.3);
-            this.dataGridView1.Columns["Añadió"].Width = (int)((double)this.dataGridView1.Width * 0.3);
-            this.dataGridView1.Columns["Fecha"].Width = (int)((double)this.dataGridView1.Width * 0.4);
+            /*   this.dataGridView1.Columns["Nombre"].Width = (int)((double)this.dataGridView1.Width * 0.3);
+               this.dataGridView1.Columns["agregó / retiró"].Width = (int)((double)this.dataGridView1.Width * 0.3);
+               this.dataGridView1.Columns["Fecha"].Width = (int)((double)this.dataGridView1.Width * 0.4);*/
+
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dataGridView1.Columns["motivo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -472,8 +482,10 @@ namespace POS
                             m_Drawer.Close();
 
                         }
-
-                        useDefaultPrinter();
+                        else
+                        {
+                            useDefaultPrinter();
+                        }
                     }
                     catch (Exception)
                     {
@@ -486,7 +498,7 @@ namespace POS
                     }
                     //<<<step1>>>--End
 
-                    Turno.AddCashToDrawer(empleado.ID, formShiftAddMoney.cash);
+                    Turno.AddCashToDrawer(empleado.ID, formShiftAddMoney.cash, formShiftAddMoney.reason);
                     MessageBox.Show("Se realizó correctamente");
                     this.setGroupBoxInfo();
                 }

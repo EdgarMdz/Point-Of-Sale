@@ -379,8 +379,8 @@ namespace POS
         private void Abonar()
         {
             FormPagar form = new FormPagar(this.SaldoLbl.Text, false, 0.0);
-            DarkForm darkForm = new DarkForm();
-            darkForm.Show();
+            //DarkForm darkForm = new DarkForm();
+            //darkForm.Show();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 double num1 = Convert.ToDouble(form.Pay);
@@ -428,10 +428,10 @@ namespace POS
                         y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 5;
 
                         string str = "Pago de Cliente";
-                        Font font = new Font("times new roman", 20f, FontStyle.Bold);//this.getFont(str1, width, FontStyle.Regular);
+                        Font font = new Font("times new roman", 17f, FontStyle.Bold);//this.getFont(str1, width, FontStyle.Regular);
                         y1 += printingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1) + 1;
 
-                        font = new Font("Times new Roman", 10f, FontStyle.Regular);
+                        font = width > 200 ? new Font("Times new Roman", 9.9f) : new Font("Times new Roman", 7f);
 
                         str = "Cliente: " + this.cliente.Name;
                         y1 += printingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
@@ -490,7 +490,7 @@ namespace POS
                     MessageBox.Show("El Cliente no genera ningun adeudo");
                 }
             }
-            darkForm.Close();
+           // darkForm.Close();
             this.FillDataList();
         }
 
@@ -617,7 +617,6 @@ namespace POS
             darkForm.Show();
             if (listaClientesForm.ShowDialog() == DialogResult.OK)
             {
-                DataTable dataTable = new DataTable();
                 this.cliente = new Cliente();
                 this.cliente.Name = this.SearchTxt.Text;
                 this.DetalleCompraDataGridView1.DataSource = (object)null;
@@ -896,14 +895,14 @@ namespace POS
 
 
                 data = "Detalle de Venta";
-                mainFont = new Font("Times new roman", 20f, FontStyle.Bold);
+                mainFont = new Font("Times new roman", 17f, FontStyle.Bold);
 
                 infoList.Add(new Tuple<string, List<object>, bool>("printLine",
                     new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
                     true));
 
                 data = string.Format("Folio: {0}", sale.ID.ToString("X"));
-                mainFont = new Font("Times new Roman", 9.9f);
+                mainFont = width > 200 ? new Font("Times new Roman", 9.9f) : new Font("Times new Roman", 7f);
 
                 infoList.Add(new Tuple<string, List<object>, bool>("printLine",
                     new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }), true));
@@ -1106,13 +1105,13 @@ namespace POS
                  true));
                 
                 data = "Resumen de Compras";
-                mainFont = new Font("times new roman", 20f, FontStyle.Bold); //this.getFont(data, width, FontStyle.Bold);
+                mainFont = new Font("times new roman", 17f, FontStyle.Bold); //this.getFont(data, width, FontStyle.Bold);
                 infoList.Add(new Tuple<string, List<object>, bool>("printLine",
                new List<object>(new object[] { data, mainFont, width, StringAlignment.Center }),
                true));
                 
                 data = "Cliente: " + this.cliente.Name;
-                mainFont = new Font("times new roman", 10f, FontStyle.Regular);
+                mainFont = width > 200 ? new Font("Times new Roman", 9.9f) : new Font("Times new Roman", 7f);
                 infoList.Add(new Tuple<string, List<object>, bool>("printLine",
                new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }),
                true));

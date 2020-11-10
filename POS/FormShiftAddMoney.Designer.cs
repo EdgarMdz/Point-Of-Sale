@@ -38,6 +38,8 @@ namespace POS
             this.bunifuImageButton1 = new Bunifu.Framework.UI.BunifuImageButton();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,14 +50,14 @@ namespace POS
             this.titleLbl.Location = new System.Drawing.Point(138, 37);
             this.titleLbl.Name = "titleLbl";
             this.titleLbl.Size = new System.Drawing.Size(602, 83);
-            this.titleLbl.TabIndex = 1;
+            this.titleLbl.TabIndex = 15;
             this.titleLbl.Text = "Agregar Efectivo";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Century Gothic", 22F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(92, 240);
+            this.label1.Location = new System.Drawing.Point(139, 167);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(109, 37);
             this.label1.TabIndex = 7;
@@ -78,7 +80,7 @@ namespace POS
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Century Gothic", 22F, System.Drawing.FontStyle.Bold);
-            this.textBox1.Location = new System.Drawing.Point(322, 237);
+            this.textBox1.Location = new System.Drawing.Point(274, 164);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(481, 43);
             this.textBox1.TabIndex = 0;
@@ -98,10 +100,30 @@ namespace POS
             this.button1.Location = new System.Drawing.Point(336, 370);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(223, 46);
-            this.button1.TabIndex = 6;
+            this.button1.TabIndex = 2;
             this.button1.Text = "Aceptar";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Century Gothic", 22F, System.Drawing.FontStyle.Bold);
+            this.label2.Location = new System.Drawing.Point(139, 255);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(115, 37);
+            this.label2.TabIndex = 9;
+            this.label2.Text = "Motivo";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Font = new System.Drawing.Font("Century Gothic", 22F, System.Drawing.FontStyle.Bold);
+            this.textBox2.Location = new System.Drawing.Point(274, 252);
+            this.textBox2.Multiline = true;
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(481, 93);
+            this.textBox2.TabIndex = 1;
+            this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // FormShiftAddMoney
             // 
@@ -109,6 +131,8 @@ namespace POS
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(895, 458);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.bunifuImageButton1);
@@ -137,5 +161,7 @@ namespace POS
         private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button1;
+        private Label label2;
+        private TextBox textBox2;
     }
 }

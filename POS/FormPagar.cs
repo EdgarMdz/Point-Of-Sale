@@ -1,19 +1,23 @@
 ﻿using Bunifu.Framework.UI;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace POS
 {
     public partial class FormPagar : Form
     {
+     /*  protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                // turn on WS_EX_TOOLWINDOW style bit
+                cp.ExStyle |= 0x80;
+                return cp;
+            }
+        }*/
         private double minimumPaymentNeeded;
         private bool payingPO;
 
@@ -36,7 +40,7 @@ namespace POS
             this.payingPO = false;
             this.minimumPaymentNeeded = minimumPaymentRequired;
             this.sellingMode = sellingMode;
-            this.Total = "$" + CalculateToal(Convert.ToDouble(total.Substring(1)));
+            this.Total = total;// CalculateToal(Convert.ToDouble(total.Substring(1)));
         }
 
         private string CalculateToal(double total)

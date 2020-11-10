@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace POS
 {
-    public partial class DarkForm : Form
+    public partial class Toast_Message : Form
     {
-       /* protected override CreateParams CreateParams
+        protected override CreateParams CreateParams
         {
             get
             {
@@ -14,24 +14,35 @@ namespace POS
                 cp.ExStyle |= 0x80;
                 return cp;
             }
-        }*/
+        }
 
-        public DarkForm()
+        public Toast_Message(string message)
         {
             InitializeComponent();
+            label1.Text = message;
+        }
+
+        private void Toast_Message_Load(object sender, EventArgs e)
+        {
+            timer1.Start();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (Parent.Controls.Count < 2)
+            if (timer1.Interval == 1)
+            {
+                timer1.Interval = 2500;
+            }
+            else
             {
                 timer1.Stop();
                 this.Close();
             }
         }
 
-        private void DarkForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void Toast_Message_FormClosing(object sender, FormClosingEventArgs e)
         {
+            timer1.Enabled = false;
             timer1.Dispose();
         }
     }

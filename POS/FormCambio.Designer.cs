@@ -118,7 +118,6 @@ namespace POS
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Cambio | Point of Sale";
-            this.TopMost = true;
             this.Deactivate += new System.EventHandler(this.FormCambio_Deactivate);
             this.Load += new System.EventHandler(this.FormCambio_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.FormCambio_Paint);

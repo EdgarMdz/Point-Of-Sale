@@ -982,11 +982,15 @@ namespace POS
         {
             if (dataGridView1.DataSource != null)
             {
+                try
+                {
 
-                if (e.ColumnIndex == dataGridView1.Columns["cantidad"].Index && !PO.delivered)
-                    dataGridView1.Cursor = Cursors.IBeam;
-                else
-                    dataGridView1.Cursor = Cursors.Arrow;
+                    if (e.ColumnIndex == dataGridView1.Columns["cantidad"].Index && !PO.delivered)
+                        dataGridView1.Cursor = Cursors.IBeam;
+                    else
+                        dataGridView1.Cursor = Cursors.Arrow;
+                }
+                catch (Exception) { }
             }
         }
 

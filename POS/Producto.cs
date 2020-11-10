@@ -24,6 +24,8 @@ namespace POS
 
         public bool isReturnable { get; set; }
 
+        
+
 
         /// <summary>
         /// Looks for a group of products' ID which are permitted to be sell together to form a case searching 
@@ -40,6 +42,8 @@ namespace POS
 
         public bool displayAsKilogram { get; set; }
 
+  
+
         public bool HideInTicket { get; set; }
 
         public double CurrentStock { get; set; }
@@ -52,6 +56,7 @@ namespace POS
         public string Barcode { get; set; }
 
         public string mainProductBarcode { get; set; }
+        public double PiecesToMakeOneMainProduct { get; set; }
 
         /// <summary>
         /// returns true if there is a match for the given amount.
@@ -122,7 +127,15 @@ namespace POS
 
         public void addProduct()
         {
-            this.negocio.AddProduct(this.Brand, this.Description, this.RetailCost, this.CostPerCase, this.PiecesPerCase, this.PurchaseCost, this.CurrentStock, this.minStock, this.Image, this.Barcode, this.defaultDepotID, this.mainProductBarcode, this.isReturnable, this.displayAsKilogram, this.HideInTicket);
+            this.negocio.AddProduct(this.Brand, this.Description, this.RetailCost, this.CostPerCase,
+                this.PiecesPerCase, this.PurchaseCost, this.CurrentStock, this.minStock, this.Image,
+                this.Barcode, this.defaultDepotID, this.mainProductBarcode, this.isReturnable,
+                this.displayAsKilogram, this.HideInTicket, PiecesToMakeOneMainProduct);
+        }
+
+        public void DeletePurchaseCostRecordValue(DateTime date, double remainingPieces, double purchaseCost)
+        {
+            negocio.product_DeletePurchaseCostRecordValue(Barcode, date, remainingPieces, purchaseCost);
         }
 
         public void UpdateWholeSaleCost(int costID, double discount, bool isByPercentage)
@@ -145,7 +158,7 @@ namespace POS
                 this.RetailCost = Convert.ToDouble(row["Precio Menudeo"]);
                 this.CostPerCase = Convert.ToDouble(row["Precio por Caja"]);
                 this.PiecesPerCase = Convert.ToDouble(row["Piezas por Caja"]);
-                this.PurchaseCost = Convert.ToDouble(row["Precio de Compra"]);
+                this.PurchaseCost = row["Precio de Compra"].ToString()==""?0: Convert.ToDouble(row["Precio de Compra"]);
                 this.CurrentStock = Convert.ToDouble(row["Stock"]);
                 this.minStock = Convert.ToDouble(row["Stock Mínimo"].ToString() == "" ? 0 : row["Stock Mínimo"]);
                 this.mainProductBarcode = row["Código de Barras del Producto Principal"].ToString();
@@ -159,6 +172,7 @@ namespace POS
                 }
                 this.defaultDepotID = Convert.ToInt32(row["Bodega por Defecto"]);
                 _mixedCaseGroup = row["id_grupo"].ToString() != "" ? Convert.ToInt32(row["id_grupo"]) : 0;
+                this.PiecesToMakeOneMainProduct = row["piezas para un producto"].ToString() == "" ? 0 : Convert.ToDouble(row["piezas para un producto"]);
             }
             return true;
         }
@@ -184,7 +198,7 @@ namespace POS
 
         public void UpdateProduct(string NewBarcode)
         {
-            this.negocio.EditProduct(this.Brand, this.Description, this.RetailCost, this.CostPerCase, this.PiecesPerCase, this.PurchaseCost, this.CurrentStock, this.minStock, this.Image, this.Barcode, NewBarcode, this.defaultDepotID, this.mainProductBarcode, this.isReturnable, this.displayAsKilogram, this.HideInTicket);
+            this.negocio.EditProduct(this.Brand, this.Description, this.RetailCost, this.CostPerCase, this.PiecesPerCase, this.PurchaseCost, this.CurrentStock, this.minStock, this.Image, this.Barcode, NewBarcode, this.defaultDepotID, this.mainProductBarcode, this.isReturnable, this.displayAsKilogram, this.HideInTicket,PiecesToMakeOneMainProduct);
         }
 
         public static DataTable SearchValueGetTable(string Search)
@@ -217,7 +231,10 @@ namespace POS
             return new Capa_de_Datos().product_getMixedSaleGroupInfo(groupID);
         }
 
-
+        public DataTable checkForStoredPurchaseCosts()
+        {
+            return negocio.Product_checkForStoredPurchaseCosts(Barcode);
+        }
         public static DataTable getBestSellProducts(DateTime date, int periodOfTimeValue)
         {
             if (periodOfTimeValue > 3)
@@ -414,6 +431,11 @@ namespace POS
                 }
             }
         }
+        public DataTable getDerivedProductsList()
+        {
+            return negocio.getDerivedProductsList(Barcode);
+        }
+
         public static Tuple<int, double> getCasesAndSingleProducts(Producto producto, double amount)
         {
             int cases = producto.PiecesPerCase > 1.0 ? (int)Math.Truncate(amount / producto.PiecesPerCase) : 0;

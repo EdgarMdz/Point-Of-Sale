@@ -183,8 +183,11 @@ namespace POS
                 {
                     if (new Proveedor(SupplierID).getProductInfo(BarCodeTxt.Text).Rows.Count == 0 || editingMode)
                     {
+
                         barcode = results.Rows[0]["código de barras"].ToString();
-                        var p = new Producto(barcode);
+                        var p = checkformainproduct(barcode);
+                        barcode = p.Barcode;
+
                         BarCodeTxt.Text = barcode;
                         descriptionLbl.Text = p.Description;
                         MarcaLbl.Text = p.Brand;
@@ -195,6 +198,7 @@ namespace POS
                         this.panel.Show();
                         this.CenterToScreen();
                         precioTxt.Select();
+                        precioTxt.Focus();
                     }
                     else
                     {
@@ -211,7 +215,8 @@ namespace POS
                     if (form.ShowDialog() == DialogResult.OK)
                     {
                         barcode = form.selectedItem[0];
-                        var p = new Producto(barcode);
+                        var p = checkformainproduct(barcode);
+                        barcode = p.Barcode;
 
                         BarCodeTxt.Text = p.Barcode;
                         descriptionLbl.Text = p.Description;
@@ -219,6 +224,7 @@ namespace POS
                         StockLbl.Text = p.CurrentStock.ToString("n2");
                         MinStockLbl.Text = p.minStock.ToString("n2");
                         precioTxt.Select();
+
                         this.NextButton.Hide();
                         this.Height = 540;
                         this.panel.Show();
@@ -229,7 +235,12 @@ namespace POS
                 {
                     var barcode = Producto.SearchValueGetTable(BarCodeTxt.Text);
                     if (barcode.Rows.Count == 0)
-                        MessageBox.Show("No se encontraron productos");
+                    {
+                        if (Producto.SearchProduct(BarCodeTxt.Text)&& checkformainproduct(BarCodeTxt.Text).Barcode == BarCodeTxt.Text)
+                            MessageBox.Show("El producto principal ya se encuentra registrado para este proveedor");
+                        else
+                            MessageBox.Show("No se encontraron productos");
+                    }
                     else
                         MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
                     BarCodeTxt.Text = "";
@@ -240,7 +251,10 @@ namespace POS
                 if (Producto.SearchProduct(BarCodeTxt.Text) && new Proveedor(SupplierID).getProductInfo(BarCodeTxt.Text).Rows.Count == 0 || editingMode)
                 {
                     barcode = BarCodeTxt.Text;
-                    var p = new Producto(barcode);
+                    var p = checkformainproduct(barcode);
+                    barcode = p.Barcode;
+
+                    BarCodeTxt.Text = barcode;
                     descriptionLbl.Text = p.Description;
                     MarcaLbl.Text = p.Brand;
                     StockLbl.Text = p.CurrentStock.ToString("n2");
@@ -249,17 +263,37 @@ namespace POS
                     this.Height = 540;
                     this.panel.Show();
                     this.CenterToScreen();
+                    precioTxt.Focus();
                     precioTxt.Select();
                 }
                 else
                 {
                     var barcode = Producto.SearchValueGetTable(BarCodeTxt.Text);
                     if (barcode.Rows.Count == 0)
-                        MessageBox.Show("No se encontraron productos");
+                    { 
+                        if (Producto.SearchProduct(BarCodeTxt.Text) && checkformainproduct(BarCodeTxt.Text).Barcode == BarCodeTxt.Text)
+                            MessageBox.Show("El producto principal ya se encuentra registrado para este proveedor");
+                        else
+                            MessageBox.Show("No se encontraron productos"); 
+                    }
                     else
                         MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
                 }
             }
+        }
+
+        private Producto checkformainproduct(string barcode)
+        {
+            var p = new Producto(barcode);
+            while ( p.mainProductBarcode != "")
+            {
+                p = new Producto(p.mainProductBarcode);
+            }
+
+            if (p.Barcode != barcode)
+                new Toast_Message("Se reedirigió al producto principal").Show();
+
+            return p;
         }
 
         bool isNumber(string text)

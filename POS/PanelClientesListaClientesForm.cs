@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,7 +11,6 @@ namespace POS
     public partial class PanelClientesListaClientesForm : Form
     {
         private Cliente cliente = new Cliente();
-
 
         public int IDCustomer { get; set; }
 
@@ -51,13 +47,18 @@ namespace POS
         }
 
         private async void BuscarClientetxt_TextChanged(object sender, EventArgs e)
-        {;
-            DataTable dataTable2 = BuscarClientetxt.Text == "" ? this.cliente.GetCustomerList() :
-                await Task.Run(() => this.cliente.SearchCustomer(this.BuscarClientetxt.Text));
-            
-            dataTable2.Columns["Id_Cliente"].ColumnName = "Número de Cliente";
-            
-            this.dataGridView1.DataSource = (object)dataTable2;
+        {
+            try
+            {
+
+                DataTable dataTable2 = BuscarClientetxt.Text == "" ? this.cliente.GetCustomerList() :
+                    await Task.Run(() => this.cliente.SearchCustomer(this.BuscarClientetxt.Text));
+
+                dataTable2.Columns["Id_Cliente"].ColumnName = "Número de Cliente";
+
+                this.dataGridView1.DataSource = (object)dataTable2;
+            }
+            catch (Exception) { }
         }
 
         private void AbrirBtn_Click(object sender, EventArgs e)

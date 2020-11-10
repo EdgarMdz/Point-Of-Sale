@@ -157,17 +157,37 @@ namespace POS
 
             }
             catch (FormatException) { dataGridView1[e.ColumnIndex, e.RowIndex].Value = "0"; }
+            toolTip1.Hide(this);
         }
 
         private void PanelVentas_RetornarEnvasesForm_Load(object sender, EventArgs e)
         {
+            this.Focus();
             try {
-                dataGridView1.CurrentCell = dataGridView1.Rows[0].Cells["tobeReturned"];
-                dataGridView1.BeginEdit(true);
-                dataGridView1.Select();
-                dataGridView1.Columns[dataGridView1.CurrentCell.ColumnIndex].HeaderCell.Style.BackColor = Color.FromArgb(0, 192, 0);
+                dataGridView1.Columns["tobereturned"].HeaderCell.Style.BackColor = Color.FromArgb(0, 172, 224);
+                dataGridView1.DefaultCellStyle.BackColor = Color.FromArgb(230,230,230);
+                dataGridView1.Columns["tobereturned"].DefaultCellStyle.BackColor = Color.White;
+                dataGridView1.Columns["tobereturned"].DefaultCellStyle.ForeColor = Color.FromArgb(0, 172, 224); 
+
+                dataGridView1.BeginInvoke(new Action(() =>
+                {
+                    dataGridView1.CurrentCell = dataGridView1.Rows[0].Cells["tobeReturned"];
+                    dataGridView1.BeginEdit(false);
+                }));
+                /*dataGridView1.Select();
+                dataGridView1.Focus();*/
             }
             catch (Exception){ }
          }
+
+        private void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            var cellRect = dataGridView1.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false);
+            toolTip1.Show("Ingrese la cantidad de envases que se van a retornar",
+                          this, dataGridView1.Location.X + cellRect.X + cellRect.Width,
+                          dataGridView1.Location.Y + cellRect.Y - 15,
+                          5000);
+            dataGridView1.ShowCellToolTips = true;
+        }
     }
 }

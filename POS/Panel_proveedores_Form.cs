@@ -1,5 +1,5 @@
-﻿using Bunifu.Framework.UI; 
-using word =Microsoft.Office.Interop.Word;
+﻿using Bunifu.Framework.UI;
+using word = Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -78,7 +78,7 @@ namespace POS
             this.dataGridView4.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
 
             dataGridView3.DefaultCellStyle.Font = dataGridView4.DefaultCellStyle.Font = new Font("century gothic", 10f, FontStyle.Bold);
-            dataGridView3.ColumnHeadersDefaultCellStyle.Font= dataGridView4.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", 12f, FontStyle.Bold);
+            dataGridView3.ColumnHeadersDefaultCellStyle.Font = dataGridView4.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", 12f, FontStyle.Bold);
 
             SearchSupplierTxt.Focus();
 
@@ -87,6 +87,10 @@ namespace POS
             comboColumn.DataSource = Bodega.GetDepots();
             comboColumn.DisplayMember = "Nombre";
             comboColumn.ValueMember = "ID_Bodega";
+
+
+            if (comboColumn.Items.Count <= 1)
+                comboColumn.Visible = false;
 
             dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 15.75f, FontStyle.Bold);
         }
@@ -216,10 +220,10 @@ namespace POS
                 };
 
                 bunifuImageButton.LostFocus += (s, e) =>
-                  {
-                      var button = s as BunifuImageButton;
-                      button.Size = new Size(250, 150);
-                  };
+                {
+                    var button = s as BunifuImageButton;
+                    button.Size = new Size(250, 150);
+                };
 
                 bunifuImageButton.MouseEnter += (s, e) =>
                 {
@@ -1195,7 +1199,7 @@ namespace POS
                     dataGridView2.EndEdit();
                 }
 
-               // this.dataGridView1.DataSource = this.proveedor.GetSupplierProductList();
+                // this.dataGridView1.DataSource = this.proveedor.GetSupplierProductList();
                 foreach (DataGridViewRow row in dataGridView1.Rows)
                 {
                     if (row.Cells["Código de Barras"].Value.ToString() == poveedoresNuevoProducto.barcode)
@@ -1403,9 +1407,9 @@ namespace POS
         private void generataPurchaseOrder()
         {
             PanelProveedor_GeneratePO newPO = new PanelProveedor_GeneratePO(this.proveedor, this.EmployeeID, Convert.ToDouble(this.grandTotalLbl.Text.Substring(this.grandTotalLbl.Text.IndexOf("$") + 1)));
-            DarkForm dk = new DarkForm();
+            //DarkForm dk = new DarkForm();
             LoadingScreen load = new LoadingScreen();
-            dk.Show();
+            //dk.Show();
             if (newPO.ShowDialog() == DialogResult.OK)
             {
                 if (newPO.PO_ID > -1)
@@ -1432,7 +1436,7 @@ namespace POS
                 setPurchaseStatistics();
             }
             load.Close();
-            dk.Close();
+            //dk.Close();
         }
 
         private void resetPurchase()
@@ -1513,8 +1517,8 @@ namespace POS
                     double UnitaryCost = Convert.ToDouble(productSupplierInfo.Rows[0]["Precio de Compra"]);
                     double PiecesPerCase = Convert.ToDouble(productSupplierInfo.Rows[0]["Piezas por Caja"]);
 
-                    product.PurchaseCost = UnitaryCost / PiecesPerCase * product.PiecesPerCase;
-                    product.UpdateProduct(product.Barcode);
+                   // product.PurchaseCost = UnitaryCost / PiecesPerCase * product.PiecesPerCase;
+                   // product.UpdateProduct(product.Barcode);
 
                     this.proveedor.addProductToPO(poID, product, Convert.ToDouble(row1.Cells["amount"].Value.ToString()),
                         PiecesPerCase, UnitaryCost, Convert.ToDouble(row1.Cells["Total"].Value), Convert.ToInt32(row1.Cells["depot"].Value));
@@ -1869,6 +1873,8 @@ namespace POS
             this.timer.Dispose();
             FilteringTextbox.Text = "";
             ProductTxt.Text = "";
+            chart2.Series.Clear();
+            label11.Text = "";
         }
 
         private void phoneNumberTxt_KeyPress(object sender, KeyPressEventArgs e)
@@ -2447,7 +2453,7 @@ namespace POS
 
             if (dataGridView2.Visible && dataGridView2.RowCount > 0 && dataGridView2.CurrentRow != null)
             {
-                if (keyData == (Keys.F3))
+                if (keyData == (Keys.F3) && dataGridView2.Columns["depot"].Visible  )
                 {
                     dataGridView2.CurrentCell = dataGridView2.CurrentRow.Cells["depot"];
                     dataGridView2.BeginEdit(true);
@@ -2569,8 +2575,8 @@ namespace POS
         {
             var total = Convert.ToDouble(this.grandTotalLbl.Text.Substring(this.grandTotalLbl.Text.IndexOf("$") + 1));
             PanelProveedor_GeneratePO newPO = new PanelProveedor_GeneratePO(this.proveedor, this.EmployeeID, total > 0 ? total : 0, 2);
-            DarkForm dk = new DarkForm();
-            dk.Show();
+            //DarkForm dk = new DarkForm();
+            //dk.Show();
             if (newPO.ShowDialog() == DialogResult.OK)
             {
 
@@ -2593,7 +2599,7 @@ namespace POS
                 else
                     dataGridView1.DataSource = proveedor.GetSupplierProductList();
             }
-            dk.Close();
+            //dk.Close();
         }
 
         private void SearchSupplierTxt_Leave(object sender, EventArgs e)
@@ -2662,14 +2668,20 @@ namespace POS
 
         private void setPurchaseStatistics()
         {
+            textBox1.Text = "";
             setBestSellers();
+            loadBuyChart();
             setWorstSellers();
             setPurchaseChart();
         }
 
-        private void setPurchaseChart()
+        private async void setPurchaseChart()
         {
             Proveedor.PeriodOfTime period;
+            chart1.Hide();
+            var color = panel2.BackColor;
+            panel2.BackColor = Color.White;
+            pictureBox3.Show();
 
             switch (comboBox1.SelectedIndex)
             {
@@ -2688,7 +2700,7 @@ namespace POS
                     break;
             }
 
-            DataTable dt = proveedor.getPurchaseStatistics(dateTimePicker1.Value, period);
+            DataTable dt = await Task.Run(()=> proveedor.getPurchaseStatistics(dateTimePicker1.Value, period));
 
             SeriesChartType type;
             if (dt.Rows.Count > 3)
@@ -2699,8 +2711,23 @@ namespace POS
 
 
 
-            Series purchases = new Series("Compra") { ChartType = type, Font = new Font("century gothic", 10f, FontStyle.Regular), BorderWidth = 4 , IsValueShownAsLabel =true};
-            Series payment = new Series("Pago") { ChartType = type, Font = new Font("century gothic", 10f, FontStyle.Regular), BorderWidth = 4, IsValueShownAsLabel = true };
+            Series purchases = new Series("Compra")
+            {
+                ChartType = type,
+                Font = new Font("century gothic", 10f, FontStyle.Regular),
+                BorderWidth = 4,
+                IsValueShownAsLabel = true,
+                Color = Color.Gold
+            };
+
+            Series payment = new Series("Pago")
+            {
+                ChartType = type,
+                Font = new Font("century gothic", 10f, FontStyle.Regular),
+                BorderWidth = 4,
+                IsValueShownAsLabel = true,
+                Color = Color.FromArgb(255, 150, 66)
+            };
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
@@ -2714,6 +2741,10 @@ namespace POS
             chart1.Series.Add(payment);
 
             chart1.ChartAreas[0].RecalculateAxesScale();
+
+            chart1.Show();
+            pictureBox3.Hide();
+            panel2.BackColor = color;
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -2722,8 +2753,9 @@ namespace POS
         }
 
 
-        private void setBestSellers()
+        private async void setBestSellers()
         {
+            pictureBox1.Show();
             Proveedor.PeriodOfTime period;
 
             switch (comboBox1.SelectedIndex)
@@ -2743,12 +2775,14 @@ namespace POS
                     break;
             }
 
-            dataGridView3.DataSource = proveedor.getBestSellers(dateTimePicker1.Value, period);
+            dataGridView3.DataSource = await Task.Run(()=> proveedor.getBestSellers(dateTimePicker1.Value, period));
+            pictureBox1.Hide();
         }
 
-        private void setWorstSellers()
+        private async void setWorstSellers()
         {
             Proveedor.PeriodOfTime period;
+            pictureBox2.Show();
 
             switch (comboBox1.SelectedIndex)
             {
@@ -2767,7 +2801,8 @@ namespace POS
                     break;
             }
 
-            dataGridView4.DataSource = proveedor.getWorstSellers(dateTimePicker1.Value, period);
+            dataGridView4.DataSource = await Task.Run(() => proveedor.getWorstSellers(dateTimePicker1.Value, period));
+            pictureBox2.Hide();
         }
 
         private void dataGridView3_DataSourceChanged(object sender, EventArgs e)
@@ -2775,16 +2810,139 @@ namespace POS
             (sender as DataGridView).AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             (sender as DataGridView).Columns["Producto"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode== Keys.Enter)
+            {
+                loadBuyChart();
+            }
+        }
+
+        private async void loadBuyChart()
+        {
+
+            if (textBox1.Text.Trim() == "")
+            {
+                pictureBox4.Hide();
+                return;
+
+            }
+            var color = panel4.BackColor;
+            panel4.BackColor = Color.White;
+
+            string barcode = "";
+            var table = proveedor.SearchValueGetTable(textBox1.Text);
+
+            if (table.Rows.Count == 1)
+            {
+                var product = new Producto(table.Rows[0]["Código de Barras"].ToString());
+                label11.Text = string.Format("{0}, {1}", product.Description, product.Brand);
+                barcode = product.Barcode;
+            }
+            else if (table.Rows.Count > 1)
+            {
+                DarkForm darkForm = new DarkForm();
+                ChooseProductForm chooseProductForm = new ChooseProductForm(table);
+                darkForm.Show();
+                if (chooseProductForm.ShowDialog() == DialogResult.OK)
+                {
+                    var product = new Producto(chooseProductForm.selectedItem[0]);
+                    label11.Text = string.Format("{0}, {1}", product.Description, product.Brand);
+                    barcode = product.Barcode;
+                }
+                darkForm.Close();
+            }
+            else
+            {
+                MessageBox.Show("No se encontró el producto.");
+                barcode = "";
+                return;
+            }
+
+            Proveedor.PeriodOfTime period;
+
+            switch (comboBox1.SelectedIndex)
+            {
+                case 0:
+                    period = Proveedor.PeriodOfTime.ByDays;
+                    break;
+                case 1:
+                    period = Proveedor.PeriodOfTime.ByMonth;
+                    break;
+                case 2:
+                    period = Proveedor.PeriodOfTime.ByYear;
+                    break;
+
+                default:
+                    period = Proveedor.PeriodOfTime.ByDays;
+                    break;
+            }
+            pictureBox4.Show();
+            chart2.Hide();
+            DataTable dt = await Task.Run(() => proveedor.getProductBoughtQuant(dateTimePicker1.Value, period, barcode));
+
+            SeriesChartType type;
+            if (dt.Rows.Count > 3)
+                type = SeriesChartType.Spline;
+
+            else
+                type = SeriesChartType.Column;
+
+            Series purchases = new Series("Compra")
+            {
+                ChartType = type,
+                Font = new Font("century gothic", 10f, FontStyle.Regular),
+                BorderWidth = 4,
+                IsValueShownAsLabel = true,
+                Color = Color.FromArgb(141, 181, 150)
+            };
+
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                var row = dt.Rows[i];
+                purchases.Points.AddXY(row[0].ToString(), Convert.ToDouble(row["Cajas Compradas"]));
+            }
+
+            chart2.Series.Clear();
+            chart2.Series.Add(purchases);
+
+            chart2.ChartAreas[0].RecalculateAxesScale();
+
+
+            pictureBox4.Hide();
+            chart2.Show();
+            textBox1.Text = "";
+            panel4.BackColor = color;
+        }
+
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            bool validClick = (e.RowIndex != -1 && e.ColumnIndex == dataGridView2.Columns["depot"].Index); //Make sure the clicked row/column is valid.
+            var datagridview = sender as DataGridView;
+
+            // Check to make sure the cell clicked is the cell containing the combobox 
+            if (datagridview.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn && validClick)
+            {
+                datagridview.BeginEdit(true);
+                ((ComboBox)datagridview.EditingControl).DroppedDown = true;
+            }
+        }
+
+        private void dataGridView2_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            dataGridView2.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        }
     }
 
     class supplierProductsToolTip : ToolTip
     {
-        
+
         public supplierProductsToolTip()
         {
             OwnerDraw = true;
 
-           this.Popup += new PopupEventHandler(onPupup);
+            this.Popup += new PopupEventHandler(onPupup);
             this.Draw += new DrawToolTipEventHandler(onDraw);
         }
 
@@ -2800,7 +2958,7 @@ namespace POS
             g.FillRectangle(Brushes.LightYellow, e.Bounds);
 
             DataSet product = Proveedor.GetProductCostComparison(e.ToolTipText);
-            
+
             int distance = 0;
 
             var text = "Precio por Pieza";
@@ -2844,7 +3002,8 @@ namespace POS
             product.Dispose();
         }
 
-        
+
     }
 
 }
+

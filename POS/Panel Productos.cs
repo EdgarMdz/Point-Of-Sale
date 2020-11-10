@@ -10,8 +10,14 @@ namespace POS
 {
     public partial class Panel_Productos : Form
     {
+        bool saveChanges = false;
         private int selectedrow;
         private bool editingCell;
+
+        public int CurrentdepotID { get; private set; }
+
+        private Tuple<int,int> cell;//tuple to save current cell coordinates
+
         private delegate void setEmployeeDelegate(int employeeID);
 
         protected override CreateParams CreateParams
@@ -32,7 +38,9 @@ namespace POS
             this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             dataGridView1.RowTemplate.Height = 50;
-            
+            dataGridView2.Columns["pieces"].DefaultCellStyle.ForeColor = Color.FromArgb(0, 130, 170);
+            dataGridView2.Columns["pieces"].DefaultCellStyle.BackColor = Color.White;
+
         }
 
         private void showDatagridViewMenu(object sender, DataGridViewCellMouseEventArgs e)
@@ -55,15 +63,7 @@ namespace POS
                 num1 += this.dataGridView1.Columns[index].Width;
             contextMenu.Show((Control)this.dataGridView1, new Point(num1 + e.X, e.Y));
             contextMenu.MenuItems[1].Click += (EventHandler)((s, ee) => this.deleteDepot(e.ColumnIndex));
-            contextMenu.MenuItems[0].Click += (EventHandler)((s, ee) => this.editDepot(e.ColumnIndex));
-            /*contextMenu.MenuItems[1].Click += (EventHandler)((s, ee) =>
-            {
-                DarkForm darkForm = new DarkForm();
-                Panel_productos_Faltantes_Bodega productosFaltantesBodega = new Panel_productos_Faltantes_Bodega(Convert.ToInt32(this.dataGridView1.Columns[e.ColumnIndex].Name));
-                darkForm.Show();
-                int num2 = (int)productosFaltantesBodega.ShowDialog();
-                darkForm.Close();
-            });*/
+            contextMenu.MenuItems[0].Click += (EventHandler)((s, ee) =>  this.editDepot(e.ColumnIndex));
             contextMenu.MenuItems[2].Click += (EventHandler)((s, ee) =>
             {
                 Bodega bodega = new Bodega(Convert.ToInt32(this.dataGridView1.Columns[e.ColumnIndex].Name));
@@ -86,52 +86,103 @@ namespace POS
             contextMenu.Show((Control)this.dataGridView1, new Point(num1 + e.X, columnHeadersHeight + e.Y));
             contextMenu.MenuItems[0].Click += (EventHandler)((s, ee) =>
             {
-                this.dataGridView1.ReadOnly = false;
-                this.dataGridView1.CurrentCell = this.dataGridView1[e.ColumnIndex, e.RowIndex];
-                this.editingCell = false;
-                Bodega depot = new Bodega(Convert.ToInt32(this.dataGridView1.CurrentCell.OwningColumn.Name));
-                this.dataGridView1.EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(this.dataGridView1_EditingControlShowing);
-                string currentValue = "";
-                this.dataGridView1.CellBeginEdit += ((sss, eee) =>
+                if (new Producto(dataGridView1.Rows[e.RowIndex].Cells["código de barras"].Value.ToString()).mainProductBarcode == "")
                 {
-                    if (this.editingCell)
-                        return;
-                    this.editingCell = true;
-                    currentValue = this.dataGridView1.CurrentCell.Value.ToString();
-                    this.dataGridView1.CurrentCell.Value = new Bodega(Convert.ToInt32(this.dataGridView1.CurrentCell.OwningColumn.Name)).getProductQuantity(this.dataGridView1.Rows[eee.RowIndex].Cells["Código de Barras"].Value.ToString());
-                });
-                this.dataGridView1.BeginEdit(true);
-                this.dataGridView1.CellEndEdit += (DataGridViewCellEventHandler)((ss, eee) =>
-                {
-                    if (this.dataGridView1.ReadOnly)
-                        return;
-                    this.dataGridView1.EditingControlShowing -= new DataGridViewEditingControlShowingEventHandler(this.dataGridView1_EditingControlShowing);
-                    try
+                    this.dataGridView1.ReadOnly = false;
+                    this.dataGridView1.CurrentCell = this.dataGridView1[e.ColumnIndex, e.RowIndex];
+                    this.editingCell = false;
+                    Bodega depot = new Bodega(Convert.ToInt32(this.dataGridView1.CurrentCell.OwningColumn.Name));
+                    this.dataGridView1.EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(this.dataGridView1_EditingControlShowing);
+                    string currentValue = "";
+                    this.dataGridView1.CellBeginEdit += ((sss, eee) =>
                     {
-                        Producto producto1 = new Producto(this.dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells["Código de Barras"].Value.ToString());
-                        double newQuantity = Convert.ToDouble(this.dataGridView1.CurrentCell.Value);
-                        this.dataGridView1.CurrentCell.Value = (object)string.Format("{0} {1},\n{2} {3}", (object)Math.Truncate(newQuantity / producto1.PiecesPerCase), Math.Truncate(newQuantity / producto1.PiecesPerCase) == 1.0 ? (object)"caja" : (object)"cajas", (object)(newQuantity % producto1.PiecesPerCase), newQuantity % producto1.PiecesPerCase == 1.0 ? (object)"pieza" : (object)"piezas");
-                        new Bodega(Convert.ToInt32(this.dataGridView1.CurrentCell.OwningColumn.Name)).UpdateProductQuantity(newQuantity, producto1.Barcode);
-                        this.editingCell = false;
-                        Producto producto2 = new Producto(producto1.Barcode);
-                        this.dataGridView1.CurrentCell.OwningRow.DefaultCellStyle.ForeColor = producto2.CurrentStock >= producto2.minStock ? Color.Black : Color.Tomato;
-                    }
-                    catch (FormatException)
+                        if (this.editingCell)
+                            return;
+                        this.editingCell = true;
+                        currentValue = this.dataGridView1.CurrentCell.Value.ToString();
+                        this.dataGridView1.CurrentCell.Value = new Bodega(Convert.ToInt32(this.dataGridView1.CurrentCell.OwningColumn.Name)).
+                        getProductQuantity(this.dataGridView1.Rows[eee.RowIndex].Cells["Código de Barras"].Value.ToString());
+
+                        var product = new Producto(this.dataGridView1.Rows[eee.RowIndex].Cells["Código de Barras"].Value.ToString());
+                        var ChildTable = product.getDerivedProductsList();
+
+                        if (ChildTable.Rows.Count > 0)
+                            showHelpPanel(product,ChildTable, Convert.ToInt32(this.dataGridView1.CurrentCell.OwningColumn.Name));
+                    });
+                    this.dataGridView1.BeginEdit(true);
+                    this.dataGridView1.CellEndEdit += (DataGridViewCellEventHandler)((ss, eee) =>
                     {
-                        string str = this.dataGridView1.CurrentCell.Value.ToString();
-                        if (str.ToLower().IndexOf("caja") == -1 && str.ToLower().IndexOf("pieza") == -1)
+                        if (this.dataGridView1.ReadOnly)
+                            return;
+                        this.dataGridView1.EditingControlShowing -= new DataGridViewEditingControlShowingEventHandler(this.dataGridView1_EditingControlShowing);
+                        try
                         {
-                            int num2 = (int)MessageBox.Show("El formato no es válido");
+                            Producto producto1 = new Producto(this.dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells["Código de Barras"].Value.ToString());
+                            double newQuantity = Convert.ToDouble(this.dataGridView1.CurrentCell.Value);
+                            this.dataGridView1.CurrentCell.Value = (object)string.Format("{0} {1},\n{2} {3}", (object)Math.Truncate(newQuantity / producto1.PiecesPerCase), Math.Truncate(newQuantity / producto1.PiecesPerCase) == 1.0 ? (object)"caja" : (object)"cajas", (object)(newQuantity % producto1.PiecesPerCase), newQuantity % producto1.PiecesPerCase == 1.0 ? (object)"pieza" : (object)"piezas");
+                            new Bodega(Convert.ToInt32(this.dataGridView1.CurrentCell.OwningColumn.Name)).UpdateProductQuantity(newQuantity, producto1.Barcode);
+                            this.editingCell = false;
+                            Producto producto2 = new Producto(producto1.Barcode);
+                            this.dataGridView1.CurrentCell.OwningRow.DefaultCellStyle.ForeColor = producto2.CurrentStock >= producto2.minStock ? Color.Black : Color.Tomato;
                         }
-                        this.dataGridView1.CurrentCell.Value = (object)currentValue;
-                    }
-                    catch (InvalidCastException)
-                    {
-                        this.dataGridView1.CurrentCell.Value = (object)currentValue;
-                    }
-                    this.dataGridView1.ReadOnly = true;
-                });
+                        catch (FormatException)
+                        {
+                            string str = this.dataGridView1.CurrentCell.Value.ToString();
+                            if (str.ToLower().IndexOf("caja") == -1 && str.ToLower().IndexOf("pieza") == -1)
+                            {
+                                int num2 = (int)MessageBox.Show("El formato no es válido");
+                            }
+                            this.dataGridView1.CurrentCell.Value = (object)currentValue;
+                        }
+                        catch (InvalidCastException)
+                        {
+                            this.dataGridView1.CurrentCell.Value = (object)currentValue;
+                        }
+                        this.dataGridView1.ReadOnly = true;
+
+                    });
+                }
+                else
+                {
+                    MessageBox.Show("Este producto no cuenta con inventario. Para modificarlo busca el producto principal y modifica su stock.\n\n\nEl código de barras del" +
+                        " producto principal se copio al portapapeles.");
+                    Clipboard.SetText(new Producto(dataGridView1.Rows[e.RowIndex].Cells["código de barras"].Value.ToString()).mainProductBarcode);
+                }
             });
+        }
+
+        private void showHelpPanel(Producto product, DataTable childTable, int depotID)
+        {
+            dataGridView2.EndEdit();
+            dataGridView2.Rows.Clear();
+            addRowtoHelpGridView(product.Barcode, product.Description, new Bodega(depotID).getProductQuantity(product.Barcode));
+
+            this.CurrentdepotID = depotID;
+            cell = new Tuple<int, int>(dataGridView1.CurrentCell.RowIndex, dataGridView1.CurrentCell.ColumnIndex);
+
+            foreach (DataRow item in childTable.Rows)
+            {
+                addRowtoHelpGridView(item["Código de Barras"].ToString(), item["Descripción"].ToString(), 0);
+            }
+
+            dataGridView2.CurrentCell = dataGridView2.Rows[0].Cells["pieces"];
+            dataGridView2.BeginEdit(true);
+
+            helpPanel.Show();
+        }
+
+        private int addRowtoHelpGridView(string barcode, string description, double amount)
+        {
+            int index = dataGridView2.Rows.Add();
+
+            dataGridView2.Rows[index].Cells["barcode"].Value = barcode;
+            dataGridView2.Rows[index].Cells["description"].Value = description;
+            dataGridView2.Rows[index].Cells["pieces"].Value = amount.ToString("n3");
+            dataGridView2.Rows[index].Cells["pieces"].ReadOnly = false;
+            dataGridView2.Rows[index].Cells["pieces"].Style.ForeColor = Color.FromArgb(0, 130, 170);
+            dataGridView2.Rows[index].Cells["pieces"].Style.BackColor = Color.White;
+
+            return index;
         }
 
         private void dataGridView1_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
@@ -193,7 +244,10 @@ namespace POS
             dataGridView1.DataSource = await Task.Run(() => Bodega.getInventory());
 
             if (this.dataGridView1.RowCount <= 0)
+            {
+                Cursor = Cursors.Default;
                 return;
+            }
             this.dataGridView1.FirstDisplayedCell = this.dataGridView1.Rows[0].Cells[0];
 
             CellFormatting();
@@ -313,16 +367,16 @@ namespace POS
                 for (int index = 3; index < this.dataGridView1.Columns.Count; ++index)
                     this.dataGridView1.Columns[index].Name = dataSource.Columns[this.dataGridView1.Columns[index].HeaderText].Caption;
 
-               // this.dataGridView1.Sort(this.dataGridView1.Columns["Marca"], ListSortDirection.Ascending);
+                // this.dataGridView1.Sort(this.dataGridView1.Columns["Marca"], ListSortDirection.Ascending);
 
                 if (this.dataGridView1.Columns.Count <= 4)
                     this.TransferStockBtn.Enabled = false;
-                
+
                 this.FitTableInformation();
                 this.CellFormatting();
             }
 
-            if(dataGridView1.RowCount>0)
+            if (dataGridView1.RowCount > 0)
             {
                 foreach (Control item in bunifuGradientPanel1.Controls)
                 {
@@ -416,7 +470,7 @@ namespace POS
 
         public void setEmployee(int employeeID)
         {
-            if(this.InvokeRequired)
+            if (this.InvokeRequired)
             {
                 var del = new setEmployeeDelegate(setEmployee);
                 this.Invoke(del, new object[] { employeeID });
@@ -448,7 +502,13 @@ namespace POS
         {
             PanelProductos_NuevaBodega productosNuevaBodega = new PanelProductos_NuevaBodega();
             productosNuevaBodega.Show();
-
+            productosNuevaBodega.FormClosed += (s, ee) =>
+              {
+                  if (productosNuevaBodega.DialogResult == DialogResult.OK)
+                      optionPanelAnimation(false);
+                  else
+                      panel1.Focus();
+              };
             TransferStockBtn.Enabled = true;
         }
 
@@ -592,8 +652,9 @@ namespace POS
 
         private void SearchTxt_Enter(object sender, EventArgs e)
         {
-            SearchTxt.Focus();
-            SearchTxt.Select(0, SearchTxt.Text.Length);
+            optionPanelAnimation(false);
+            SearchTxt.SelectAll();
+
         }
 
 
@@ -625,7 +686,7 @@ namespace POS
 
         private void AddBtn_MouseHover(object sender, EventArgs e)
         {
-           
+
         }
 
         private void wholesaleCostsBtn_Click(object sender, EventArgs e)
@@ -634,14 +695,220 @@ namespace POS
             wholeSaleCosts.ShowDialog();
         }
 
-        private void dataGridView1_RowHeightChanged(object sender, DataGridViewRowEventArgs e)
-        {
-            e.Row.Height += 5;
-        }
+        private void dataGridView1_RowHeightChanged(object sender, DataGridViewRowEventArgs e) => e.Row.Height += 5;
 
         private void dataGridView1_Leave(object sender, EventArgs e)
         {
-            dataGridView1.CancelEdit();
+            if (ActiveControl != null && ActiveControl.Name != dataGridView2.Name)
+            {
+                helpPanel.Hide();
+                dataGridView1.CancelEdit();
+            }
+        }
+
+
+        private void bunifuImageButton1_Click(object sender, EventArgs e)
+        {
+            panel1.Select();
+            if (moreOptionsPanel.Visible)
+                optionPanelAnimation(false);
+            else
+                optionPanelAnimation(true);
+        }
+        private void optionPanelAnimation(bool show)
+        {
+
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            int step = 15;
+
+            if (show)
+            {
+                if (!moreOptionsPanel.Visible)
+                    burgerBtn.Image = Properties.Resources.close;
+                panel1.Location = new Point(moreOptionsPanel.Width + 1, panel1.Location.Y);
+                moreOptionsPanel.Show();
+            }
+            else
+            {
+                panel1.Location = new Point(0, panel1.Location.Y);
+            }
+
+            timer.Interval = 1;
+            timer.Tick += (s, e) =>
+            {
+                if (show)
+                {
+                    if (panel1.Location.X > 0)
+                    {
+                        panel1.Location = new Point(panel1.Location.X - step, panel1.Location.Y);
+                    }
+                    else
+                    {
+                        timer.Stop();
+                        timer.Dispose();
+                    }
+                }
+                else
+                {
+                    if (panel1.Location.X < moreOptionsPanel.Width)
+                    {
+                        panel1.Location = new Point(panel1.Location.X + step, panel1.Location.Y);
+                    }
+                    else
+                    {
+                        moreOptionsPanel.Hide();
+                        timer.Stop();
+                        timer.Dispose();
+                        burgerBtn.Image = Properties.Resources.Hamburger_icon_svg;
+                    }
+                }
+            };
+            timer.Start();
+        }
+
+        private void panel1_Leave(object sender, EventArgs e)
+        {
+            optionPanelAnimation(false);
+        }
+
+        private void dataGridView1_Enter(object sender, EventArgs e)
+        {
+            optionPanelAnimation(false);
+        }
+
+        private void bunifuImageButton2_Click(object sender, EventArgs e)
+        {
+            panel_Productos_Importar_desde_excel form = new panel_Productos_Importar_desde_excel();
+            form.FormClosed += (s, ee) =>
+            {
+                if (form.DialogResult == DialogResult.OK)
+                    optionPanelAnimation(false);
+                else
+                    panel1.Select();
+            };
+            form.Show();
+
+        }
+
+        private void dataGridView2_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            int i = 0;
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                if (i % 2 == 0)
+                {
+                    row.DefaultCellStyle.BackColor = Color.FromArgb(217, 226, 243);
+                    row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(217, 226, 243);
+                }
+
+                else
+                {
+                    row.DefaultCellStyle.BackColor = Color.White;
+                    row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(217, 226, 243);
+                }
+
+                row.Cells["pieces"].Style.BackColor = Color.White;
+                row.Cells["pieces"].Style.ForeColor = Color.FromArgb(0, 130, 170);
+                row.Cells["pieces"].Style.SelectionBackColor = Color.White;
+                i++;
+
+            }
+        }
+
+        private void dataGridView2_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dataGridView2.Rows.Count>0)
+            {
+                try
+                {
+                    if (e.ColumnIndex == dataGridView2.Columns["pieces"].Index && e.RowIndex>-1)
+                        dataGridView2.Cursor = Cursors.IBeam;
+                    else
+                        dataGridView2.Cursor = Cursors.Arrow;
+                }
+                catch (Exception) { }
+            }
+        }
+
+   
+        private void dataGridView2_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            
+        }
+
+        private void dataGridView2_CellValidated(object sender, DataGridViewCellEventArgs e)
+        {
+           
+        }
+
+        private void dataGridView2_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {/*
+            dataGridView2[e.ColumnIndex, e.ColumnIndex].Style.BackColor = Color.FromArgb(176, 224, 230);
+            dataGridView2[e.ColumnIndex, e.ColumnIndex].Style.ForeColor = Color.Black;*/
+        }
+
+        private void dataGridView2_Leave(object sender, EventArgs e)
+        {
+            dataGridView2.EndEdit();
+            dataGridView1[cell.Item2, cell.Item1].Value = new Bodega(CurrentdepotID).getProductQuantity(dataGridView1.Rows[cell.Item1].Cells["Código de Barras"].Value.ToString());
+            dataGridView1.CurrentCell = dataGridView1[cell.Item2, cell.Item1];
+            dataGridView1.Focus();
+            dataGridView1.Select();
+            dataGridView1.BeginEdit(true);
+        }
+
+        
+
+        private void dataGridView2_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            try { Convert.ToDouble(dataGridView2[e.ColumnIndex,e.RowIndex].Value);  }
+            catch (FormatException) { dataGridView2[e.ColumnIndex, e.RowIndex].Value = "0.00"; }
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            dataGridView2.EndEdit();
+
+            Producto mainProduct = new Producto();
+            double count = 0;
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                var subProduct = new Producto(row.Cells["barcode"].Value.ToString());
+
+                if (mainProduct.Barcode == null)
+                {
+                    mainProduct = new Producto(subProduct.Barcode);
+                    count += Convert.ToDouble(row.Cells["pieces"].Value.ToString());
+                }
+                else
+                {
+                    count += 1 / subProduct.PiecesToMakeOneMainProduct * Convert.ToDouble(row.Cells["pieces"].Value.ToString());
+                }
+
+            }
+
+            new Bodega(CurrentdepotID).UpdateProductQuantity(count, mainProduct.Barcode);
+            
+            dataGridView1.CurrentCell.Value = count.ToString("n3") + " piezas";
+            helpPanel.Hide();
+        }
+
+        private void dataGridView1_CurrentCellChanged(object sender, EventArgs e)
+        {
+            if(dataGridView1.CurrentCell== null ||  cell != null&&( dataGridView1.CurrentCell.RowIndex != cell.Item1 || dataGridView1.CurrentCell.ColumnIndex != cell.Item2))
+            {
+                helpPanel.Hide();
+            }
+        }
+
+        private void helpPanel_VisibleChanged(object sender, EventArgs e)
+        {
+            var celllocationX = dataGridView1.Location.X + dataGridView1.GetCellDisplayRectangle(cell.Item2, cell.Item1, true).Left - helpPanel.Width - 20;
+            var celllocationy = dataGridView1.Location.Y + dataGridView1.GetCellDisplayRectangle(cell.Item2, cell.Item1, true).Top;
+            helpPanel.Location = new Point(celllocationX, celllocationy);
         }
     }
+
+
 }

@@ -399,6 +399,18 @@ namespace POS
 
         }
 
+        public DataTable getProductBoughtQuant(DateTime date, PeriodOfTime mode, string barcode)
+        {
+            DataTable dt = negocio.Supplier_getProductBoughtQuant(ID, date, (int)mode,barcode);
+
+            if (dt.Columns["mes"] != null)
+            {
+                dt.Columns.Remove(dt.Columns["mes"]);
+                dt.AcceptChanges();
+            }
+            return dt;
+
+        }
         public DataTable getBestSellers(DateTime date, PeriodOfTime mode)
         {
            return negocio.Supplier_getBestSellers(ID, date, (int)mode);
@@ -409,5 +421,7 @@ namespace POS
            return negocio.Supplier_getWorstSellers(ID, date,(int) mode);
 
         }
+
+     
     }
 }

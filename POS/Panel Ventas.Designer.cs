@@ -104,7 +104,12 @@ namespace POS
             this.reprintElipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.panel7 = new System.Windows.Forms.Panel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.OkBtn = new System.Windows.Forms.Button();
+            this.bunifuImageButton1 = new Bunifu.Framework.UI.BunifuImageButton();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.alterCostTxt = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.panel4.SuspendLayout();
@@ -123,6 +128,8 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).BeginInit();
             this.panel7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).BeginInit();
+            this.panel8.SuspendLayout();
             this.SuspendLayout();
             // 
             // LastSaleElipse
@@ -236,6 +243,7 @@ namespace POS
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView2.DefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView2.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridView2.EnableHeadersVisualStyles = false;
             this.dataGridView2.Location = new System.Drawing.Point(0, 100);
             this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
@@ -246,10 +254,14 @@ namespace POS
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView2.Size = new System.Drawing.Size(889, 855);
             this.dataGridView2.TabIndex = 2;
+            this.dataGridView2.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellClick);
+            this.dataGridView2.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellDoubleClick);
             this.dataGridView2.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellEndEdit);
+            this.dataGridView2.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellEnter);
             this.dataGridView2.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView2_CellFormatting);
             this.dataGridView2.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView2_CellMouseClick);
             this.dataGridView2.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellValueChanged);
+            this.dataGridView2.CurrentCellDirtyStateChanged += new System.EventHandler(this.dataGridView2_CurrentCellDirtyStateChanged);
             this.dataGridView2.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_RowEnter);
             this.dataGridView2.RowHeightChanged += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView2_RowHeightChanged);
             this.dataGridView2.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView2_RowsAdded);
@@ -1042,10 +1054,78 @@ namespace POS
             // 
             this.toolTip1.ShowAlways = true;
             // 
+            // OkBtn
+            // 
+            this.OkBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.OkBtn.AutoSize = true;
+            this.OkBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(150)))), ((int)(((byte)(190)))));
+            this.OkBtn.FlatAppearance.BorderSize = 0;
+            this.OkBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.OkBtn.Font = new System.Drawing.Font("Century Gothic", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.OkBtn.ForeColor = System.Drawing.Color.White;
+            this.OkBtn.Location = new System.Drawing.Point(184, 200);
+            this.OkBtn.Margin = new System.Windows.Forms.Padding(2);
+            this.OkBtn.Name = "OkBtn";
+            this.OkBtn.Size = new System.Drawing.Size(297, 46);
+            this.OkBtn.TabIndex = 9;
+            this.OkBtn.Text = "&Aceptar";
+            this.toolTip1.SetToolTip(this.OkBtn, "Buscar Ticket\r\nAlt + B");
+            this.OkBtn.UseVisualStyleBackColor = false;
+            this.OkBtn.Click += new System.EventHandler(this.OkBtn_Click);
+            // 
+            // bunifuImageButton1
+            // 
+            this.bunifuImageButton1.BackColor = System.Drawing.Color.White;
+            this.bunifuImageButton1.Image = global::POS.Properties.Resources.close;
+            this.bunifuImageButton1.ImageActive = null;
+            this.bunifuImageButton1.Location = new System.Drawing.Point(629, 7);
+            this.bunifuImageButton1.Name = "bunifuImageButton1";
+            this.bunifuImageButton1.Size = new System.Drawing.Size(20, 24);
+            this.bunifuImageButton1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.bunifuImageButton1.TabIndex = 10;
+            this.bunifuImageButton1.TabStop = false;
+            this.bunifuImageButton1.Zoom = 10;
+            this.bunifuImageButton1.Click += new System.EventHandler(this.bunifuImageButton1_Click_1);
+            // 
             // timer1
             // 
             this.timer1.Interval = 1500;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // panel8
+            // 
+            this.panel8.Controls.Add(this.bunifuImageButton1);
+            this.panel8.Controls.Add(this.OkBtn);
+            this.panel8.Controls.Add(this.alterCostTxt);
+            this.panel8.Controls.Add(this.label3);
+            this.panel8.Location = new System.Drawing.Point(351, 400);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(664, 274);
+            this.panel8.TabIndex = 53;
+            this.panel8.Visible = false;
+            this.panel8.Paint += new System.Windows.Forms.PaintEventHandler(this.panel8_Paint);
+            // 
+            // alterCostTxt
+            // 
+            this.alterCostTxt.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold);
+            this.alterCostTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.alterCostTxt.Location = new System.Drawing.Point(147, 115);
+            this.alterCostTxt.Name = "alterCostTxt";
+            this.alterCostTxt.Size = new System.Drawing.Size(370, 41);
+            this.alterCostTxt.TabIndex = 1;
+            this.alterCostTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.alterCostTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.alterCostTxt_KeyDown);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            this.label3.Location = new System.Drawing.Point(125, 29);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(414, 32);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Ingrese el Precio del Producto:";
             // 
             // Panel_Ventas
             // 
@@ -1053,6 +1133,7 @@ namespace POS
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1367, 1100);
+            this.Controls.Add(this.panel8);
             this.Controls.Add(this.panel7);
             this.Controls.Add(this.bunifuGradientPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -1090,6 +1171,9 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).EndInit();
             this.panel7.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).EndInit();
+            this.panel8.ResumeLayout(false);
+            this.panel8.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1165,5 +1249,10 @@ namespace POS
         private DataGridViewTextBoxColumn Total;
         private DataGridViewComboBoxColumn depot;
         private DataGridViewCheckBoxColumn WholesaleDiscountApplied;
+        private Panel panel8;
+        private TextBox alterCostTxt;
+        private Label label3;
+        private Button OkBtn;
+        private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton1;
     }
 }

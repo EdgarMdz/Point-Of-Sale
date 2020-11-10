@@ -352,9 +352,9 @@ namespace POS
         private void Paybtn_Click(object sender, EventArgs e)
         {
             FormCambio formCambio = new FormCambio(this.employee.salary);
-            DarkForm darkForm = new DarkForm();
+            //DarkForm darkForm = new DarkForm();
             Form_Login formLogin = new Form_Login(string.Format("Verificación De\nUsuario"));
-            darkForm.Show();
+            //darkForm.Show();
             formLogin.ShowDialog();
             Empleado empleado = new Empleado(formLogin.ID);
             if (formLogin.DialogResult == DialogResult.OK)
@@ -375,15 +375,13 @@ namespace POS
                     openDrawer();
                     this.employee.paySalary();
                     formCambio.ShowDialog();
-                    goto label_7;
+                   // goto label_7;
                 }
             }
             if (formLogin.DialogResult == DialogResult.OK && !empleado.isAdmin)
             {
                 MessageBox.Show("No dispone de los permisos necesarios para realizar el pago");
             }
-        label_7:
-            darkForm.Close();
         }
 
         private void openDrawer()
@@ -447,8 +445,8 @@ namespace POS
             if (customer.Debt <= 0.0)
                 return;
             FormPagar form = new FormPagar("$" + customer.Debt.ToString("n2"), false, 0.0);
-            DarkForm darkForm = new DarkForm();
-            darkForm.Show();
+            //DarkForm darkForm = new DarkForm();
+            //darkForm.Show();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 double customerPayment = Convert.ToDouble(form.Pay);
@@ -496,10 +494,10 @@ namespace POS
                         y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 5;
 
                         string str = "Pago de Cliente";
-                        Font font = new Font("times new roman", 20f, FontStyle.Bold);//this.getFont(str1, width, FontStyle.Regular);
+                        Font font = new Font("times new roman", 17f, FontStyle.Bold);//this.getFont(str1, width, FontStyle.Regular);
                         y1 += printingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1) + 1;
 
-                        font = new Font("Times new Roman", 10f, FontStyle.Regular);
+                        font = width > 200 ? new Font("Times new Roman", 9.9f) : new Font("Times new Roman", 7f);
 
                         if (customer.ID != 0)
                         {
@@ -507,7 +505,7 @@ namespace POS
                             y1 += printingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
                         }
 
-                        str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.Date.ToShortTimeString());
+                        str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.ToShortTimeString());
                         y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
 
 
@@ -555,7 +553,7 @@ namespace POS
                 }
             }
             paymentDebtBtn.Enabled = true;
-            darkForm.Close();
+            //darkForm.Close();
         }
 
         private Font getFont(string text, int width, FontStyle style = FontStyle.Bold)
@@ -596,8 +594,8 @@ namespace POS
         private async void loanBtn_Click(object sender, EventArgs e)
         {
             FormPrestamo formPrestamo = new FormPrestamo();
-            DarkForm darkForm = new DarkForm();
-            darkForm.Show();
+            //DarkForm darkForm = new DarkForm();
+           // darkForm.Show();
             if (formPrestamo.ShowDialog() == DialogResult.OK && formPrestamo.loan > 0.0)
             {
                 double loan = formPrestamo.loan;
@@ -612,7 +610,7 @@ namespace POS
                 formCambio.ShowDialog();
                 this.debtLbl.Text = "$" + (cliente.Debt + loan).ToString("n2");
             }
-            darkForm.Close();
+           // darkForm.Close();
         }
 
         private void changePassBtn_Click(object sender, EventArgs e)

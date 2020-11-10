@@ -125,7 +125,7 @@ namespace POS
                     totalAmountOfPieces = Convert.ToDouble(cellValue.Substring(0, cellValue.IndexOf(".") + 3));
 
                 dataGridView2.Rows[rowIndex].Cells["amount"].Value = amountFormat(p, totalAmountOfPieces + quantity);
-                dataGridView2.Rows[rowIndex].Cells["Total"].Value = getCost(p, rowIndex);
+                dataGridView2.Rows[rowIndex].Cells["Total"].Value = getCost(p, rowIndex, Convert.ToDouble(dataGridView2.Rows[rowIndex].Cells["UnitCost"].Value));
                 dataGridView2.CurrentCell = dataGridView2.Rows[rowIndex].Cells["description"];
             }
             totalLbl.Text = string.Format("Total   ${0}", GetTotal().ToString("n2"));
@@ -337,7 +337,7 @@ namespace POS
                 dataGridView2.Rows[rowIndex].Cells["Total"].Value = (p.RetailCost * amount).ToString("n2");
         }
 
-        private string getCost(Producto product, int rowIndex)
+        private string getCost(Producto product, int rowIndex, double retailCost = -1)
         {
 
             double amount = getAmountOfSinglePieces(dataGridView2.Rows[rowIndex].Cells["amount"].Value.ToString(), product);
@@ -406,18 +406,27 @@ namespace POS
                 (dataGridView2.Rows[rowIndex].Cells["WholesaleDiscountApplied"] as DataGridViewCheckBoxCell).Value = false;
             }
 
-
-            totalDiscount = validateDiscount(totalDiscount, product, amount);
+            if (retailCost == -1)
+                totalDiscount = validateDiscount(totalDiscount, product, amount);
 
             ///if there still a discount then show it in the table as the format -> "$100.00 \n -$15.00"
             ///otherwise show just the total
             if (totalDiscount > 0.0)
             {
                 string newLine = Environment.NewLine;
-                return string.Format("{0}{1}-{2}", (product.RetailCost * amount).ToString("n2"), newLine, totalDiscount.ToString("n2"));
+
+                if (retailCost == -1)
+                    return string.Format("{0}{1}-{2}", (product.RetailCost * amount).ToString("n2"), newLine, totalDiscount.ToString("n2"));
+                else
+                    return string.Format("{0}{1}-{2}", (retailCost * amount).ToString("n2"), newLine, totalDiscount.ToString("n2"));
             }
             else
-                return (product.RetailCost * amount).ToString("n2");
+            {
+                if (retailCost == -1)
+                    return (product.RetailCost * amount).ToString("n2");
+                else
+                    return (retailCost * amount).ToString("n2");
+            }
         }
 
 
@@ -819,7 +828,7 @@ namespace POS
             this.CanceledLbl.Visible = false;
             this.CancelSaleBtn.Hide();
             this.CobrarBtn.Show();
-            this.sale = (Venta)null;
+            this.sale = null;
             this.label2.Hide();
             this.dateOfSaleLbl.Hide();
             this.EmployeeNameLbl.Hide();
@@ -870,18 +879,17 @@ namespace POS
                 return;
 
             double Total = Convert.ToDouble(this.totalLbl.Text.Substring(this.totalLbl.Text.IndexOf("$") + 1));
-            DarkForm darkForm = new DarkForm();
+           // DarkForm darkForm = new DarkForm();
             FormPagar formPagar = new FormPagar("$" + Total.ToString("n2"), !this.customer.hasCredit, this.getCostOfReturnablePackages());
-            darkForm.Show();
+            //darkForm.Show();
             dataGridView2.EndEdit();
 
 
             if (formPagar.ShowDialog() == DialogResult.OK)
             {
                 //if not shift is initiated and employee is not admin then start a new shift
-                if (!Turno.shiftActive && !(new Empleado(EmployeeID).isAdmin))
+                if (!Turno.shiftActive)
                     Turno.start(DateTime.Now, 0, EmployeeID);
-
 
                 Venta venta = new Venta();
                 double Payment = Convert.ToDouble(formPagar.Pay);
@@ -963,30 +971,41 @@ namespace POS
                     }
                 }
 
-                FormCambio formCambio = new FormCambio(Convert.ToDouble(formPagar.Cash) - Convert.ToDouble(formPagar.Pay));
-                formCambio.Show();
-
-                var saleID = venta.newSale(this.EmployeeID, this.customer.ID, Total, Payment + formPagar.rest, list.ToArray(), Convert.ToDouble(formPagar.Cash));
-
-                if (this.checkBox1.Checked)
+                long saleID=-1;
+                try
                 {
-                    if (Convert.ToDouble(formPagar.Pay) > 0)
-                        openCashDrawer();
-                    printTicket(saleID, printingString, discount);
+                    saleID = venta.newSale(this.EmployeeID, this.customer.ID, Total, Payment/* + formPagar.rest*/, list.ToArray(), Convert.ToDouble(formPagar.Cash));
                 }
-                else
+                catch (Exception ex)
                 {
-                    if (Convert.ToDouble(formPagar.Pay) > 0)
-                        if (cashDrawer != null)
-                            openCashDrawer();
-                      // else
+                    MessageBox.Show("La operación no se pudo completar.\n"+ex.Message);
+                }
+                if (saleID > 0)
+                {
+                    this.BeginInvoke((Action)(() =>
+                    {
+                        if (this.checkBox1.Checked)
+                        {
+                            if (Convert.ToDouble(formPagar.Pay) > 0)
+                                openCashDrawer();
+                            printTicket(saleID, printingString, discount);
+                        }
+                        else
+                        {
+                            if (Convert.ToDouble(formPagar.Pay) > 0)
+                                if (cashDrawer != null)
+                                    openCashDrawer();
+                        // else
                         //    printNothing();
+                    }
+                    }));
                 }
-
+                FormCambio formCambio = new FormCambio(Convert.ToDouble(formPagar.Cash) - Convert.ToDouble(formPagar.Pay));
+                formCambio.ShowDialog();
                 this.ClearSale();
                 formCambio.Focus();
             }
-            darkForm.Close();
+            //darkForm.Close();
         }
 
         private void printTicket(long saleID, string products, double discount)
@@ -1161,7 +1180,7 @@ namespace POS
                 true));
 
             data = string.Format("Folio: {0}", lastSale.ID.ToString("X"));
-            mainFont = new Font("Times new Roman", 9.9f);
+            mainFont = width>200? new Font("Times new Roman", 9.9f):new Font("Times new Roman", 7f);
 
             infoList.Add(new Tuple<string, List<object>, bool>("printLine",
                 new List<object>(new object[] { data, mainFont, width, StringAlignment.Near }), true));
@@ -1619,8 +1638,8 @@ namespace POS
         private async void CustomerPaymentBtn_Click(object sender, EventArgs e)
         {
             FormPagar form = new FormPagar("$" + this.customer.Debt.ToString("n2"), false, 0.0);
-            DarkForm darkForm = new DarkForm();
-            darkForm.Show();
+            //DarkForm darkForm = new DarkForm();
+         //   darkForm.Show();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 double customerPayment = Convert.ToDouble(form.Pay);
@@ -1649,6 +1668,7 @@ namespace POS
                         Graphics graphics = ee.Graphics;
                         this.customerPaymentDocument.PrinterSettings.PrinterName = this.ticket.printerName;
                         this.customerPaymentDocument.DefaultPageSettings.PaperSize = new PaperSize("Custom", 200, 200);
+
                         int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
                         
                         int y1 = 0;
@@ -1678,7 +1698,7 @@ namespace POS
                             y1 += printingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
                         }
 
-                        str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.Date.ToShortTimeString());
+                        str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.ToShortTimeString());
                         y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
 
 
@@ -1705,6 +1725,7 @@ namespace POS
                         if (ticket.footerDisplay)
                             printingClass.printLine(ticket.footer, ticket.footerFont, width, StringAlignment.Center, graphics, y1);
                     });
+
                     try
                     {
                         this.customerPaymentDocument.PrinterSettings.PrinterName = this.printDialog1.PrinterSettings.PrinterName;
@@ -1723,7 +1744,7 @@ namespace POS
                 else
                     MessageBox.Show("El Cliente no genera ningun adeudo");
             }
-            darkForm.Close();
+            //darkForm.Close();
         }
 
         private void dataGridView2_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -2362,7 +2383,7 @@ namespace POS
             this.CanceledLbl.Font = new Font(this.CanceledLbl.Font.FontFamily, this.CanceledLbl.Font.Size * ((double)num1 > (double)num2 ? num2 : num1), this.CanceledLbl.Font.Style);
             this.ResumeLayout();
             this.CanceledLbl.Location = new Point(-50, (this.CanceledLbl.Parent.Height - this.CanceledLbl.Height) / 2);
-           
+
             this.printDialog1 = new PrintDialog();
             this.printDialog1.PrinterSettings.PrinterName = this.ticket.printerName;
 
@@ -2629,9 +2650,9 @@ namespace POS
             
             else*/ if (arePendingPackages() && !this.sale.isSaleCanceled)
             {
-                DarkForm darkForm = new DarkForm();
+                //DarkForm darkForm = new DarkForm();
                 PanelVentas_RetornarEnvasesForm returnForm = new PanelVentas_RetornarEnvasesForm(sale.ID, EmployeeID);
-                darkForm.Show();
+               // darkForm.Show();
 
                 if (returnForm.ShowDialog() == DialogResult.OK)
                 {
@@ -2647,7 +2668,7 @@ namespace POS
 
                     formCambio.ShowDialog();
                 }
-                darkForm.Close();
+                //darkForm.Close();
             }
             else
             {
@@ -3098,10 +3119,10 @@ namespace POS
                 return true;
             }
 
-            if(keyData== Keys.F3 && dataGridView2.RowCount>0 && isNewSale)
+            if(keyData== Keys.F3 && dataGridView2.RowCount>0 && isNewSale && dataGridView2.Columns["depot"].Visible )
             {
                 dataGridView2.CurrentCell = dataGridView2.CurrentRow.Cells["depot"];
-                ProductTxt.Leave -= ProductTxt_Leave;
+                ProductTxt.Leave -= new EventHandler(ProductTxt_Leave);
                 ActiveControl = dataGridView2;
                 dataGridView2.BeginEdit(true);
                 return true;
@@ -3182,7 +3203,7 @@ namespace POS
 
         private void dataGridView2_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-
+            int x = 0;
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -3534,21 +3555,119 @@ namespace POS
 
         private void dataGridView2_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == dataGridView2.Columns["depot"].Index)
+            if (e.ColumnIndex == dataGridView2.Columns["depot"].Index )
             {
-                ProductTxt.Leave += ProductTxt_Leave;
+                ProductTxt.Leave += new EventHandler(ProductTxt_Leave);
                 ProductTxt.Select();
             }
+            dataGridView2.BeginInvoke((Action)(() => { try { dataGridView2.CurrentCell = dataGridView2.CurrentRow.Cells["description"]; } catch (Exception) { } }));
         }
 
         private void Panel_Ventas_Deactivate(object sender, EventArgs e)
         {
-            ProductTxt.Leave -= ProductTxt_Leave;
+            ProductTxt.Leave -= new EventHandler(ProductTxt_Leave);
         }
 
         private void Panel_Ventas_Activated(object sender, EventArgs e)
         {
-            ProductTxt.Leave += ProductTxt_Leave;
+            ProductTxt.Leave += new EventHandler(ProductTxt_Leave);
+        }
+
+        private void dataGridView2_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == dataGridView2.Columns["UnitCost"].Index && sale == null && new Empleado(EmployeeID).isAdmin)
+            {
+                panel7.Enabled = false;
+                panel8.Show();
+                alterCostTxt.Text = dataGridView2.CurrentCell.Value.ToString();
+                alterCostTxt.Select();
+                alterCostTxt.Focus();
+            }
+        }
+
+        private void panel8_Paint(object sender, PaintEventArgs e)
+        {
+            using (Pen p=new Pen(Color.Red))
+            {
+                e.Graphics.DrawRectangle(p, 0, 0, panel8.Width - 1, panel8.Height - 1);
+            }
+        }
+
+        private void OkBtn_Click(object sender, EventArgs e)
+        {
+            double value = -1;
+            bool valid = double.TryParse(alterCostTxt.Text, out value);
+
+            if (valid && value > 0)
+            {
+                dataGridView2.CurrentCell.Value = value.ToString("n2");
+                addOneMoreProduct();
+                subtractOneProduct();
+                panel8.Hide();
+                panel7.Enabled = true;
+                ProductTxt.Select();
+            }
+            else
+            {
+                MessageBox.Show("El valor debe ser un número mayor a cero");
+                alterCostTxt.Select();
+            }
+
+        }
+
+        private void alterCostTxt_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                OkBtn_Click(this, new EventArgs());
+            else if(e.KeyCode == Keys.Escape)
+            {
+                if (alterCostTxt.Text != "")
+                    alterCostTxt.Text = "";
+                else
+                    bunifuImageButton1_Click_1(this, new EventArgs());
+            }
+        }
+
+        private void bunifuImageButton1_Click_1(object sender, EventArgs e)
+        {
+            panel8.Hide();
+            panel7.Enabled = true;
+        }
+
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if(e.ColumnIndex== dataGridView2.Columns["refound"].Index && e.RowIndex>=0 && !dataGridView2[e.ColumnIndex,e.RowIndex].ReadOnly)
+            {
+                dataGridView2[e.ColumnIndex, e.RowIndex].Value = !Convert.ToBoolean(dataGridView2[e.ColumnIndex, e.RowIndex].Value);
+            }
+            else if (e.ColumnIndex == dataGridView2.Columns["depot"].Index && e.RowIndex >= 0 && sale == null)
+            {
+                dataGridView2.CurrentCell = dataGridView2[e.ColumnIndex, e.RowIndex];
+                dataGridView2.BeginEdit(true);
+                
+            }
+
+        }
+
+        private void dataGridView2_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            bool validClick = (e.RowIndex != -1 && e.ColumnIndex == dataGridView2.Columns["depot"].Index); //Make sure the clicked row/column is valid.
+            var datagridview = sender as DataGridView;
+
+            // Check to make sure the cell clicked is the cell containing the combobox 
+            if (datagridview.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn && validClick)
+            {
+                ProductTxt.Leave-= new EventHandler(ProductTxt_Leave);
+                dataGridView2.Focus();
+                dataGridView2.Select();
+                datagridview.BeginEdit(true);
+                ((ComboBox)datagridview.EditingControl).DroppedDown = true;
+            }
+        }
+
+        private void dataGridView2_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            //dataGridView2.CommitEdit(DataGridViewDataErrorContexts.Commit);
         }
     }
 
@@ -3594,4 +3713,46 @@ namespace POS
         }
     }
 
+
+    public class transparentPanel : Panel
+    {
+        private const int WS_EX_TRANSPARENT = 0x20;
+        public transparentPanel()
+        {
+            SetStyle(ControlStyles.Opaque, true);
+        }
+
+        private int opacity = 50;
+        
+        public int Opacity
+        {
+            get
+            {
+                return this.opacity;
+            }
+            set
+            {
+                if (value < 0 || value > 100)
+                    throw new ArgumentException("value must be between 0 and 100");
+                this.opacity = value;
+            }
+        }
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle = cp.ExStyle | WS_EX_TRANSPARENT;
+                return cp;
+            }
+        }
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            using (var brush = new SolidBrush(Color.FromArgb(this.opacity * 255 / 100, this.BackColor)))
+            {
+                e.Graphics.FillRectangle(brush, this.ClientRectangle);
+            }
+            base.OnPaint(e);
+        }
+    }
 }
