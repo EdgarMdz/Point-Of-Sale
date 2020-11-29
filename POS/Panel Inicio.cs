@@ -28,9 +28,9 @@ namespace POS
                     flowLayoutPanel1.Controls.Clear();
                 else
                     if (flowLayoutPanel1.Controls.Count == 0)
-                    {
-                        populateNotificationPanel();
-                    }
+                {
+                    populateNotificationPanel();
+                }
                 employeeID = value;
             }
         }
@@ -51,42 +51,35 @@ namespace POS
         {
             this.InitializeComponent();
             this.WindowState = windowState;
-           
-            if(new Empleado(empID).isAdmin)
+
+            if (new Empleado(empID).isAdmin)
                 this.populateNotificationPanel();
 
             this.Size = size;
-           // this.AgendaEventsPanel.Parent =this.agendaBackgrountPictureBox;
-            //this.AgendaHeaderPanel.Parent = this.agendaBackgrountPictureBox;
-          //  this.AgendaEventsPanel.BackColor = Color.FromArgb(155, Color.White);
-            //this.flowLayoutPanel1.BackColor = Color.FromArgb(180, 0, 130, 170);
             this.flowLayoutPanel1.HorizontalScroll.Maximum = 0;
             this.flowLayoutPanel1.AutoScroll = true;
-           // this.flowLayoutPanel1.VerticalScroll.Visible = true;
 
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            
-            
+
+
             this.endShiftBtn.Visible = Turno.shiftActive;
             this.startShiftBtn.Visible = !Turno.shiftActive;
             this.employeeID = empID;
             this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             this.date = DateTime.Now;
-            
-            this.printDialog1.PrinterSettings.PrinterName = new PrinterTicket().printerName;
 
-            this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+            this.printDialog1.PrinterSettings.PrinterName = new PrinterTicket().printerName;
         }
-    
+
+
 
         private void Panel_Inicio_Load(object sender, EventArgs e)
         {
 
             if (Turno.shiftActive)
                 this.setGroupBoxInfo();
-            
+
 
             //<<<step1>>>--Start
             //Use a Logical Device Name which has been set on the SetupPOS.
@@ -143,13 +136,13 @@ namespace POS
                 this.flowLayoutPanel1.Controls.Clear();
 
                 DataTable products = Producto.getWrongProducts();
-                
+
                 foreach (DataRow row in products.Rows)
                 {
                     //PARECE SER QUE SE DIVIDIO EN DOS EL TASK. JUNTARLO SI LLEGA A FALLAR
                     Func<Panel> function = (Func<Panel>)(() => this.createEventsForAgenda(row));
                     Panel p = await Task.Run<Panel>(function);
-                    
+
                     this.flowLayoutPanel1.Controls.Add(p);
                     p.Width = p.Parent.Width;
                     height += p.Height;
@@ -164,7 +157,7 @@ namespace POS
 
         private Panel createEventsForAgenda(DataRow row)
         {
-            
+
             Panel containerPanel = new Panel();
             containerPanel.Name = row["Código de Barras"].ToString();
             containerPanel.BackColor = Color.Transparent;
@@ -187,14 +180,14 @@ namespace POS
                 Dock = DockStyle.Fill,
                 SizeMode = PictureBoxSizeMode.Zoom,
                 BackColor = p.image != null ? Color.White : Color.Transparent
-            }) ;
+            });
 
             bunifuSeparator.BringToFront();
             Panel panel2 = new Panel();
-           
+
             panel2.BackColor = Color.Transparent;
             panel2.Dock = DockStyle.Fill;
-            
+
 
             Label label2 = new Label();
             label2.Dock = DockStyle.Top;
@@ -205,7 +198,7 @@ namespace POS
             label2.AutoSize = false;
             label2.Size = new Size(100, panel2.Height / 2);
             label2.Text = row["Descripción"].ToString();
-            
+
             Label label3 = new Label();
             label3.Dock = DockStyle.Fill;
             label3.BackColor = Color.FromArgb(0, Color.White);
@@ -217,12 +210,12 @@ namespace POS
             panel2.Controls.Add((Control)label2);
             panel2.Controls.Add((Control)label3);
             label3.BringToFront();
-                       
+
 
             containerPanel.Controls.Add((Control)panel1);
             containerPanel.Controls.Add((Control)panel2);
-            
-            
+
+
             panel2.BringToFront();
 
 
@@ -230,15 +223,15 @@ namespace POS
             containerPanel.Controls.Add(bunifuSeparator);
             bunifuSeparator.Dock = DockStyle.Bottom;
 
-            
+
             label2.DoubleClick += (s, e) =>
             openProduct((s as Label).Parent.Parent.Name);
-            
+
             label3.DoubleClick += (s, e) =>
             openProduct((s as Label).Parent.Parent.Name);
-            
-            containerPanel.DoubleClick += (s, e) => 
-            openProduct((s as Panel).Parent.Name); 
+
+            containerPanel.DoubleClick += (s, e) =>
+            openProduct((s as Panel).Parent.Name);
 
             panel1.Controls[0].DoubleClick += (s, e) =>
              openProduct((s as PictureBox).Parent.Parent.Name);
@@ -282,14 +275,14 @@ namespace POS
             control.BackColor = Color.FromArgb(50, 0, 0, 0);
         }
 
-        private void openProduct( string barcode)
+        private void openProduct(string barcode)
         {
             Form_Agregar form = new Form_Agregar(new Producto(barcode));
-            if(form.ShowDialog()== DialogResult.OK)
+            if (form.ShowDialog() == DialogResult.OK)
             {
                 foreach (Control control in flowLayoutPanel1.Controls)
                 {
-                    if(control.Name==barcode)
+                    if (control.Name == barcode)
                     {
                         flowLayoutPanel1.Controls.Remove(control);
                         break;
@@ -334,7 +327,7 @@ namespace POS
             this.Cursor = Cursors.WaitCursor;
 
             DataTable dt = await Task.Run(() => Turno.endShift(this.employeeID));
-            
+
             this.printDocument1 = new PrintDocument();
             printDocument1.PrintController = new StandardPrintController();
 
@@ -412,7 +405,7 @@ namespace POS
                 MessageBox.Show("Registre una impresora para poder utilizar esta opción", "No se ha registrado impresora");
             }
             inicioFinDeTurno.ShowDialog();
-            
+
             darkForm.Close();
 
             this.Cursor = Cursors.Default;
@@ -420,18 +413,22 @@ namespace POS
 
         private void dataGridView1_DataSourceChanged(object sender, EventArgs e)
         {
+            setDatagridviewFontSize();
             resizeColumns();
-            //dataGridView1.Sort(dataGridView1.Columns["Fecha"], ListSortDirection.Ascending);
+        }
 
+        private void setDatagridviewFontSize()
+        {
+            var prop = Properties.Settings.Default;
+            dataGridView1.DefaultCellStyle.Font = new Font("century gothic", prop.PanelInicio_DGVFont - 2, FontStyle.Bold);
+            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", prop.PanelInicio_DGVFont, FontStyle.Bold);
+            dataGridView1.RowsDefaultCellStyle.Font = new Font("century gothic", prop.PanelInicio_DGVFont - 2, FontStyle.Bold);
         }
 
         private void resizeColumns()
         {
             if (this.dataGridView1.Rows.Count == 0)
                 return;
-            /*   this.dataGridView1.Columns["Nombre"].Width = (int)((double)this.dataGridView1.Width * 0.3);
-               this.dataGridView1.Columns["agregó / retiró"].Width = (int)((double)this.dataGridView1.Width * 0.3);
-               this.dataGridView1.Columns["Fecha"].Width = (int)((double)this.dataGridView1.Width * 0.4);*/
 
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dataGridView1.Columns["motivo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -444,13 +441,13 @@ namespace POS
             DarkForm darkForm = new DarkForm();
             Form_Login formLogin = new Form_Login(string.Format("Verificación De\nUsuario"));
             FormShiftAddMoney formShiftAddMoney = new FormShiftAddMoney();
-          
+
             darkForm.Show();
             formLogin.ShowDialog();
-            
+
             Empleado empleado = new Empleado(formLogin.ID);
-            
-            
+
+
             if (formLogin.DialogResult == DialogResult.OK && empleado.isAdmin)
             {
                 if (formShiftAddMoney.ShowDialog() == DialogResult.OK)
@@ -555,6 +552,62 @@ namespace POS
                 catch (PosControlException)
                 {
                 }
+            }
+
+            dispose.DisposeControls(this);
+        }
+
+        private void Panel_Inicio_Resize(object sender, EventArgs e)
+        {
+            /*var resolution = Screen.PrimaryScreen.Bounds;
+            if (resolution == new Rectangle(0, 0, 1366, 768))
+            {*/
+            NotificationContainerPanel.Width = (this.Width - 50) / 2;
+            NotificationContainerPanel.Height = this.Height - NotificationContainerPanel.Location.Y - 20;
+            NotificationContainerPanel.Location = new Point((this.Width / 2 - NotificationContainerPanel.Width) / 2,
+                    NotificationContainerPanel.Location.Y);
+
+            shiftPanel.Width = (this.Width - 50) / 2;
+            shiftPanel.Height = this.Height - shiftPanel.Location.Y - 20;
+            shiftPanel.Location = new Point(this.Width / 2 + (this.Width / 2 - shiftPanel.Width) / 2, shiftPanel.Location.Y);
+            /* 
+         }*/
+        }
+
+        private void Panel_Inicio_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.LeftCtrl))
+            {
+                var prop = Properties.Settings.Default;
+
+                float value = prop.PanelInicio_DGVFont + e.Delta / 50;
+
+                setNewFontValue(value);
+            }
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.Add) || keyData == (Keys.Control | Keys.Oemplus))
+            {
+                float value = Properties.Settings.Default.PanelInicio_DGVFont + 1;
+                setNewFontValue(value);
+            }
+            if (keyData == (Keys.Control | Keys.OemMinus) || keyData == (Keys.Control | Keys.Subtract))
+            {
+                setNewFontValue(Properties.Settings.Default.PanelInicio_DGVFont - 1);
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void setNewFontValue(float fontSize)
+        {
+            if (fontSize > 8.5 && fontSize < 30)
+            {
+                Properties.Settings.Default.PanelInicio_DGVFont = fontSize;
+                Properties.Settings.Default.Save();
+
+                setDatagridviewFontSize();
             }
         }
     }

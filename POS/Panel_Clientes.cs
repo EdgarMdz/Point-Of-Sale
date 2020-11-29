@@ -61,9 +61,17 @@ namespace POS
             if (this.cliente.ID <= 0)
                 return;
             this.AddButton.Size = new Size(202, 37);
-            this.AddButton.Location = new Point(this.AddButton.Location.X, this.SearchTxt.Location.Y / 2 - this.AddButton.Height + 25);
+
+            this.AddButton.Location = 
+                new Point(10, 
+                this.SearchTxt.Location.Y / 2 - this.AddButton.Height + 25);
+
             this.ListaClientesBtn.Size = this.AddButton.Size;
-            this.ListaClientesBtn.Location = new Point(this.ListaClientesBtn.Location.X, this.SearchTxt.Location.Y / 2 - this.ListaClientesBtn.Height + 25);
+
+            this.ListaClientesBtn.Location =
+                new Point(AddButton.Location.X + AddButton.Width + 10,
+                this.SearchTxt.Location.Y / 2 - this.ListaClientesBtn.Height + 25);
+            
             this.showLabels();
             if (this.cliente.Status == "Activo")
             {
@@ -591,8 +599,13 @@ namespace POS
 
         private void Panel_Clientes_Load(object sender, EventArgs e)
         {
-            this.AddButton.Location = new Point((this.Width - this.AddButton.Width - this.ListaClientesBtn.Width) / 2, (this.Height - this.AddButton.Height) / 2);
-            this.ListaClientesBtn.Location = new Point((this.Width + this.ListaClientesBtn.Width) / 2, (this.Height - this.ListaClientesBtn.Height) / 2);
+            this.AddButton.Location =
+                new Point((this.Width - this.AddButton.Width - this.ListaClientesBtn.Width) / 2,
+                (this.Height - this.AddButton.Height) / 2);
+
+            this.ListaClientesBtn.Location = 
+                new Point((this.Width + this.ListaClientesBtn.Width) / 2,
+                (this.Height - this.ListaClientesBtn.Height) / 2);
         }
 
         private void AddButton_Click(object sender, EventArgs e)
@@ -728,10 +741,12 @@ namespace POS
             this.DetalleCompraDataGridView1.Columns[5].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             this.DetalleCompraDataGridView1.Columns[6].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             this.DetalleCompraDataGridView1.Columns[7].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DetalleCompraDataGridView1.Height = listView1.Height;
             this.label5.Visible = false;
             this.label10.Visible = false;
             this.TotalLbl.Visible = false;
             this.AbonoLbl.Visible = false;
+
         }
 
         private void DetalleCompraDataGridView1_DataSourceChanged(object sender, EventArgs e)
@@ -823,6 +838,7 @@ namespace POS
           object sender,
           ListViewItemSelectionChangedEventArgs e)
         {
+            DetalleCompraDataGridView1.Height = TotalLbl.Location.Y - DetalleCompraDataGridView1.Location.Y;
             this.fillGridView(e.ItemIndex);
             this.printTicketBtn.Text = this.listView1.SelectedItems.Count > 1 ? "Imprimir Tickets" : "Imprimir Ticket";
         }

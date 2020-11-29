@@ -123,11 +123,11 @@ namespace POS
             foreach (bool flag in this.diasVisita)
                 visitingDays = !flag ? visitingDays + "0" : visitingDays + "1";
             this.negocio.UpdateVisitingDays(visitingDays, this.ID);
-            Recordatorio recordatorio = new Recordatorio();
+           /* Recordatorio recordatorio = new Recordatorio();
             recordatorio.ID_Supplier = this.ID;
             recordatorio.getVisitingReminder();
             recordatorio.RepeatingDays = this.diasVisita;
-            recordatorio.UpdateReminder();
+            recordatorio.UpdateReminder();*/
         }
 
         public DataTable GetSales()

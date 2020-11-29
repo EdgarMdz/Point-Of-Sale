@@ -26,6 +26,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <BootstrapperComponentsLocation>Relative</BootstrapperComponentsLocation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -49,6 +50,15 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>z29 %281%29.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>0722B25B88DE146D543E9872106353BEF61E146C</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>POS_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Bunifu_UI_v1.5.3">
@@ -122,6 +132,7 @@
     <Compile Include="Display_Reminder.Designer.cs">
       <DependentUpon>Display_Reminder.cs</DependentUpon>
     </Compile>
+    <Compile Include="dispose.cs" />
     <Compile Include="Empleado.cs" />
     <Compile Include="Form new wholesale cost.cs">
       <SubType>Form</SubType>
@@ -244,6 +255,12 @@
     </Compile>
     <Compile Include="panel Productos_Importar desde excel.Designer.cs">
       <DependentUpon>panel Productos_Importar desde excel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Panel Ventas 1366x768.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Panel Ventas 1366x768.Designer.cs">
+      <DependentUpon>Panel Ventas 1366x768.cs</DependentUpon>
     </Compile>
     <Compile Include="panel ventas select promo.cs">
       <SubType>Form</SubType>
@@ -371,11 +388,11 @@
     <Compile Include="Panel_Clientes.Designer.cs">
       <DependentUpon>Panel_Clientes.cs</DependentUpon>
     </Compile>
-    <Compile Include="Panel_Configuracion.cs">
+    <Compile Include="Panel_Configuracion_Impresora.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Panel_Configuracion.Designer.cs">
-      <DependentUpon>Panel_Configuracion.cs</DependentUpon>
+    <Compile Include="Panel_Configuracion_Impresora.Designer.cs">
+      <DependentUpon>Panel_Configuracion_Impresora.cs</DependentUpon>
     </Compile>
     <Compile Include="Panel_Empleados.cs">
       <SubType>Form</SubType>
@@ -425,6 +442,11 @@
     <Compile Include="Panel_proveedores_Form.Designer.cs">
       <DependentUpon>Panel_proveedores_Form.cs</DependentUpon>
     </Compile>
+    <Compile Include="POSDBDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>POSDBDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="PrinterTicket.cs" />
     <Compile Include="Producto.cs" />
     <Compile Include="Proveedor.cs" />
@@ -437,6 +459,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="startingWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -526,6 +549,9 @@
     <EmbeddedResource Include="panel Productos_Importar desde excel.resx">
       <DependentUpon>panel Productos_Importar desde excel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Panel Ventas 1366x768.resx">
+      <DependentUpon>Panel Ventas 1366x768.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="panel ventas select promo.resx">
       <DependentUpon>panel ventas select promo.cs</DependentUpon>
     </EmbeddedResource>
@@ -589,8 +615,8 @@
     <EmbeddedResource Include="Panel_Clientes.resx">
       <DependentUpon>Panel_Clientes.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Panel_Configuracion.resx">
-      <DependentUpon>Panel_Configuracion.cs</DependentUpon>
+    <EmbeddedResource Include="Panel_Configuracion_Impresora.resx">
+      <DependentUpon>Panel_Configuracion_Impresora.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Panel_Empleados.resx">
       <DependentUpon>Panel_Empleados.cs</DependentUpon>
@@ -650,6 +676,18 @@
       <DependentUpon>dataBaseDataSet.xsd</DependentUpon>
     </None>
     <None Include="packages.config" />
+    <None Include="POSDBDataSet.xsc">
+      <DependentUpon>POSDBDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="POSDBDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>POSDBDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="POSDBDataSet.xss">
+      <DependentUpon>POSDBDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="POS_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -790,12 +828,16 @@
     <None Include="Resources\Hamburger_icon.svg.png" />
     <None Include="Resources\checkmarkNoBg.png" />
     <None Include="Resources\checkmark_nobg.png" />
-    <Content Include="Data\FinalDB.mdf">
+    <Content Include="Data\POSDB.ldf">
+      <DependentUpon>POSDB.mdf</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\FinalDB_log.ldf">
-      <DependentUpon>FinalDB.mdf</DependentUpon>
+    <None Include="Data\POSDB.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="Data\POSDB_log.ldf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DependentUpon>POSDB.mdf</DependentUpon>
     </Content>
     <Content Include="z29 %281%29.ico" />
     <None Include="Resources\new Window.png" />
@@ -815,5 +857,6 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

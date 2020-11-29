@@ -41,6 +41,7 @@
             this.scrapNoInfoLbl = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.pieChart2 = new LiveCharts.WinForms.PieChart();
+            this.label1 = new System.Windows.Forms.Label();
             this.scrapGridView = new System.Windows.Forms.DataGridView();
             this.ProductStatisticsCard = new Bunifu.Framework.UI.BunifuCards();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -59,13 +60,14 @@
             this.bestSellerNoInfoLbl = new System.Windows.Forms.Label();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.pieChart1 = new LiveCharts.WinForms.PieChart();
+            this.label4 = new System.Windows.Forms.Label();
             this.bestSellGridView = new System.Windows.Forms.DataGridView();
             this.periodTimeCombo = new System.Windows.Forms.ComboBox();
             this.bunifuGradientPanel3 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.MimimizeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
             this.StatisticsPanel.SuspendLayout();
             this.bunifuCards1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -88,24 +90,22 @@
             this.bunifuGradientPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
+            this.panel5.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // StatisticsPanel
             // 
+            this.StatisticsPanel.AutoScroll = true;
             this.StatisticsPanel.BackColor = System.Drawing.Color.White;
-            this.StatisticsPanel.Controls.Add(this.label2);
-            this.StatisticsPanel.Controls.Add(this.bunifuCards1);
-            this.StatisticsPanel.Controls.Add(this.ProductStatisticsCard);
-            this.StatisticsPanel.Controls.Add(this.investmentProfitStatisticsCard);
-            this.StatisticsPanel.Controls.Add(this.datePicker);
-            this.StatisticsPanel.Controls.Add(this.bestSellersCard);
-            this.StatisticsPanel.Controls.Add(this.periodTimeCombo);
+            this.StatisticsPanel.Controls.Add(this.panel6);
+            this.StatisticsPanel.Controls.Add(this.panel5);
             this.StatisticsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.StatisticsPanel.Font = new System.Drawing.Font("Century Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.StatisticsPanel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.StatisticsPanel.Location = new System.Drawing.Point(0, 25);
             this.StatisticsPanel.Name = "StatisticsPanel";
-            this.StatisticsPanel.Size = new System.Drawing.Size(1557, 783);
+            this.StatisticsPanel.Size = new System.Drawing.Size(1386, 763);
             this.StatisticsPanel.TabIndex = 14;
             this.StatisticsPanel.Resize += new System.EventHandler(this.StatisticsPanel_Resize);
             // 
@@ -114,7 +114,7 @@
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Century Gothic", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(633, 25);
+            this.label2.Location = new System.Drawing.Point(548, 22);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(291, 56);
             this.label2.TabIndex = 1;
@@ -131,11 +131,11 @@
             this.bunifuCards1.Controls.Add(this.scrapNoInfoLbl);
             this.bunifuCards1.Controls.Add(this.splitContainer1);
             this.bunifuCards1.LeftSahddow = false;
-            this.bunifuCards1.Location = new System.Drawing.Point(12, 98);
+            this.bunifuCards1.Location = new System.Drawing.Point(22, 20);
             this.bunifuCards1.Name = "bunifuCards1";
             this.bunifuCards1.RightSahddow = true;
             this.bunifuCards1.ShadowDepth = 50;
-            this.bunifuCards1.Size = new System.Drawing.Size(389, 655);
+            this.bunifuCards1.Size = new System.Drawing.Size(389, 596);
             this.bunifuCards1.TabIndex = 0;
             // 
             // scrapNoInfoLbl
@@ -164,8 +164,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.scrapGridView);
-            this.splitContainer1.Size = new System.Drawing.Size(389, 655);
-            this.splitContainer1.SplitterDistance = 400;
+            this.splitContainer1.Size = new System.Drawing.Size(389, 596);
+            this.splitContainer1.SplitterDistance = 363;
             this.splitContainer1.TabIndex = 4;
             // 
             // pieChart2
@@ -173,9 +173,20 @@
             this.pieChart2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pieChart2.Location = new System.Drawing.Point(0, 32);
             this.pieChart2.Name = "pieChart2";
-            this.pieChart2.Size = new System.Drawing.Size(389, 368);
+            this.pieChart2.Size = new System.Drawing.Size(389, 331);
             this.pieChart2.TabIndex = 0;
             this.pieChart2.Text = "pieChart2";
+            // 
+            // label1
+            // 
+            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label1.ForeColor = System.Drawing.Color.OrangeRed;
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(389, 32);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Scrap";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // scrapGridView
             // 
@@ -220,7 +231,7 @@
             this.scrapGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.scrapGridView.RowHeadersVisible = false;
             this.scrapGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.scrapGridView.Size = new System.Drawing.Size(389, 251);
+            this.scrapGridView.Size = new System.Drawing.Size(389, 229);
             this.scrapGridView.TabIndex = 14;
             this.scrapGridView.DataSourceChanged += new System.EventHandler(this.scrapGridView_DataSourceChanged);
             // 
@@ -233,7 +244,7 @@
             this.ProductStatisticsCard.color = System.Drawing.Color.CornflowerBlue;
             this.ProductStatisticsCard.Controls.Add(this.panel2);
             this.ProductStatisticsCard.LeftSahddow = false;
-            this.ProductStatisticsCard.Location = new System.Drawing.Point(819, 481);
+            this.ProductStatisticsCard.Location = new System.Drawing.Point(829, 344);
             this.ProductStatisticsCard.Name = "ProductStatisticsCard";
             this.ProductStatisticsCard.RightSahddow = true;
             this.ProductStatisticsCard.ShadowDepth = 20;
@@ -320,11 +331,11 @@
             this.investmentProfitStatisticsCard.color = System.Drawing.Color.Gold;
             this.investmentProfitStatisticsCard.Controls.Add(this.panel4);
             this.investmentProfitStatisticsCard.LeftSahddow = false;
-            this.investmentProfitStatisticsCard.Location = new System.Drawing.Point(819, 98);
+            this.investmentProfitStatisticsCard.Location = new System.Drawing.Point(829, 20);
             this.investmentProfitStatisticsCard.Name = "investmentProfitStatisticsCard";
             this.investmentProfitStatisticsCard.RightSahddow = true;
             this.investmentProfitStatisticsCard.ShadowDepth = 20;
-            this.investmentProfitStatisticsCard.Size = new System.Drawing.Size(1004, 272);
+            this.investmentProfitStatisticsCard.Size = new System.Drawing.Size(1004, 283);
             this.investmentProfitStatisticsCard.TabIndex = 7;
             this.investmentProfitStatisticsCard.SizeChanged += new System.EventHandler(this.investmentProfitStatisticsCard_SizeChanged);
             // 
@@ -335,7 +346,7 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1004, 272);
+            this.panel4.Size = new System.Drawing.Size(1004, 283);
             this.panel4.TabIndex = 12;
             // 
             // InvestmentProfitLbl
@@ -355,7 +366,7 @@
             this.investmentProfitChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.investmentProfitChart.Location = new System.Drawing.Point(0, 0);
             this.investmentProfitChart.Name = "investmentProfitChart";
-            this.investmentProfitChart.Size = new System.Drawing.Size(1004, 272);
+            this.investmentProfitChart.Size = new System.Drawing.Size(1004, 283);
             this.investmentProfitChart.TabIndex = 1;
             this.investmentProfitChart.Text = "cartesianChart1";
             // 
@@ -365,7 +376,7 @@
             this.datePicker.CalendarFont = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.datePicker.CalendarForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.datePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.datePicker.Location = new System.Drawing.Point(1325, 11);
+            this.datePicker.Location = new System.Drawing.Point(1180, 6);
             this.datePicker.MaxDate = new System.DateTime(2019, 11, 6, 0, 0, 0, 0);
             this.datePicker.Name = "datePicker";
             this.datePicker.Size = new System.Drawing.Size(200, 41);
@@ -384,11 +395,11 @@
             this.bestSellersCard.Controls.Add(this.bestSellerNoInfoLbl);
             this.bestSellersCard.Controls.Add(this.splitContainer2);
             this.bestSellersCard.LeftSahddow = false;
-            this.bestSellersCard.Location = new System.Drawing.Point(417, 98);
+            this.bestSellersCard.Location = new System.Drawing.Point(427, 20);
             this.bestSellersCard.Name = "bestSellersCard";
             this.bestSellersCard.RightSahddow = true;
             this.bestSellersCard.ShadowDepth = 20;
-            this.bestSellersCard.Size = new System.Drawing.Size(392, 655);
+            this.bestSellersCard.Size = new System.Drawing.Size(392, 596);
             this.bestSellersCard.TabIndex = 4;
             // 
             // bestSellerNoInfoLbl
@@ -417,8 +428,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.bestSellGridView);
-            this.splitContainer2.Size = new System.Drawing.Size(392, 655);
-            this.splitContainer2.SplitterDistance = 400;
+            this.splitContainer2.Size = new System.Drawing.Size(392, 596);
+            this.splitContainer2.SplitterDistance = 363;
             this.splitContainer2.TabIndex = 5;
             // 
             // pieChart1
@@ -426,9 +437,20 @@
             this.pieChart1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pieChart1.Location = new System.Drawing.Point(0, 32);
             this.pieChart1.Name = "pieChart1";
-            this.pieChart1.Size = new System.Drawing.Size(392, 368);
+            this.pieChart1.Size = new System.Drawing.Size(392, 331);
             this.pieChart1.TabIndex = 0;
             this.pieChart1.Text = "pieChart1";
+            // 
+            // label4
+            // 
+            this.label4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label4.ForeColor = System.Drawing.Color.Lime;
+            this.label4.Location = new System.Drawing.Point(0, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(392, 32);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Más Vendidos";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // bestSellGridView
             // 
@@ -473,7 +495,7 @@
             this.bestSellGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.bestSellGridView.RowHeadersVisible = false;
             this.bestSellGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.bestSellGridView.Size = new System.Drawing.Size(392, 251);
+            this.bestSellGridView.Size = new System.Drawing.Size(392, 229);
             this.bestSellGridView.TabIndex = 14;
             this.bestSellGridView.DataSourceChanged += new System.EventHandler(this.bestSellGridView_DataSourceChanged);
             this.bestSellGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.bestSellGridView_CellFormatting);
@@ -491,7 +513,7 @@
             "Mensual",
             "Anual",
             "Todo"});
-            this.periodTimeCombo.Location = new System.Drawing.Point(1322, 58);
+            this.periodTimeCombo.Location = new System.Drawing.Point(1177, 53);
             this.periodTimeCombo.Name = "periodTimeCombo";
             this.periodTimeCombo.Size = new System.Drawing.Size(203, 33);
             this.periodTimeCombo.TabIndex = 2;
@@ -511,7 +533,7 @@
             this.bunifuGradientPanel3.Location = new System.Drawing.Point(0, 0);
             this.bunifuGradientPanel3.Name = "bunifuGradientPanel3";
             this.bunifuGradientPanel3.Quality = 10;
-            this.bunifuGradientPanel3.Size = new System.Drawing.Size(1557, 25);
+            this.bunifuGradientPanel3.Size = new System.Drawing.Size(1386, 25);
             this.bunifuGradientPanel3.TabIndex = 15;
             // 
             // MimimizeBtn
@@ -520,7 +542,7 @@
             this.MimimizeBtn.BackColor = System.Drawing.Color.Transparent;
             this.MimimizeBtn.Image = global::POS.Properties.Resources.minimize;
             this.MimimizeBtn.ImageActive = null;
-            this.MimimizeBtn.Location = new System.Drawing.Point(1505, 2);
+            this.MimimizeBtn.Location = new System.Drawing.Point(1334, 2);
             this.MimimizeBtn.Name = "MimimizeBtn";
             this.MimimizeBtn.Size = new System.Drawing.Size(20, 20);
             this.MimimizeBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -534,7 +556,7 @@
             this.closeBtn.BackColor = System.Drawing.Color.Transparent;
             this.closeBtn.Image = global::POS.Properties.Resources.close;
             this.closeBtn.ImageActive = null;
-            this.closeBtn.Location = new System.Drawing.Point(1534, 2);
+            this.closeBtn.Location = new System.Drawing.Point(1363, 2);
             this.closeBtn.Name = "closeBtn";
             this.closeBtn.Size = new System.Drawing.Size(20, 20);
             this.closeBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -542,33 +564,35 @@
             this.closeBtn.TabStop = false;
             this.closeBtn.Zoom = 10;
             // 
-            // label1
+            // panel5
             // 
-            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label1.ForeColor = System.Drawing.Color.OrangeRed;
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(389, 32);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Scrap";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.panel5.Controls.Add(this.label2);
+            this.panel5.Controls.Add(this.periodTimeCombo);
+            this.panel5.Controls.Add(this.datePicker);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel5.Location = new System.Drawing.Point(0, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(1386, 100);
+            this.panel5.TabIndex = 9;
             // 
-            // label4
+            // panel6
             // 
-            this.label4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label4.ForeColor = System.Drawing.Color.Lime;
-            this.label4.Location = new System.Drawing.Point(0, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(392, 32);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "Más Vendidos";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.panel6.AutoScroll = true;
+            this.panel6.Controls.Add(this.ProductStatisticsCard);
+            this.panel6.Controls.Add(this.bunifuCards1);
+            this.panel6.Controls.Add(this.bestSellersCard);
+            this.panel6.Controls.Add(this.investmentProfitStatisticsCard);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel6.Location = new System.Drawing.Point(0, 100);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(1386, 663);
+            this.panel6.TabIndex = 10;
             // 
             // panel_Estadisticas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1557, 808);
+            this.ClientSize = new System.Drawing.Size(1386, 788);
             this.Controls.Add(this.StatisticsPanel);
             this.Controls.Add(this.bunifuGradientPanel3);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -577,7 +601,6 @@
             this.ShowInTaskbar = false;
             this.Text = "Estadísticas | Point of Sale";
             this.StatisticsPanel.ResumeLayout(false);
-            this.StatisticsPanel.PerformLayout();
             this.bunifuCards1.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -600,6 +623,9 @@
             this.bunifuGradientPanel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).EndInit();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
+            this.panel6.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -637,5 +663,7 @@
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Panel panel5;
     }
 }

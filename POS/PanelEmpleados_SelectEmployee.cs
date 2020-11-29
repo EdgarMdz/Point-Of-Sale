@@ -27,6 +27,7 @@ namespace POS
             this.ShowInTaskbar = false;
             this.dataGridView1.DataSource = (object)employeeList;
             this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+            ActiveControl = dataGridView1;
         }
 
         private void okBtn_Click(object sender, EventArgs e)
@@ -73,5 +74,12 @@ namespace POS
             this.chooseEmployee();
         }
 
+        private void dataGridView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (dataGridView1.Rows.Count > 0 && e.KeyCode == Keys.Enter)
+                chooseEmployee();
+            else if (e.KeyCode == Keys.Escape)
+                closeBtn_Click(this, null);
+        }
     }
 }

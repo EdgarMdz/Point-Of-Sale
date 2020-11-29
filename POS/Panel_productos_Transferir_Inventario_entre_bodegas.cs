@@ -184,8 +184,6 @@ namespace POS
         {
             if (this.receiverDepot != null && this.donatingDepot != null)
             {
-                this.transferCount = 0;
-                textBox1.Text = "0.00";
                 this.setDonatingDepotCard();
             }
 
@@ -208,6 +206,8 @@ namespace POS
 
             currentDonatingID = DonatingComboDepotsIds.IndexOf(currentDonatingID);
             this.DonatingCombo.SelectedIndex = currentDonatingID > -1 ? currentDonatingID : 0;
+
+            simulateTransfer();
         }
 
 
@@ -218,10 +218,9 @@ namespace POS
             if (this.donatingDepot == null || this.receiverDepot == null)
                 return;
 
-            transferCount = 0;
-            textBox1.Text = "0.00";
             addedPiecesLbl.Hide();
             setDonatingDepotCard();
+            simulateTransfer();
         }
 
 
@@ -256,6 +255,8 @@ namespace POS
             string str = this.receiverCombo.SelectedItem.ToString();
             this.receiverCombo.SelectedItem = this.DonatingCombo.SelectedItem;
             this.DonatingCombo.SelectedItem = str;
+
+            simulateTransfer();
         }
 
 
@@ -299,6 +300,11 @@ namespace POS
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            simulateTransfer();
+        }
+
+        private void simulateTransfer()
         {
             try
             {
@@ -359,6 +365,25 @@ namespace POS
         private void textBox1_Enter(object sender, EventArgs e)
         {
             textBox1.SelectAll();
+        }
+
+        private void Panel_productos_Transferir_Inventario_entre_bodegas_Resize(object sender, EventArgs e)
+        {
+            label6.Location = new Point((this.Width / 2 - label6.Width) / 2, label6.Location.Y);
+            
+            receiverCombo.Width = (int)(this.Width * 0.42);
+            receiverCombo.Location= new Point((this.Width / 2 - receiverCombo.Width) / 2, receiverCombo.Location.Y);
+
+            ReceiverDepotCard.Width = receiverCombo.Width;
+            ReceiverDepotCard.Location = new Point(receiverCombo.Location.X, ReceiverDepotCard.Location.Y);
+
+            label5.Location = new Point(this.Width / 2 + (this.Width/2 - label5.Width) / 2, label5.Location.Y);
+
+            DonatingCombo.Width = (int)(this.Width * 0.42);
+            DonatingCombo.Location = new Point(this.Width / 2 + (this.Width / 2 - DonatingCombo.Width) / 2, DonatingCombo.Location.Y);
+
+            DonatingDepotCard.Width = DonatingCombo.Width;
+            DonatingDepotCard.Location = new Point(DonatingCombo.Location.X, DonatingDepotCard.Location.Y);
         }
     }
 }

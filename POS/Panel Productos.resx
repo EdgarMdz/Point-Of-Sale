@@ -134,6 +134,20 @@
         fpwZDD92N4Yfk/AXHpYDi5KmlRj2AAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="moreOptionsBtn.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
+        +wAAAPsBYnjHCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAD4SURBVFhHzZfL
+        CQJBEAX34EVTMiIDMA5vZqMxeDIEI/A+VsM2DMub/U0PY0GBFCv9QC87pJSKwhmf+MaLeqZWGV14oX1w
+        b+q5GmU04Yjf8XBu6AgZXbhnh3PDRsjowgkf49GpISNkzIWmI2ScCs1GyKiEJiNkLAnhI2ScE0JHyLgk
+        hI2QcY0QMkLGtUL1CBm3CFUjZNwqzI24qu+4Mu4RSiM+eFDfMWXcI/QbAP1+Auj3J4Sq46aMa4Tq46aM
+        S0LIcVPGOSHsuCljSQg9bsqohPDjpoxToclxU8ZcaHbclNGFpsdNGV3o92ICf/Fq1u/l1ITGr+dp+AE7
+        iefmQzOI8wAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
   <metadata name="barcode.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -1577,9 +1591,6 @@
         f3LpPddJ+rmTpfeCk6V/7r/litW36j2eheVJ/RSR/w9ZhAEzmQItSgAAAABJRU5ErkJggg==
 </value>
   </data>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
   <data name="NewDepotBtn.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAALUAAAAoCAYAAAC4q7s0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8

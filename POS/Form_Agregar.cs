@@ -280,18 +280,27 @@ namespace POS
         {
             producto.Description = this.DescriptionTxt.Text;
             producto.Barcode = this.barcodeTxt.Text;
+            
             if (this.BrandTxt.Text != "")
                 producto.Brand = this.BrandTxt.Text;
+            
             if (this.retailCostTxt.Text != "")
                 producto.RetailCost = Convert.ToDouble(this.retailCostTxt.Text);
-            if (this.costbyCaseTxt.Text != "")
-                producto.CostPerCase = Convert.ToDouble(this.costbyCaseTxt.Text);
+            
             if (this.piecesByCaseTxt.Text != "")
                 producto.PiecesPerCase = Convert.ToDouble(this.piecesByCaseTxt.Text);
+
+            if (this.costbyCaseTxt.Text != "")
+                producto.CostPerCase = LinkProductCheckBox.Checked || producto.PiecesPerCase == 1 ?
+                    producto.RetailCost :
+                    Convert.ToDouble(this.costbyCaseTxt.Text);
+
             if (this.stockTxt.Text != "")
                 producto.CurrentStock = Convert.ToDouble(this.stockTxt.Text);
+          
             if (this.minimumStockTxt.Text != "")
                 producto.minStock = Convert.ToDouble(this.minimumStockTxt.Text);
+            
             if (this.PurchaseCostTxt.Text != "")
                 producto.PurchaseCost = Convert.ToDouble(this.PurchaseCostTxt.Text);
             producto.mainProductBarcode = this.LinkProductCheckBox.Checked ? this.linkedProductBarcodeTxt.Text : "";
@@ -581,6 +590,13 @@ namespace POS
 
         private void retailCostTxt_OnValueChanged(object sender, EventArgs e)
         {
+            double ppc = -1;
+            double.TryParse(piecesByCaseTxt.Text, out ppc);
+            if(LinkProductCheckBox.Checked ||ppc == 1)
+            {
+                costbyCaseTxt.Text = retailCostTxt.Text;
+            }
+
             if (this.retailCostLbl.Visible || !(this.retailCostTxt.Text != ""))
                 return;
             this.retailCostLbl.Visible = true;
@@ -836,10 +852,7 @@ namespace POS
 
         private void Form_Agregar_Paint(object sender, PaintEventArgs e)
         {
-            Pen p = new Pen(Brushes.Black, 3);
-
-            e.Graphics.DrawRectangle(p, this.ClientRectangle);
-            p.Dispose();
+            e.Graphics.FillRectangle(Brushes.Black, e.ClipRectangle);
         }
 
         private void wholesaleCostsBtn_Click(object sender, EventArgs e)
@@ -854,6 +867,8 @@ namespace POS
         private void Form_Agregar_FormClosing(object sender, FormClosingEventArgs e)
         {
             pictureBox1.Dispose();
+            timer1.Stop();
+            timer1.Dispose();
         }
 
         private void bunifuImageButton2_Click(object sender, EventArgs e)
@@ -933,7 +948,8 @@ namespace POS
                     PurchaseCostTxt.Text = (value).ToString("n2");
                     bunifuMaterialTextbox1.LineIdleColor = Color.Gray;
 
-                    setHelpingValues();
+                    timer1.Stop();
+                    timer1.Start();
                 }
             }
             catch (Exception) {
@@ -989,12 +1005,12 @@ namespace POS
 
             x = 1 - (x - Math.Truncate(x)) < 0.0009 ? Math.Ceiling(x) : x;
 
-            if (cancellationTokenSource != null)
+/*            if (cancellationTokenSource != null)
                 cancellationTokenSource.Cancel();
 
             cancellationTokenSource = new CancellationTokenSource();
             var cancel = cancellationTokenSource.Token;
-
+*/
 
             if (x - Math.Truncate(x) > 0)
             {
@@ -1006,38 +1022,38 @@ namespace POS
                     num *= 10;
                     div *= 10;
                 }
-                try
-                {
-                    var minDiv = await Task.Run(() => getMinCommonDivisor(Convert.ToUInt64(num), Convert.ToUInt64(div), cancel));
+               /* try
+                {*/
+                    var minDiv = await Task.Run(() => getMinCommonDivisor(Convert.ToUInt64(num), Convert.ToUInt64(div)/*, cancel*/));
                     subProductTxt.Text = (num / minDiv).ToString("n2");
                     mainProductTxt.Text = (div / minDiv).ToString("n2");
-                }
+                /*}
                 catch (OperationCanceledException) { }
                 finally { cancellationTokenSource = null; }
-
+                */
             }
             else
             {
-                try
-                {
-                    var mindiv = await Task.Run(() => getMinCommonDivisor((ulong)x, 9999, cancel));
+               /* try
+                {*/
+                    var mindiv = await Task.Run(() => getMinCommonDivisor((ulong)x, 9999/*, cancel*/));
                     subProductTxt.Text = (x / mindiv).ToString("n2");
                     mainProductTxt.Text = (9999 / mindiv).ToString("n2");
-                }
+                /*}
                 catch (OperationCanceledException) { }
-                finally { cancellationTokenSource = null; }
+                finally { cancellationTokenSource = null; }*/
             }
         }
 
-        private ulong getMinCommonDivisor(ulong num, ulong div, CancellationToken token)
+        private ulong getMinCommonDivisor(ulong num, ulong div/*, CancellationToken token*/)
         {
             ulong top = num > div ? num : div;
 
             while (top>=1)
             {
-                if (token.IsCancellationRequested)
+                /*if (token.IsCancellationRequested)
                     throw new OperationCanceledException();
-
+                */
                 if (num % top == 0 && div % top == 0)
                     return top;
                 else
@@ -1078,5 +1094,45 @@ namespace POS
                 helpPanel.Show();
         }
 
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            setHelpingValues();
+            timer1.Stop();
+        }
+
+        private void Form_Agregar_Resize(object sender, EventArgs e)
+        {
+            if(Screen.PrimaryScreen.Bounds== new Rectangle(0,0,1366,768))
+            {
+                this.Height = 700;
+            }
+        }
+
+        private void removeImageBtn_MouseEnter(object sender, EventArgs e)
+        {
+            removeImageBtn.BackColor = Color.FromArgb(245, 245, 245);
+            pictureBox1.BackColor = Color.FromArgb(245, 245, 245);
+        }
+
+        private void removeImageBtn_MouseLeave(object sender, EventArgs e)
+        {
+            removeImageBtn.BackColor = Color.White;
+            pictureBox1.BackColor = Color.White;
+        }
+
+        private void Form_Agregar_Shown(object sender, EventArgs e)
+        {
+            if(this.Height>Screen.PrimaryScreen.Bounds.Height)
+            {
+                this.Height = (int)(Screen.PrimaryScreen.Bounds.Height * .9);
+                this.Width = this.MaximumSize.Width;
+                this.CenterToScreen();
+            }
+            else{
+
+                this.Height = this.MaximumSize.Height;
+                this.CenterToScreen();
+            }
+        }
     }
 }

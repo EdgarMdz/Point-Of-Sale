@@ -120,6 +120,7 @@ namespace POS
             this.discountTxt.Size = new System.Drawing.Size(117, 30);
             this.discountTxt.TabIndex = 42;
             this.discountTxt.Text = "0%";
+            this.discountTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.discountTxt.Visible = false;
             this.discountTxt.TextChanged += new System.EventHandler(this.discountTxt_TextChanged);
             this.discountTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.discountTxt_KeyDown);
@@ -285,15 +286,15 @@ namespace POS
             this.InfoLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.InfoLbl.AutoSize = true;
             this.InfoLbl.Font = new System.Drawing.Font("Century Gothic", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.InfoLbl.ForeColor = System.Drawing.Color.DimGray;
-            this.InfoLbl.Location = new System.Drawing.Point(445, 315);
+            this.InfoLbl.Location = new System.Drawing.Point(465, 345);
             this.InfoLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.InfoLbl.Name = "InfoLbl";
-            this.InfoLbl.Size = new System.Drawing.Size(418, 32);
+            this.InfoLbl.Size = new System.Drawing.Size(306, 64);
             this.InfoLbl.TabIndex = 32;
             this.InfoLbl.Text = "No hay Información Disponible";
+            this.InfoLbl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.InfoLbl.Visible = false;
             // 
             // discountLbl
@@ -302,7 +303,7 @@ namespace POS
             this.discountLbl.AutoSize = true;
             this.discountLbl.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.discountLbl.ForeColor = System.Drawing.Color.LimeGreen;
-            this.discountLbl.Location = new System.Drawing.Point(504, 28);
+            this.discountLbl.Location = new System.Drawing.Point(519, 28);
             this.discountLbl.Name = "discountLbl";
             this.discountLbl.Size = new System.Drawing.Size(142, 28);
             this.discountLbl.TabIndex = 40;
@@ -503,7 +504,7 @@ namespace POS
             this.DetalleCompraDataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this.DetalleCompraDataGridView1.RowTemplate.Height = 24;
             this.DetalleCompraDataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DetalleCompraDataGridView1.Size = new System.Drawing.Size(356, 173);
+            this.DetalleCompraDataGridView1.Size = new System.Drawing.Size(356, 185);
             this.DetalleCompraDataGridView1.TabIndex = 16;
             this.DetalleCompraDataGridView1.Visible = false;
             this.DetalleCompraDataGridView1.DataSourceChanged += new System.EventHandler(this.DetalleCompraDataGridView1_DataSourceChanged);

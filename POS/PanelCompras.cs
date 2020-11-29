@@ -538,11 +538,9 @@ namespace POS
             foreach (DataGridViewColumn column in this.dataGridView1.Columns)
             {
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                column.HeaderCell.Style.Font = new Font("Century Gothic", 24f, FontStyle.Bold);
                 num = column.Width;
                 column.SortMode = DataGridViewColumnSortMode.NotSortable;
             }
-            this.dataGridView1.DefaultCellStyle.Font = new Font("Century Gothic", 16f);
             this.dataGridView1.DefaultCellStyle.ForeColor = Color.Black;
 
             //if (num < this.dataGridView1.Width)
@@ -564,7 +562,7 @@ namespace POS
             if (e.ColumnIndex == dataGridView1.Columns["cantidad"].Index)
             {
                 var cellRect = dataGridView1.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false);
-                toolTip1.Show("Ingrese la cantidad de cajas que se recibieron de este producto.", this, dataGridView1.Location.X + cellRect.X + 10,
+                toolTip1.Show("Ingrese la cantidad de cajas que se recibieron de este producto.", this, dataGridView1.Location.X + cellRect.X +cellRect.Width/2- 10,
                               dataGridView1.Location.Y + cellRect.Y - 5,
                               5000);
                 dataGridView1.ShowCellToolTips = true;
@@ -1000,6 +998,31 @@ namespace POS
             {
                 dataGridView1.BeginEdit(true);
             }
+        }
+
+        private void PanelCompras_Resize(object sender, EventArgs e)
+        {
+            var res = Screen.PrimaryScreen.Bounds;
+            foreach (Control control in headerPanel.Controls)
+            {
+                control.Width = (headerPanel.Width / 3);
+            }
+
+            if(res!= new Rectangle(0,0,1920,1080))
+            {
+                dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 12);
+                dataGridView1.DefaultCellStyle.Font = new Font("Century Gothic", 12);
+            }
+            else
+            {
+                dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 24);
+                dataGridView1.DefaultCellStyle.Font = new Font("Century Gothic", 16);
+            }
+        }
+
+        private void headerPanel_Resize(object sender, EventArgs e)
+        {
+            leftPanel.Width = middlePanel.Width = rightPanel.Width = headerPanel.Width / 3;
         }
     }
 }

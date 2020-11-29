@@ -181,12 +181,17 @@ namespace POS
 
                 if (results.Rows.Count == 1)
                 {
-                    if (new Proveedor(SupplierID).getProductInfo(BarCodeTxt.Text).Rows.Count == 0 || editingMode)
+                    if (supplier.getProductInfo(BarCodeTxt.Text).Rows.Count == 0 || editingMode)
                     {
 
                         barcode = results.Rows[0]["código de barras"].ToString();
                         var p = checkformainproduct(barcode);
                         barcode = p.Barcode;
+                        if(supplier.getProductInfo(barcode).Rows.Count>0)
+                        {
+                            MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
+                            return;
+                        }
 
                         BarCodeTxt.Text = barcode;
                         descriptionLbl.Text = p.Description;
@@ -217,6 +222,12 @@ namespace POS
                         barcode = form.selectedItem[0];
                         var p = checkformainproduct(barcode);
                         barcode = p.Barcode;
+
+                        if (supplier.getProductInfo(barcode).Rows.Count > 0)
+                        {
+                            MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
+                            return;
+                        }
 
                         BarCodeTxt.Text = p.Barcode;
                         descriptionLbl.Text = p.Description;
@@ -253,7 +264,11 @@ namespace POS
                     barcode = BarCodeTxt.Text;
                     var p = checkformainproduct(barcode);
                     barcode = p.Barcode;
-
+                    if (!editingMode && new Proveedor(SupplierID).getProductInfo(barcode).Rows.Count > 0)
+                    {
+                        MessageBox.Show("El producto ya se encuentra registrado para este proveedor");
+                        return;
+                    }
                     BarCodeTxt.Text = barcode;
                     descriptionLbl.Text = p.Description;
                     MarcaLbl.Text = p.Brand;
@@ -270,9 +285,12 @@ namespace POS
                 {
                     var barcode = Producto.SearchValueGetTable(BarCodeTxt.Text);
                     if (barcode.Rows.Count == 0)
-                    { 
+                    {
                         if (Producto.SearchProduct(BarCodeTxt.Text) && checkformainproduct(BarCodeTxt.Text).Barcode == BarCodeTxt.Text)
+                        {
                             MessageBox.Show("El producto principal ya se encuentra registrado para este proveedor");
+                        }
+
                         else
                             MessageBox.Show("No se encontraron productos"); 
                     }
@@ -291,7 +309,10 @@ namespace POS
             }
 
             if (p.Barcode != barcode)
-                new Toast_Message("Se reedirigió al producto principal").Show();
+            {
+                if (new Proveedor(SupplierID).getProductInfo(p.Barcode).Rows.Count == 0)
+                    new Toast_Message("Se reedirigió al producto principal").Show();
+            }
 
             return p;
         }

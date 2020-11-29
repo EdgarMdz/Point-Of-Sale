@@ -38,10 +38,6 @@ namespace POS
             this.bunifuImageButton2 = new Bunifu.Framework.UI.BunifuImageButton();
             this.bunifuImageButton1 = new Bunifu.Framework.UI.BunifuImageButton();
             this.TabPanel = new System.Windows.Forms.Panel();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.settingsBtn = new Bunifu.Framework.UI.BunifuImageButton();
-            this.changeUserBtn = new Bunifu.Framework.UI.BunifuImageButton();
-            this.userNameLbl = new System.Windows.Forms.Label();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.homeBtn = new System.Windows.Forms.Button();
             this.VentasButton = new System.Windows.Forms.Button();
@@ -51,9 +47,14 @@ namespace POS
             this.SuppliersBtn = new System.Windows.Forms.Button();
             this.PurchasesBtn = new System.Windows.Forms.Button();
             this.employeeBtn = new System.Windows.Forms.Button();
+            this.settingsPanel = new System.Windows.Forms.Panel();
+            this.settingsBtn = new Bunifu.Framework.UI.BunifuImageButton();
+            this.changeUserBtn = new Bunifu.Framework.UI.BunifuImageButton();
+            this.userNameLbl = new System.Windows.Forms.Label();
+            this.datePanel = new System.Windows.Forms.Panel();
+            this.MinutesLbl = new System.Windows.Forms.Label();
             this.Daylbl = new System.Windows.Forms.Label();
             this.DateLbl = new System.Windows.Forms.Label();
-            this.MinutesLbl = new System.Windows.Forms.Label();
             this.HourLbl = new System.Windows.Forms.Label();
             this.ContainerPanel = new System.Windows.Forms.Panel();
             this.time = new System.Windows.Forms.Timer(this.components);
@@ -61,10 +62,11 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).BeginInit();
             this.TabPanel.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
+            this.settingsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.settingsBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.changeUserBtn)).BeginInit();
-            this.flowLayoutPanel1.SuspendLayout();
+            this.datePanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // WindowSizeControlPanel
@@ -113,13 +115,11 @@ namespace POS
             // 
             // TabPanel
             // 
+            this.TabPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.TabPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.TabPanel.Controls.Add(this.panel1);
             this.TabPanel.Controls.Add(this.flowLayoutPanel1);
-            this.TabPanel.Controls.Add(this.Daylbl);
-            this.TabPanel.Controls.Add(this.DateLbl);
-            this.TabPanel.Controls.Add(this.MinutesLbl);
-            this.TabPanel.Controls.Add(this.HourLbl);
+            this.TabPanel.Controls.Add(this.settingsPanel);
+            this.TabPanel.Controls.Add(this.datePanel);
             this.TabPanel.Dock = System.Windows.Forms.DockStyle.Left;
             this.TabPanel.Location = new System.Drawing.Point(0, 0);
             this.TabPanel.Margin = new System.Windows.Forms.Padding(2);
@@ -127,61 +127,9 @@ namespace POS
             this.TabPanel.Size = new System.Drawing.Size(202, 700);
             this.TabPanel.TabIndex = 1;
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.settingsBtn);
-            this.panel1.Controls.Add(this.changeUserBtn);
-            this.panel1.Controls.Add(this.userNameLbl);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 600);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(202, 100);
-            this.panel1.TabIndex = 16;
-            // 
-            // settingsBtn
-            // 
-            this.settingsBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.settingsBtn.BackColor = System.Drawing.Color.Transparent;
-            this.settingsBtn.Image = global::POS.Properties.Resources.GearWhite;
-            this.settingsBtn.ImageActive = null;
-            this.settingsBtn.Location = new System.Drawing.Point(124, 8);
-            this.settingsBtn.Name = "settingsBtn";
-            this.settingsBtn.Size = new System.Drawing.Size(60, 60);
-            this.settingsBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.settingsBtn.TabIndex = 11;
-            this.settingsBtn.TabStop = false;
-            this.settingsBtn.Zoom = 10;
-            this.settingsBtn.Click += new System.EventHandler(this.settingsBtn_Click);
-            // 
-            // changeUserBtn
-            // 
-            this.changeUserBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.changeUserBtn.BackColor = System.Drawing.Color.Transparent;
-            this.changeUserBtn.Image = global::POS.Properties.Resources.changeUserBtn;
-            this.changeUserBtn.ImageActive = null;
-            this.changeUserBtn.Location = new System.Drawing.Point(14, 11);
-            this.changeUserBtn.Name = "changeUserBtn";
-            this.changeUserBtn.Size = new System.Drawing.Size(51, 54);
-            this.changeUserBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.changeUserBtn.TabIndex = 15;
-            this.changeUserBtn.TabStop = false;
-            this.changeUserBtn.Zoom = 10;
-            this.changeUserBtn.Click += new System.EventHandler(this.changeUserBtn_Click);
-            // 
-            // userNameLbl
-            // 
-            this.userNameLbl.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.userNameLbl.Font = new System.Drawing.Font("Microsoft Tai Le", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.userNameLbl.ForeColor = System.Drawing.Color.White;
-            this.userNameLbl.Location = new System.Drawing.Point(0, 68);
-            this.userNameLbl.Name = "userNameLbl";
-            this.userNameLbl.Size = new System.Drawing.Size(202, 32);
-            this.userNameLbl.TabIndex = 16;
-            this.userNameLbl.Text = "   Edgar";
-            this.userNameLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // flowLayoutPanel1
             // 
+            this.flowLayoutPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.flowLayoutPanel1.Controls.Add(this.homeBtn);
             this.flowLayoutPanel1.Controls.Add(this.VentasButton);
             this.flowLayoutPanel1.Controls.Add(this.ProductsButton);
@@ -190,13 +138,15 @@ namespace POS
             this.flowLayoutPanel1.Controls.Add(this.SuppliersBtn);
             this.flowLayoutPanel1.Controls.Add(this.PurchasesBtn);
             this.flowLayoutPanel1.Controls.Add(this.employeeBtn);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(1, 134);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 129);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(200, 471);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(202, 471);
             this.flowLayoutPanel1.TabIndex = 14;
             // 
             // homeBtn
             // 
+            this.homeBtn.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.homeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
             this.homeBtn.FlatAppearance.BorderSize = 0;
             this.homeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -331,6 +281,88 @@ namespace POS
             this.employeeBtn.UseVisualStyleBackColor = false;
             this.employeeBtn.Click += new System.EventHandler(this.employeeBtn_Click);
             // 
+            // settingsPanel
+            // 
+            this.settingsPanel.Controls.Add(this.settingsBtn);
+            this.settingsPanel.Controls.Add(this.changeUserBtn);
+            this.settingsPanel.Controls.Add(this.userNameLbl);
+            this.settingsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.settingsPanel.Location = new System.Drawing.Point(0, 600);
+            this.settingsPanel.Name = "settingsPanel";
+            this.settingsPanel.Size = new System.Drawing.Size(202, 100);
+            this.settingsPanel.TabIndex = 16;
+            // 
+            // settingsBtn
+            // 
+            this.settingsBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.settingsBtn.BackColor = System.Drawing.Color.Transparent;
+            this.settingsBtn.Image = global::POS.Properties.Resources.GearWhite;
+            this.settingsBtn.ImageActive = null;
+            this.settingsBtn.Location = new System.Drawing.Point(124, 8);
+            this.settingsBtn.Name = "settingsBtn";
+            this.settingsBtn.Size = new System.Drawing.Size(60, 60);
+            this.settingsBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.settingsBtn.TabIndex = 11;
+            this.settingsBtn.TabStop = false;
+            this.settingsBtn.Zoom = 10;
+            this.settingsBtn.Click += new System.EventHandler(this.settingsBtn_Click);
+            // 
+            // changeUserBtn
+            // 
+            this.changeUserBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.changeUserBtn.BackColor = System.Drawing.Color.Transparent;
+            this.changeUserBtn.Image = global::POS.Properties.Resources.changeUserBtn;
+            this.changeUserBtn.ImageActive = null;
+            this.changeUserBtn.Location = new System.Drawing.Point(14, 11);
+            this.changeUserBtn.Name = "changeUserBtn";
+            this.changeUserBtn.Size = new System.Drawing.Size(51, 54);
+            this.changeUserBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.changeUserBtn.TabIndex = 15;
+            this.changeUserBtn.TabStop = false;
+            this.changeUserBtn.Zoom = 10;
+            this.changeUserBtn.Click += new System.EventHandler(this.changeUserBtn_Click);
+            // 
+            // userNameLbl
+            // 
+            this.userNameLbl.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.userNameLbl.Font = new System.Drawing.Font("Microsoft Tai Le", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.userNameLbl.ForeColor = System.Drawing.Color.White;
+            this.userNameLbl.Location = new System.Drawing.Point(0, 68);
+            this.userNameLbl.Name = "userNameLbl";
+            this.userNameLbl.Size = new System.Drawing.Size(202, 32);
+            this.userNameLbl.TabIndex = 16;
+            this.userNameLbl.Text = "   Edgar";
+            this.userNameLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // datePanel
+            // 
+            this.datePanel.Controls.Add(this.MinutesLbl);
+            this.datePanel.Controls.Add(this.Daylbl);
+            this.datePanel.Controls.Add(this.DateLbl);
+            this.datePanel.Controls.Add(this.HourLbl);
+            this.datePanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.datePanel.Location = new System.Drawing.Point(0, 0);
+            this.datePanel.Name = "datePanel";
+            this.datePanel.Size = new System.Drawing.Size(202, 129);
+            this.datePanel.TabIndex = 17;
+            // 
+            // MinutesLbl
+            // 
+            this.MinutesLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.MinutesLbl.AutoSize = true;
+            this.MinutesLbl.BackColor = System.Drawing.Color.Transparent;
+            this.MinutesLbl.Font = new System.Drawing.Font("Century Gothic", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MinutesLbl.ForeColor = System.Drawing.Color.White;
+            this.MinutesLbl.Location = new System.Drawing.Point(122, 17);
+            this.MinutesLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.MinutesLbl.Name = "MinutesLbl";
+            this.MinutesLbl.Size = new System.Drawing.Size(64, 47);
+            this.MinutesLbl.TabIndex = 5;
+            this.MinutesLbl.Text = "22";
+            this.MinutesLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.MinutesLbl.Visible = false;
+            // 
             // Daylbl
             // 
             this.Daylbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -339,7 +371,7 @@ namespace POS
             this.Daylbl.BackColor = System.Drawing.Color.Transparent;
             this.Daylbl.Font = new System.Drawing.Font("Century Gothic", 12.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Daylbl.ForeColor = System.Drawing.Color.White;
-            this.Daylbl.Location = new System.Drawing.Point(130, 74);
+            this.Daylbl.Location = new System.Drawing.Point(128, 65);
             this.Daylbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.Daylbl.Name = "Daylbl";
             this.Daylbl.Size = new System.Drawing.Size(48, 19);
@@ -355,30 +387,13 @@ namespace POS
             this.DateLbl.BackColor = System.Drawing.Color.Transparent;
             this.DateLbl.Font = new System.Drawing.Font("Century Gothic", 12.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DateLbl.ForeColor = System.Drawing.Color.White;
-            this.DateLbl.Location = new System.Drawing.Point(130, 100);
+            this.DateLbl.Location = new System.Drawing.Point(128, 91);
             this.DateLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.DateLbl.Name = "DateLbl";
             this.DateLbl.Size = new System.Drawing.Size(68, 19);
             this.DateLbl.TabIndex = 7;
             this.DateLbl.Text = "Nov 22";
             this.DateLbl.Visible = false;
-            // 
-            // MinutesLbl
-            // 
-            this.MinutesLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.MinutesLbl.AutoSize = true;
-            this.MinutesLbl.BackColor = System.Drawing.Color.Transparent;
-            this.MinutesLbl.Font = new System.Drawing.Font("Century Gothic", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MinutesLbl.ForeColor = System.Drawing.Color.White;
-            this.MinutesLbl.Location = new System.Drawing.Point(124, 26);
-            this.MinutesLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.MinutesLbl.Name = "MinutesLbl";
-            this.MinutesLbl.Size = new System.Drawing.Size(64, 47);
-            this.MinutesLbl.TabIndex = 5;
-            this.MinutesLbl.Text = "22";
-            this.MinutesLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.MinutesLbl.Visible = false;
             // 
             // HourLbl
             // 
@@ -388,7 +403,7 @@ namespace POS
             this.HourLbl.BackColor = System.Drawing.Color.Transparent;
             this.HourLbl.Font = new System.Drawing.Font("Century Gothic", 84.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.HourLbl.ForeColor = System.Drawing.Color.White;
-            this.HourLbl.Location = new System.Drawing.Point(-23, 6);
+            this.HourLbl.Location = new System.Drawing.Point(-25, -3);
             this.HourLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.HourLbl.Name = "HourLbl";
             this.HourLbl.Size = new System.Drawing.Size(183, 135);
@@ -399,6 +414,8 @@ namespace POS
             // 
             // ContainerPanel
             // 
+            this.ContainerPanel.AutoSize = true;
+            this.ContainerPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ContainerPanel.BackColor = System.Drawing.Color.White;
             this.ContainerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ContainerPanel.Location = new System.Drawing.Point(202, 0);
@@ -410,8 +427,8 @@ namespace POS
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(997, 700);
             this.Controls.Add(this.WindowSizeControlPanel);
             this.Controls.Add(this.ContainerPanel);
@@ -423,17 +440,21 @@ namespace POS
             this.RightToLeftLayout = true;
             this.Text = "Point of Sale";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.Shown += new System.EventHandler(this.Form1_Shown);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.WindowSizeControlPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).EndInit();
             this.TabPanel.ResumeLayout(false);
-            this.TabPanel.PerformLayout();
-            this.panel1.ResumeLayout(false);
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.settingsPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.settingsBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.changeUserBtn)).EndInit();
-            this.flowLayoutPanel1.ResumeLayout(false);
+            this.datePanel.ResumeLayout(false);
+            this.datePanel.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -452,7 +473,7 @@ namespace POS
         private System.Windows.Forms.Button SuppliersBtn;
         private System.Windows.Forms.Button PurchasesBtn;
         private System.Windows.Forms.Button employeeBtn;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel settingsPanel;
         private Bunifu.Framework.UI.BunifuImageButton settingsBtn;
         private Bunifu.Framework.UI.BunifuImageButton changeUserBtn;
         private System.Windows.Forms.Label userNameLbl;
@@ -462,5 +483,6 @@ namespace POS
         private System.Windows.Forms.Label HourLbl;
         private System.Windows.Forms.Timer time;
         private Button statisticsBtn;
+        private Panel datePanel;
     }
 }

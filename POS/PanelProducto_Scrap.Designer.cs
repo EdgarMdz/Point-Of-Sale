@@ -92,7 +92,7 @@ namespace POS
             // NoPictureLbl
             // 
             this.NoPictureLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.NoPictureLbl.Location = new System.Drawing.Point(427, 70);
+            this.NoPictureLbl.Location = new System.Drawing.Point(442, 71);
             this.NoPictureLbl.Name = "NoPictureLbl";
             this.NoPictureLbl.Size = new System.Drawing.Size(100, 60);
             this.NoPictureLbl.TabIndex = 9;
@@ -230,9 +230,9 @@ namespace POS
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(359, 8);
+            this.pictureBox1.Location = new System.Drawing.Point(400, 8);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(226, 184);
+            this.pictureBox1.Size = new System.Drawing.Size(184, 184);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 8;
             this.pictureBox1.TabStop = false;
@@ -313,7 +313,7 @@ namespace POS
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(615, 755);
+            this.ClientSize = new System.Drawing.Size(615, 749);
             this.Controls.Add(this.searchBtn);
             this.Controls.Add(this.OkBtn);
             this.Controls.Add(this.bunifuImageButton1);

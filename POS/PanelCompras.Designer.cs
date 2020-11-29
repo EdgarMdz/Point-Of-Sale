@@ -34,18 +34,35 @@ namespace POS
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PanelCompras));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             this.MimimizeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.closeBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.PODescriptionPanel = new Bunifu.Framework.UI.BunifuGradientPanel();
-            this.paymentDateLbl = new System.Windows.Forms.Label();
-            this.purchaseDateLbl = new System.Windows.Forms.Label();
-            this.employeeName = new System.Windows.Forms.Label();
+            this.headerPanel = new System.Windows.Forms.Panel();
+            this.middlePanel = new System.Windows.Forms.Panel();
+            this.panel11 = new System.Windows.Forms.Panel();
             this.arrivalDateLbl = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.panel10 = new System.Windows.Forms.Panel();
+            this.employeeName = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.leftPanel = new System.Windows.Forms.Panel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.SupplierLbl = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.POIDlbl = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.rightPanel = new System.Windows.Forms.Panel();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.paymentDateLbl = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.purchaseDateLbl = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.ConfirmBtn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.TotalLbl = new System.Windows.Forms.TextBox();
@@ -64,14 +81,7 @@ namespace POS
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.bunifuSeparator1 = new Bunifu.Framework.UI.BunifuSeparator();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.POIDlbl = new System.Windows.Forms.Label();
-            this.SupplierLbl = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.deleteBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.backButton = new Bunifu.Framework.UI.BunifuImageButton();
             this.pdfFileBtn = new Bunifu.Framework.UI.BunifuImageButton();
@@ -88,6 +98,16 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).BeginInit();
             this.PODescriptionPanel.SuspendLayout();
+            this.headerPanel.SuspendLayout();
+            this.middlePanel.SuspendLayout();
+            this.panel11.SuspendLayout();
+            this.panel10.SuspendLayout();
+            this.leftPanel.SuspendLayout();
+            this.panel5.SuspendLayout();
+            this.panel4.SuspendLayout();
+            this.rightPanel.SuspendLayout();
+            this.panel8.SuspendLayout();
+            this.panel7.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.deleteBtn)).BeginInit();
@@ -134,24 +154,13 @@ namespace POS
             // 
             this.PODescriptionPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("PODescriptionPanel.BackgroundImage")));
             this.PODescriptionPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.PODescriptionPanel.Controls.Add(this.paymentDateLbl);
-            this.PODescriptionPanel.Controls.Add(this.purchaseDateLbl);
-            this.PODescriptionPanel.Controls.Add(this.employeeName);
-            this.PODescriptionPanel.Controls.Add(this.arrivalDateLbl);
-            this.PODescriptionPanel.Controls.Add(this.label5);
+            this.PODescriptionPanel.Controls.Add(this.headerPanel);
             this.PODescriptionPanel.Controls.Add(this.ConfirmBtn);
             this.PODescriptionPanel.Controls.Add(this.panel1);
             this.PODescriptionPanel.Controls.Add(this.dataGridView1);
             this.PODescriptionPanel.Controls.Add(this.bunifuSeparator1);
             this.PODescriptionPanel.Controls.Add(this.textBox1);
-            this.PODescriptionPanel.Controls.Add(this.label3);
-            this.PODescriptionPanel.Controls.Add(this.label4);
             this.PODescriptionPanel.Controls.Add(this.label6);
-            this.PODescriptionPanel.Controls.Add(this.POIDlbl);
-            this.PODescriptionPanel.Controls.Add(this.SupplierLbl);
-            this.PODescriptionPanel.Controls.Add(this.label8);
-            this.PODescriptionPanel.Controls.Add(this.label7);
-            this.PODescriptionPanel.Controls.Add(this.label2);
             this.PODescriptionPanel.Controls.Add(this.deleteBtn);
             this.PODescriptionPanel.Controls.Add(this.backButton);
             this.PODescriptionPanel.Controls.Add(this.pdfFileBtn);
@@ -166,60 +175,239 @@ namespace POS
             this.PODescriptionPanel.Size = new System.Drawing.Size(1279, 723);
             this.PODescriptionPanel.TabIndex = 2;
             // 
-            // paymentDateLbl
+            // headerPanel
             // 
-            this.paymentDateLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.paymentDateLbl.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.paymentDateLbl.Location = new System.Drawing.Point(980, 77);
-            this.paymentDateLbl.Name = "paymentDateLbl";
-            this.paymentDateLbl.Size = new System.Drawing.Size(220, 21);
-            this.paymentDateLbl.TabIndex = 23;
-            this.paymentDateLbl.Text = "20/Septiembre/2019";
-            this.paymentDateLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.headerPanel.Controls.Add(this.middlePanel);
+            this.headerPanel.Controls.Add(this.leftPanel);
+            this.headerPanel.Controls.Add(this.rightPanel);
+            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerPanel.Location = new System.Drawing.Point(0, 0);
+            this.headerPanel.Name = "headerPanel";
+            this.headerPanel.Size = new System.Drawing.Size(1279, 100);
+            this.headerPanel.TabIndex = 31;
+            this.headerPanel.Resize += new System.EventHandler(this.headerPanel_Resize);
             // 
-            // purchaseDateLbl
+            // middlePanel
             // 
-            this.purchaseDateLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.purchaseDateLbl.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.purchaseDateLbl.Location = new System.Drawing.Point(1012, 26);
-            this.purchaseDateLbl.Name = "purchaseDateLbl";
-            this.purchaseDateLbl.Size = new System.Drawing.Size(220, 21);
-            this.purchaseDateLbl.TabIndex = 22;
-            this.purchaseDateLbl.Text = "20/Septiembre/2019";
-            this.purchaseDateLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.middlePanel.Controls.Add(this.panel11);
+            this.middlePanel.Controls.Add(this.panel10);
+            this.middlePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.middlePanel.Location = new System.Drawing.Point(397, 0);
+            this.middlePanel.Name = "middlePanel";
+            this.middlePanel.Size = new System.Drawing.Size(420, 100);
+            this.middlePanel.TabIndex = 26;
             // 
-            // employeeName
+            // panel11
             // 
-            this.employeeName.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.employeeName.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.employeeName.Location = new System.Drawing.Point(564, 25);
-            this.employeeName.Name = "employeeName";
-            this.employeeName.Size = new System.Drawing.Size(237, 21);
-            this.employeeName.TabIndex = 20;
-            this.employeeName.Text = "Edgar Abel Méndez Arvizu";
-            this.employeeName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.panel11.Controls.Add(this.arrivalDateLbl);
+            this.panel11.Controls.Add(this.label5);
+            this.panel11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel11.Location = new System.Drawing.Point(0, 50);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(420, 50);
+            this.panel11.TabIndex = 23;
             // 
             // arrivalDateLbl
             // 
-            this.arrivalDateLbl.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.arrivalDateLbl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.arrivalDateLbl.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.arrivalDateLbl.Location = new System.Drawing.Point(581, 76);
+            this.arrivalDateLbl.Location = new System.Drawing.Point(199, 0);
             this.arrivalDateLbl.Name = "arrivalDateLbl";
-            this.arrivalDateLbl.Size = new System.Drawing.Size(220, 21);
+            this.arrivalDateLbl.Size = new System.Drawing.Size(221, 50);
             this.arrivalDateLbl.TabIndex = 21;
             this.arrivalDateLbl.Text = "20/Septiembre/2019";
             this.arrivalDateLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label5
             // 
-            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label5.AutoSize = true;
+            this.label5.Dock = System.Windows.Forms.DockStyle.Left;
             this.label5.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(384, 74);
+            this.label5.Location = new System.Drawing.Point(0, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(199, 24);
+            this.label5.Size = new System.Drawing.Size(199, 50);
             this.label5.TabIndex = 5;
             this.label5.Text = "Fecha de Entrega:";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // panel10
+            // 
+            this.panel10.Controls.Add(this.employeeName);
+            this.panel10.Controls.Add(this.label8);
+            this.panel10.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel10.Location = new System.Drawing.Point(0, 0);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(420, 50);
+            this.panel10.TabIndex = 22;
+            // 
+            // employeeName
+            // 
+            this.employeeName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.employeeName.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.employeeName.Location = new System.Drawing.Point(179, 0);
+            this.employeeName.Name = "employeeName";
+            this.employeeName.Size = new System.Drawing.Size(241, 50);
+            this.employeeName.TabIndex = 20;
+            this.employeeName.Text = "Edgar Abel Méndez Arvizu";
+            this.employeeName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label8
+            // 
+            this.label8.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label8.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(0, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(179, 50);
+            this.label8.TabIndex = 8;
+            this.label8.Text = "Realizó Compra:";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // leftPanel
+            // 
+            this.leftPanel.Controls.Add(this.panel5);
+            this.leftPanel.Controls.Add(this.panel4);
+            this.leftPanel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.leftPanel.Location = new System.Drawing.Point(0, 0);
+            this.leftPanel.Name = "leftPanel";
+            this.leftPanel.Size = new System.Drawing.Size(397, 100);
+            this.leftPanel.TabIndex = 24;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.SupplierLbl);
+            this.panel5.Controls.Add(this.label3);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel5.Location = new System.Drawing.Point(0, 50);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(397, 50);
+            this.panel5.TabIndex = 21;
+            // 
+            // SupplierLbl
+            // 
+            this.SupplierLbl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SupplierLbl.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SupplierLbl.Location = new System.Drawing.Point(122, 0);
+            this.SupplierLbl.Name = "SupplierLbl";
+            this.SupplierLbl.Size = new System.Drawing.Size(275, 50);
+            this.SupplierLbl.TabIndex = 19;
+            this.SupplierLbl.Text = "Abarrotera de Valles S.A. de C.V.";
+            this.SupplierLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label3
+            // 
+            this.label3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label3.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(0, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(122, 50);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "Proveedor:";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.POIDlbl);
+            this.panel4.Controls.Add(this.label2);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(0, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(397, 50);
+            this.panel4.TabIndex = 20;
+            // 
+            // POIDlbl
+            // 
+            this.POIDlbl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.POIDlbl.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.POIDlbl.Location = new System.Drawing.Point(96, 0);
+            this.POIDlbl.Name = "POIDlbl";
+            this.POIDlbl.Size = new System.Drawing.Size(301, 50);
+            this.POIDlbl.TabIndex = 18;
+            this.POIDlbl.Text = "999999999";
+            this.POIDlbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label2
+            // 
+            this.label2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label2.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(0, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(96, 50);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Orden #";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // rightPanel
+            // 
+            this.rightPanel.Controls.Add(this.panel8);
+            this.rightPanel.Controls.Add(this.panel7);
+            this.rightPanel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.rightPanel.Location = new System.Drawing.Point(817, 0);
+            this.rightPanel.Name = "rightPanel";
+            this.rightPanel.Size = new System.Drawing.Size(462, 100);
+            this.rightPanel.TabIndex = 25;
+            // 
+            // panel8
+            // 
+            this.panel8.Controls.Add(this.paymentDateLbl);
+            this.panel8.Controls.Add(this.label7);
+            this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel8.Location = new System.Drawing.Point(0, 50);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(462, 50);
+            this.panel8.TabIndex = 25;
+            // 
+            // paymentDateLbl
+            // 
+            this.paymentDateLbl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.paymentDateLbl.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.paymentDateLbl.Location = new System.Drawing.Point(174, 0);
+            this.paymentDateLbl.Name = "paymentDateLbl";
+            this.paymentDateLbl.Size = new System.Drawing.Size(288, 50);
+            this.paymentDateLbl.TabIndex = 23;
+            this.paymentDateLbl.Text = "20/Septiembre/2019";
+            this.paymentDateLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label7
+            // 
+            this.label7.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label7.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(0, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(174, 50);
+            this.label7.TabIndex = 7;
+            this.label7.Text = "Fecha de Pago:";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // panel7
+            // 
+            this.panel7.Controls.Add(this.purchaseDateLbl);
+            this.panel7.Controls.Add(this.label4);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel7.Location = new System.Drawing.Point(0, 0);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(462, 50);
+            this.panel7.TabIndex = 24;
+            // 
+            // purchaseDateLbl
+            // 
+            this.purchaseDateLbl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.purchaseDateLbl.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.purchaseDateLbl.Location = new System.Drawing.Point(206, 0);
+            this.purchaseDateLbl.Name = "purchaseDateLbl";
+            this.purchaseDateLbl.Size = new System.Drawing.Size(256, 50);
+            this.purchaseDateLbl.TabIndex = 22;
+            this.purchaseDateLbl.Text = "20/Septiembre/2019";
+            this.purchaseDateLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label4
+            // 
+            this.label4.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label4.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(0, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(206, 50);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "Fecha de Compra:";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ConfirmBtn
             // 
@@ -441,49 +629,48 @@ namespace POS
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridView1.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleVertical;
             this.dataGridView1.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle6;
             this.dataGridView1.EnableHeadersVisualStyles = false;
             this.dataGridView1.GridColor = System.Drawing.Color.White;
             this.dataGridView1.Location = new System.Drawing.Point(119, 195);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle7;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
-            this.dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.BackColor = System.Drawing.Color.White;
+            this.dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle8;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dataGridView1.Size = new System.Drawing.Size(746, 444);
             this.dataGridView1.TabIndex = 24;
             this.dataGridView1.DataSourceChanged += new System.EventHandler(this.dataGridView1_DataSourceChanged);
             this.dataGridView1.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dataGridView1_CellBeginEdit);
-            //this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
             this.dataGridView1.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellMouseEnter);
             this.dataGridView1.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView1_EditingControlShowing);
@@ -516,27 +703,6 @@ namespace POS
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(8, 74);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(122, 24);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Proveedor:";
-            // 
-            // label4
-            // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(800, 23);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(206, 24);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "Fecha de Compra:";
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -547,60 +713,6 @@ namespace POS
             this.label6.TabIndex = 29;
             this.label6.Text = "Buscar";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // POIDlbl
-            // 
-            this.POIDlbl.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.POIDlbl.Location = new System.Drawing.Point(100, 26);
-            this.POIDlbl.Name = "POIDlbl";
-            this.POIDlbl.Size = new System.Drawing.Size(235, 21);
-            this.POIDlbl.TabIndex = 18;
-            this.POIDlbl.Text = "999999999";
-            this.POIDlbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // SupplierLbl
-            // 
-            this.SupplierLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.SupplierLbl.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SupplierLbl.Location = new System.Drawing.Point(128, 76);
-            this.SupplierLbl.Name = "SupplierLbl";
-            this.SupplierLbl.Size = new System.Drawing.Size(260, 21);
-            this.SupplierLbl.TabIndex = 19;
-            this.SupplierLbl.Text = "Abarrotera de Valles S.A. de C.V.";
-            this.SupplierLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label8
-            // 
-            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(384, 23);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(179, 24);
-            this.label8.TabIndex = 8;
-            this.label8.Text = "Realizó Compra:";
-            // 
-            // label7
-            // 
-            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(800, 74);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(174, 24);
-            this.label7.TabIndex = 7;
-            this.label7.Text = "Fecha de Pago:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Century Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(8, 23);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(96, 24);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Orden #";
             // 
             // deleteBtn
             // 
@@ -762,6 +874,11 @@ namespace POS
             this.bunifuElipse1.ElipseRadius = 35;
             this.bunifuElipse1.TargetControl = this.PayBtn;
             // 
+            // toolTip1
+            // 
+            this.toolTip1.BackColor = System.Drawing.Color.Khaki;
+            this.toolTip1.IsBalloon = true;
+            // 
             // PanelCompras
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 21F);
@@ -781,10 +898,21 @@ namespace POS
             this.Text = "Compras | Point of Sale";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PanelCompras_FormClosing);
             this.Load += new System.EventHandler(this.PanelCompras_Load);
+            this.Resize += new System.EventHandler(this.PanelCompras_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).EndInit();
             this.PODescriptionPanel.ResumeLayout(false);
             this.PODescriptionPanel.PerformLayout();
+            this.headerPanel.ResumeLayout(false);
+            this.middlePanel.ResumeLayout(false);
+            this.panel11.ResumeLayout(false);
+            this.panel10.ResumeLayout(false);
+            this.leftPanel.ResumeLayout(false);
+            this.panel5.ResumeLayout(false);
+            this.panel4.ResumeLayout(false);
+            this.rightPanel.ResumeLayout(false);
+            this.panel8.ResumeLayout(false);
+            this.panel7.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -848,5 +976,15 @@ namespace POS
         private Bunifu.Framework.UI.BunifuImageButton deleteBtn;
         private Bunifu.Framework.UI.BunifuImageButton backButton;
         private Bunifu.Framework.UI.BunifuImageButton pdfFileBtn;
+        private Panel headerPanel;
+        private Panel middlePanel;
+        private Panel leftPanel;
+        private Panel panel5;
+        private Panel panel4;
+        private Panel rightPanel;
+        private Panel panel8;
+        private Panel panel7;
+        private Panel panel11;
+        private Panel panel10;
     }
 }

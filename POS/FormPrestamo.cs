@@ -72,5 +72,10 @@ namespace POS
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
+
+        private void FormPrestamo_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.FillRectangle(Brushes.Teal, e.ClipRectangle);
+        }
     }
 }

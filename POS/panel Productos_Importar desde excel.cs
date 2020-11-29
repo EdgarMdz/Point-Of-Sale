@@ -255,8 +255,14 @@ namespace POS
 
         private void panel_Productos_Importar_desde_excel_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (cancellationSource != null)
-                cancellationSource.Cancel();
+            try
+            {
+                if (cancellationSource != null)
+                    cancellationSource.Cancel();
+            }
+            catch (Exception) { }
+
+            this.Dispose();
         }
 
         private void closeBtn_Click_1(object sender, System.EventArgs e)
@@ -270,6 +276,8 @@ namespace POS
         private void panel_Productos_Importar_desde_excel_Load(object sender, System.EventArgs e)
         {
             closeBtn.Location = new System.Drawing.Point(panel1.Width - closeBtn.Width - 3, closeBtn.Location.Y);
+            minimizeBtn.Size = closeBtn.Size;
+            minimizeBtn.Location = new System.Drawing.Point(closeBtn.Location.X - minimizeBtn.Width - 5, closeBtn.Location.Y);
         }
 
         private void panel_Productos_Importar_desde_excel_Paint(object sender, PaintEventArgs e)
@@ -728,6 +736,19 @@ namespace POS
             {
                 e.Graphics.DrawRectangle(p, 0, 0, panel3.Width - 1, panel3.Height - 1);
             }
+        }
+
+        private void panel_Productos_Importar_desde_excel_Resize(object sender, EventArgs e)
+        {
+            if(this.Width < Screen.PrimaryScreen.Bounds.Width || this.Height<Screen.PrimaryScreen.Bounds.Height)
+            {
+                this.Size = new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+            }
+        }
+
+        private void minimizeBtn_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
         }
     }
 }

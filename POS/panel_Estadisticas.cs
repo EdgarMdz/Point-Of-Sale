@@ -459,10 +459,12 @@ namespace POS
         {
             int height = this.bestSellersCard.Height;
             this.investmentProfitStatisticsCard.Height = height / 2;
-            this.investmentProfitStatisticsCard.Width = this.StatisticsPanel.Width - this.investmentProfitStatisticsCard.Location.X - 10;
+            if (this.StatisticsPanel.Width - this.investmentProfitStatisticsCard.Location.X - 10 >= 880)
+                this.investmentProfitStatisticsCard.Width = this.StatisticsPanel.Width - this.investmentProfitStatisticsCard.Location.X - 10;
             this.ProductStatisticsCard.Location = new Point(this.ProductStatisticsCard.Location.X, this.investmentProfitStatisticsCard.Location.Y + this.investmentProfitStatisticsCard.Height + 10);
             this.ProductStatisticsCard.Height = height / 2;
-            this.ProductStatisticsCard.Width = this.StatisticsPanel.Width - this.ProductStatisticsCard.Location.X - 10;
+            if (this.StatisticsPanel.Width - this.ProductStatisticsCard.Location.X - 10 >= 880)
+                this.ProductStatisticsCard.Width = this.StatisticsPanel.Width - this.ProductStatisticsCard.Location.X - 10;
         }
 
         private void panel2_Resize(object sender, EventArgs e)

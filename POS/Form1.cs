@@ -10,6 +10,7 @@ namespace POS
     public partial class Form1 : Form
     {
         Control con;
+        protected int threadID;
        
 
         private Empleado employee;
@@ -41,6 +42,8 @@ namespace POS
 
             VentasButton.ContextMenu = menu;
             ProductsButton.ContextMenu = menu;
+
+            threadID = Thread.CurrentThread.ManagedThreadId;
 
             //ProductsButton.ContextMenu.MenuItems[0].Click += new EventHandler(contextMenuClicked);
 
@@ -99,12 +102,24 @@ namespace POS
 
         private void openNewSaleWindow(DataRow saleInfo = null)
         {
-            try {
-                Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized, saleInfo);
-                Thread thread = new Thread(() => panel.ShowDialog());
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.IsBackground = true;
-                thread.Start();
+            try
+            {
+               /* if (Screen.PrimaryScreen.Bounds == new Rectangle(0, 0, 1366, 768))
+                {
+                    Panel_Ventas_1366x768 panel = new Panel_Ventas_1366x768(employee.ID, FormWindowState.Maximized, saleInfo);
+                    Thread thread = new Thread(() => panel.ShowDialog());
+                    thread.SetApartmentState(ApartmentState.STA);
+                    thread.IsBackground = true;
+                    thread.Start();
+                }
+                else
+                {*/
+                    Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized, saleInfo);
+                    Thread thread = new Thread(() => panel.ShowDialog());
+                    thread.SetApartmentState(ApartmentState.STA);
+                    thread.IsBackground = true;
+                    thread.Start();
+                /*}*/
             }
             catch (Exception) { }
         }
@@ -121,7 +136,8 @@ namespace POS
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            this.Dispose();
+            Environment.Exit(0);
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
@@ -140,12 +156,26 @@ namespace POS
 
             if (con == null)
             {
-                Panel_Ventas panelVentas = new Panel_Ventas(employee.ID, FormWindowState.Normal);
-                con = (Control)panelVentas;
-                panelVentas.TopLevel = false;
-                ContainerPanel.Controls.Add((Control)panelVentas);
-                panelVentas.Dock = DockStyle.Fill;
-                panelVentas.Show();
+               /* if (Screen.PrimaryScreen.Bounds == new Rectangle(0, 0, 1366, 768))
+                {
+                    Panel_Ventas_1366x768 panelVentas = new Panel_Ventas_1366x768(employee.ID, FormWindowState.Normal);
+                    con = (Control)panelVentas; panelVentas.TopLevel = false;
+                    panelVentas.Dock = DockStyle.Fill;
+                    panelVentas.Show();
+                    ContainerPanel.Controls.Add((Control)panelVentas);
+
+                }
+                else
+                {*/
+                    Panel_Ventas panelVentas = new Panel_Ventas(employee.ID, FormWindowState.Normal);
+                    con = (Control)panelVentas; panelVentas.TopLevel = false;
+                    panelVentas.Dock = DockStyle.Fill;
+                    panelVentas.Show();
+                    ContainerPanel.Controls.Add((Control)panelVentas);
+
+/*                }*/
+
+                ActiveControl = ContainerPanel.Controls[0];
                 disableButton((Control)VentasButton);
                 currentWindow = ActiveWindow.Sales;
             }
@@ -182,25 +212,45 @@ namespace POS
 
                 case ActiveWindow.Sales:
                     if (con != null && VentasButton.BackColor != homeBtn.Parent.BackColor)
-                    {
-                        if (!(con as Panel_Ventas).canClose)
-                            if (MessageBox.Show("¿Desea cambiar de pestaña?. \nPerderá la información", "Cerrar", MessageBoxButtons.YesNo) == DialogResult.No)
+                    {/*
+                        if (Screen.PrimaryScreen.Bounds == new Rectangle(0, 0, 1366, 768))
+                        {
+                            if (!(con as Panel_Ventas_1366x768).canClose)
                             {
-                                return;
+                                if (MessageBox.Show("¿Desea cambiar de pestaña?. \nPerderá la información", "Cerrar", MessageBoxButtons.YesNo) == DialogResult.No)
+                                {
+                                    return;
+                                }
                             }
-                        (con as Panel_Ventas).Close();
-                        con = null;
+                            (con as Panel_Ventas_1366x768).Close();
+                            con = null;
+                        }
+                        else
+                        {*/
+                            if (!(con as Panel_Ventas).canClose)
+                            {
+                                if (MessageBox.Show("¿Desea cambiar de pestaña?. \nPerderá la información", "Cerrar", MessageBoxButtons.YesNo) == DialogResult.No)
+                                {
+                                    return;
+                                }
+                            }
+                            (con as Panel_Ventas).Close();
+                            con = null;
+                       /* }*/
+                      
                     }
                     else
                     {
-
-                        (con as Panel_Ventas).Close();
+                       /* if (Screen.PrimaryScreen.Bounds == new Rectangle(0, 0, 1366, 768))
+                            (con as Panel_Ventas_1366x768).Close();
+                        else*/
+                            (con as Panel_Ventas).Close();
                         con = null;
                     }
                     break;
 
                 case ActiveWindow.Settings:
-                    (con as Panel_Configuracion).Close();
+                    (con as Panel_Configuracion_Impresora).Close();
                     con = null;
                     break;
 
@@ -385,7 +435,7 @@ namespace POS
             
             if (con == null)
             {
-                Panel_Configuracion panelConfiguracion = new Panel_Configuracion();
+                Panel_Configuracion_Impresora panelConfiguracion = new Panel_Configuracion_Impresora();
                 panelConfiguracion.TopLevel = false;
                 con = (Control)panelConfiguracion;
                 panelConfiguracion.TopLevel = false;
@@ -470,11 +520,14 @@ namespace POS
                 for (int i = 0; i < count; i++)
                 {
                     var item = Application.OpenForms[i];
-                    
 
-                    if ( item.GetType() ==typeof( Panel_Ventas))
+
+                    if (item.GetType() == typeof(Panel_Ventas))
                     {
-                        (item as Panel_Ventas).setEmployee(employee.ID);
+                        /*if (Screen.PrimaryScreen.Bounds == new Rectangle(0, 0, 1366, 768))
+                            (item as Panel_Ventas_1366x768).setEmployee(employee.ID);
+                        else*/
+                            (item as Panel_Ventas).setEmployee(employee.ID);
                     }
                     if (item.GetType() == typeof(Panel_Productos))
                     {
@@ -529,6 +582,33 @@ namespace POS
             if (ContainerPanel.Controls.Count > 1)
                 for (int i = 0; i < ContainerPanel.Controls.Count - 1; i++)
                     ContainerPanel.Controls.RemoveAt(i);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            var re = AutoScaleDimensions;
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            /*
+            var resolution = Screen.PrimaryScreen.Bounds;
+
+            if(resolution== new Rectangle(0,0,1400, 1050) || resolution== new Rectangle(0,0,1280, 960)
+                || resolution==new Rectangle(0,0,1024, 768)|| resolution==new Rectangle(0,0,800, 600))
+            {
+                TabPanel.Dock = DockStyle.Top;
+                datePanel.Dock = DockStyle.Left;
+                flowLayoutPanel1.Dock = DockStyle.Fill;
+                settingsPanel.Dock = DockStyle.Right;
+
+                datePanel.Height = HourLbl.Location.Y + HourLbl.Height + 10;
+                datePanel.Width = DateLbl.Location.X + DateLbl.Width + 10;
+                TabPanel.Height = datePanel.Height;
+                
+                flowLayoutPanel1.Height = datePanel.Height;
+                
+            }    */     
         }
     }
 }

@@ -89,6 +89,7 @@ namespace POS
             this.CloseBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.bunifuDragControl1 = new Bunifu.Framework.UI.BunifuDragControl(this.components);
+            this.panel14 = new System.Windows.Forms.Panel();
             this.wholesaleCostsBtn = new Bunifu.Framework.UI.BunifuThinButton2();
             this.removeImageBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.bunifuFlatButton1 = new Bunifu.Framework.UI.BunifuFlatButton();
@@ -104,6 +105,9 @@ namespace POS
             this.mainProductTxt = new System.Windows.Forms.TextBox();
             this.subProductTxt = new System.Windows.Forms.TextBox();
             this.bunifuDragControl2 = new Bunifu.Framework.UI.BunifuDragControl(this.components);
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.panel12 = new System.Windows.Forms.Panel();
+            this.panel13 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -119,10 +123,13 @@ namespace POS
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CloseBtn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel14.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.removeImageBtn)).BeginInit();
             this.panel5.SuspendLayout();
             this.helpPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).BeginInit();
+            this.panel12.SuspendLayout();
+            this.panel13.SuspendLayout();
             this.SuspendLayout();
             // 
             // label9
@@ -130,7 +137,7 @@ namespace POS
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Century Gothic", 17.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.label9.Location = new System.Drawing.Point(213, 675);
+            this.label9.Location = new System.Drawing.Point(196, 640);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(63, 27);
@@ -155,7 +162,7 @@ namespace POS
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Century Gothic", 17.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label11.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.label11.Location = new System.Drawing.Point(216, 761);
+            this.label11.Location = new System.Drawing.Point(199, 726);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(63, 27);
@@ -167,7 +174,7 @@ namespace POS
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Century Gothic", 17.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label13.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.label13.Location = new System.Drawing.Point(531, 677);
+            this.label13.Location = new System.Drawing.Point(514, 642);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(73, 27);
@@ -179,7 +186,7 @@ namespace POS
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Century Gothic", 17.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label14.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.label14.Location = new System.Drawing.Point(284, 677);
+            this.label14.Location = new System.Drawing.Point(267, 642);
             this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(26, 27);
@@ -191,7 +198,7 @@ namespace POS
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Century Gothic", 17.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label15.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.label15.Location = new System.Drawing.Point(283, 761);
+            this.label15.Location = new System.Drawing.Point(266, 726);
             this.label15.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(26, 27);
@@ -203,7 +210,7 @@ namespace POS
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Century Gothic", 17.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label16.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.label16.Location = new System.Drawing.Point(530, 761);
+            this.label16.Location = new System.Drawing.Point(513, 726);
             this.label16.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(73, 27);
@@ -217,7 +224,7 @@ namespace POS
             this.LoadImageBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.LoadImageBtn.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LoadImageBtn.ForeColor = System.Drawing.Color.White;
-            this.LoadImageBtn.Location = new System.Drawing.Point(671, 281);
+            this.LoadImageBtn.Location = new System.Drawing.Point(635, 246);
             this.LoadImageBtn.Margin = new System.Windows.Forms.Padding(2);
             this.LoadImageBtn.Name = "LoadImageBtn";
             this.LoadImageBtn.Size = new System.Drawing.Size(138, 35);
@@ -233,10 +240,10 @@ namespace POS
             this.AcceptButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.AcceptButton.Font = new System.Drawing.Font("Century Gothic", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AcceptButton.ForeColor = System.Drawing.Color.White;
-            this.AcceptButton.Location = new System.Drawing.Point(364, 834);
+            this.AcceptButton.Location = new System.Drawing.Point(355, 11);
             this.AcceptButton.Margin = new System.Windows.Forms.Padding(2);
             this.AcceptButton.Name = "AcceptButton";
-            this.AcceptButton.Size = new System.Drawing.Size(158, 53);
+            this.AcceptButton.Size = new System.Drawing.Size(158, 40);
             this.AcceptButton.TabIndex = 13;
             this.AcceptButton.Text = "Aceptar";
             this.AcceptButton.UseVisualStyleBackColor = false;
@@ -265,9 +272,9 @@ namespace POS
             // 
             this.panel1.Controls.Add(this.DescriptionTxt);
             this.panel1.Controls.Add(this.DescriptionLbl);
-            this.panel1.Location = new System.Drawing.Point(31, 53);
+            this.panel1.Location = new System.Drawing.Point(14, 18);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(559, 55);
+            this.panel1.Size = new System.Drawing.Size(533, 55);
             this.panel1.TabIndex = 0;
             // 
             // DescriptionTxt
@@ -286,7 +293,7 @@ namespace POS
             this.DescriptionTxt.Location = new System.Drawing.Point(0, 11);
             this.DescriptionTxt.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.DescriptionTxt.Name = "DescriptionTxt";
-            this.DescriptionTxt.Size = new System.Drawing.Size(559, 44);
+            this.DescriptionTxt.Size = new System.Drawing.Size(533, 44);
             this.DescriptionTxt.TabIndex = 0;
             this.DescriptionTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.DescriptionTxt.OnValueChanged += new System.EventHandler(this.DescripcionTxt_OnValueChanged);
@@ -312,9 +319,9 @@ namespace POS
             // 
             this.panel2.Controls.Add(this.brandLbl);
             this.panel2.Controls.Add(this.BrandTxt);
-            this.panel2.Location = new System.Drawing.Point(31, 139);
+            this.panel2.Location = new System.Drawing.Point(14, 104);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(559, 55);
+            this.panel2.Size = new System.Drawing.Size(533, 55);
             this.panel2.TabIndex = 1;
             // 
             // brandLbl
@@ -346,7 +353,7 @@ namespace POS
             this.BrandTxt.Location = new System.Drawing.Point(0, 11);
             this.BrandTxt.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.BrandTxt.Name = "BrandTxt";
-            this.BrandTxt.Size = new System.Drawing.Size(559, 44);
+            this.BrandTxt.Size = new System.Drawing.Size(533, 44);
             this.BrandTxt.TabIndex = 1;
             this.BrandTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.BrandTxt.OnValueChanged += new System.EventHandler(this.BrandTxt_OnValueChanged);
@@ -358,9 +365,9 @@ namespace POS
             // 
             this.panel3.Controls.Add(this.BarcodeLbl);
             this.panel3.Controls.Add(this.barcodeTxt);
-            this.panel3.Location = new System.Drawing.Point(31, 225);
+            this.panel3.Location = new System.Drawing.Point(14, 190);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(559, 55);
+            this.panel3.Size = new System.Drawing.Size(533, 55);
             this.panel3.TabIndex = 2;
             // 
             // BarcodeLbl
@@ -393,7 +400,7 @@ namespace POS
             this.barcodeTxt.Location = new System.Drawing.Point(0, 11);
             this.barcodeTxt.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.barcodeTxt.Name = "barcodeTxt";
-            this.barcodeTxt.Size = new System.Drawing.Size(559, 44);
+            this.barcodeTxt.Size = new System.Drawing.Size(533, 44);
             this.barcodeTxt.TabIndex = 2;
             this.barcodeTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.barcodeTxt.OnValueChanged += new System.EventHandler(this.barcodeTxt_OnValueChanged);
@@ -406,9 +413,9 @@ namespace POS
             // 
             this.panel4.Controls.Add(this.retailCostLbl);
             this.panel4.Controls.Add(this.retailCostTxt);
-            this.panel4.Location = new System.Drawing.Point(31, 311);
+            this.panel4.Location = new System.Drawing.Point(14, 276);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(559, 55);
+            this.panel4.Size = new System.Drawing.Size(533, 55);
             this.panel4.TabIndex = 3;
             // 
             // retailCostLbl
@@ -440,7 +447,7 @@ namespace POS
             this.retailCostTxt.Location = new System.Drawing.Point(0, 11);
             this.retailCostTxt.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.retailCostTxt.Name = "retailCostTxt";
-            this.retailCostTxt.Size = new System.Drawing.Size(559, 44);
+            this.retailCostTxt.Size = new System.Drawing.Size(533, 44);
             this.retailCostTxt.TabIndex = 3;
             this.retailCostTxt.Text = "0";
             this.retailCostTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
@@ -501,9 +508,9 @@ namespace POS
             // 
             this.panel6.Controls.Add(this.costbyCaseLbl);
             this.panel6.Controls.Add(this.costbyCaseTxt);
-            this.panel6.Location = new System.Drawing.Point(31, 483);
+            this.panel6.Location = new System.Drawing.Point(14, 448);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(559, 55);
+            this.panel6.Size = new System.Drawing.Size(538, 55);
             this.panel6.TabIndex = 7;
             // 
             // costbyCaseLbl
@@ -535,7 +542,7 @@ namespace POS
             this.costbyCaseTxt.Location = new System.Drawing.Point(0, 11);
             this.costbyCaseTxt.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.costbyCaseTxt.Name = "costbyCaseTxt";
-            this.costbyCaseTxt.Size = new System.Drawing.Size(559, 44);
+            this.costbyCaseTxt.Size = new System.Drawing.Size(538, 44);
             this.costbyCaseTxt.TabIndex = 7;
             this.costbyCaseTxt.Text = "0.00";
             this.costbyCaseTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
@@ -549,9 +556,9 @@ namespace POS
             // 
             this.panel7.Controls.Add(this.piecesByCaseLbl);
             this.panel7.Controls.Add(this.piecesByCaseTxt);
-            this.panel7.Location = new System.Drawing.Point(31, 569);
+            this.panel7.Location = new System.Drawing.Point(14, 534);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(559, 55);
+            this.panel7.Size = new System.Drawing.Size(538, 55);
             this.panel7.TabIndex = 8;
             // 
             // piecesByCaseLbl
@@ -583,7 +590,7 @@ namespace POS
             this.piecesByCaseTxt.Location = new System.Drawing.Point(0, 11);
             this.piecesByCaseTxt.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.piecesByCaseTxt.Name = "piecesByCaseTxt";
-            this.piecesByCaseTxt.Size = new System.Drawing.Size(559, 44);
+            this.piecesByCaseTxt.Size = new System.Drawing.Size(538, 44);
             this.piecesByCaseTxt.TabIndex = 8;
             this.piecesByCaseTxt.Text = "1";
             this.piecesByCaseTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
@@ -597,9 +604,9 @@ namespace POS
             // 
             this.panel8.Controls.Add(this.purchaseCostLbl);
             this.panel8.Controls.Add(this.PurchaseCostTxt);
-            this.panel8.Location = new System.Drawing.Point(36, 397);
+            this.panel8.Location = new System.Drawing.Point(19, 362);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(559, 55);
+            this.panel8.Size = new System.Drawing.Size(533, 55);
             this.panel8.TabIndex = 6;
             // 
             // purchaseCostLbl
@@ -631,7 +638,7 @@ namespace POS
             this.PurchaseCostTxt.Location = new System.Drawing.Point(0, 11);
             this.PurchaseCostTxt.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.PurchaseCostTxt.Name = "PurchaseCostTxt";
-            this.PurchaseCostTxt.Size = new System.Drawing.Size(559, 44);
+            this.PurchaseCostTxt.Size = new System.Drawing.Size(533, 44);
             this.PurchaseCostTxt.TabIndex = 6;
             this.PurchaseCostTxt.Text = "0.00";
             this.PurchaseCostTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
@@ -645,7 +652,7 @@ namespace POS
             // 
             this.panel9.Controls.Add(this.stockLbl);
             this.panel9.Controls.Add(this.stockTxt);
-            this.panel9.Location = new System.Drawing.Point(31, 655);
+            this.panel9.Location = new System.Drawing.Point(14, 620);
             this.panel9.Name = "panel9";
             this.panel9.Size = new System.Drawing.Size(177, 55);
             this.panel9.TabIndex = 9;
@@ -693,7 +700,7 @@ namespace POS
             // 
             this.panel10.Controls.Add(this.minimumStockLbl);
             this.panel10.Controls.Add(this.minimumStockTxt);
-            this.panel10.Location = new System.Drawing.Point(31, 741);
+            this.panel10.Location = new System.Drawing.Point(14, 706);
             this.panel10.Name = "panel10";
             this.panel10.Size = new System.Drawing.Size(177, 55);
             this.panel10.TabIndex = 10;
@@ -741,7 +748,7 @@ namespace POS
             // 
             this.panel11.Controls.Add(this.label1);
             this.panel11.Controls.Add(this.comboBox1);
-            this.panel11.Location = new System.Drawing.Point(615, 341);
+            this.panel11.Location = new System.Drawing.Point(579, 306);
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(252, 55);
             this.panel11.TabIndex = 45;
@@ -754,7 +761,7 @@ namespace POS
             this.groupBox1.Controls.Add(this.linkedProductPanel);
             this.groupBox1.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold);
             this.groupBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.groupBox1.Location = new System.Drawing.Point(615, 509);
+            this.groupBox1.Location = new System.Drawing.Point(579, 474);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(259, 229);
             this.groupBox1.TabIndex = 47;
@@ -815,7 +822,7 @@ namespace POS
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Century Gothic", 16.2F);
             this.checkBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.checkBox1.Location = new System.Drawing.Point(615, 408);
+            this.checkBox1.Location = new System.Drawing.Point(579, 373);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(134, 29);
             this.checkBox1.TabIndex = 48;
@@ -827,11 +834,11 @@ namespace POS
             this.displayAsKilogramCheckBox.AutoSize = true;
             this.displayAsKilogramCheckBox.Font = new System.Drawing.Font("Century Gothic", 16.2F);
             this.displayAsKilogramCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.displayAsKilogramCheckBox.Location = new System.Drawing.Point(615, 441);
+            this.displayAsKilogramCheckBox.Location = new System.Drawing.Point(579, 406);
             this.displayAsKilogramCheckBox.Name = "displayAsKilogramCheckBox";
-            this.displayAsKilogramCheckBox.Size = new System.Drawing.Size(224, 29);
+            this.displayAsKilogramCheckBox.Size = new System.Drawing.Size(199, 29);
             this.displayAsKilogramCheckBox.TabIndex = 49;
-            this.displayAsKilogramCheckBox.Text = "Mostrar como Kg.";
+            this.displayAsKilogramCheckBox.Text = "Venta a Granel";
             this.displayAsKilogramCheckBox.UseVisualStyleBackColor = true;
             this.displayAsKilogramCheckBox.CheckedChanged += new System.EventHandler(this.displayAsKilogramCheckBox_CheckedChanged);
             // 
@@ -840,7 +847,7 @@ namespace POS
             this.hideInTicketCheckBox.AutoSize = true;
             this.hideInTicketCheckBox.Font = new System.Drawing.Font("Century Gothic", 16.2F);
             this.hideInTicketCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.hideInTicketCheckBox.Location = new System.Drawing.Point(615, 474);
+            this.hideInTicketCheckBox.Location = new System.Drawing.Point(579, 439);
             this.hideInTicketCheckBox.Name = "hideInTicketCheckBox";
             this.hideInTicketCheckBox.Size = new System.Drawing.Size(240, 29);
             this.hideInTicketCheckBox.TabIndex = 50;
@@ -850,7 +857,7 @@ namespace POS
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Century Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(330, 675);
+            this.textBox1.Location = new System.Drawing.Point(313, 640);
             this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
@@ -861,7 +868,7 @@ namespace POS
             // textBox2
             // 
             this.textBox2.Font = new System.Drawing.Font("Century Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(329, 759);
+            this.textBox2.Location = new System.Drawing.Point(312, 724);
             this.textBox2.Margin = new System.Windows.Forms.Padding(2);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
@@ -871,11 +878,11 @@ namespace POS
             // 
             // CloseBtn
             // 
-            this.CloseBtn.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.CloseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseBtn.BackColor = System.Drawing.Color.Transparent;
             this.CloseBtn.Image = ((System.Drawing.Image)(resources.GetObject("CloseBtn.Image")));
             this.CloseBtn.ImageActive = null;
-            this.CloseBtn.Location = new System.Drawing.Point(855, 12);
+            this.CloseBtn.Location = new System.Drawing.Point(834, 2);
             this.CloseBtn.Name = "CloseBtn";
             this.CloseBtn.Size = new System.Drawing.Size(19, 20);
             this.CloseBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -887,7 +894,7 @@ namespace POS
             // pictureBox1
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(615, 53);
+            this.pictureBox1.Location = new System.Drawing.Point(579, 18);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(252, 224);
@@ -902,8 +909,18 @@ namespace POS
             // 
             this.bunifuDragControl1.Fixed = true;
             this.bunifuDragControl1.Horizontal = true;
-            this.bunifuDragControl1.TargetControl = this;
+            this.bunifuDragControl1.TargetControl = this.panel14;
             this.bunifuDragControl1.Vertical = true;
+            // 
+            // panel14
+            // 
+            this.panel14.Controls.Add(this.CloseBtn);
+            this.panel14.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel14.Location = new System.Drawing.Point(2, 2);
+            this.panel14.Margin = new System.Windows.Forms.Padding(3, 3, 3, 10);
+            this.panel14.Name = "panel14";
+            this.panel14.Size = new System.Drawing.Size(856, 38);
+            this.panel14.TabIndex = 58;
             // 
             // wholesaleCostsBtn
             // 
@@ -923,7 +940,7 @@ namespace POS
             this.wholesaleCostsBtn.IdleFillColor = System.Drawing.Color.White;
             this.wholesaleCostsBtn.IdleForecolor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
             this.wholesaleCostsBtn.IdleLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
-            this.wholesaleCostsBtn.Location = new System.Drawing.Point(650, 792);
+            this.wholesaleCostsBtn.Location = new System.Drawing.Point(616, 757);
             this.wholesaleCostsBtn.Margin = new System.Windows.Forms.Padding(5);
             this.wholesaleCostsBtn.Name = "wholesaleCostsBtn";
             this.wholesaleCostsBtn.Size = new System.Drawing.Size(181, 41);
@@ -938,7 +955,7 @@ namespace POS
             this.removeImageBtn.BackColor = System.Drawing.Color.Transparent;
             this.removeImageBtn.Image = ((System.Drawing.Image)(resources.GetObject("removeImageBtn.Image")));
             this.removeImageBtn.ImageActive = null;
-            this.removeImageBtn.Location = new System.Drawing.Point(615, 53);
+            this.removeImageBtn.Location = new System.Drawing.Point(503, 17);
             this.removeImageBtn.Name = "removeImageBtn";
             this.removeImageBtn.Size = new System.Drawing.Size(19, 20);
             this.removeImageBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -947,6 +964,8 @@ namespace POS
             this.removeImageBtn.Visible = false;
             this.removeImageBtn.Zoom = 10;
             this.removeImageBtn.Click += new System.EventHandler(this.bunifuImageButton2_Click);
+            this.removeImageBtn.MouseEnter += new System.EventHandler(this.removeImageBtn_MouseEnter);
+            this.removeImageBtn.MouseLeave += new System.EventHandler(this.removeImageBtn_MouseLeave);
             // 
             // bunifuFlatButton1
             // 
@@ -989,7 +1008,7 @@ namespace POS
             // 
             this.panel5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.panel5.Controls.Add(this.bunifuFlatButton1);
-            this.panel5.Location = new System.Drawing.Point(672, 142);
+            this.panel5.Location = new System.Drawing.Point(636, 107);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(149, 45);
             this.panel5.TabIndex = 55;
@@ -998,7 +1017,7 @@ namespace POS
             // 
             this.alterProductsList.ActiveLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.alterProductsList.Font = new System.Drawing.Font("Century Gothic", 12.25F, System.Drawing.FontStyle.Bold);
-            this.alterProductsList.Location = new System.Drawing.Point(657, 748);
+            this.alterProductsList.Location = new System.Drawing.Point(622, 713);
             this.alterProductsList.Name = "alterProductsList";
             this.alterProductsList.Size = new System.Drawing.Size(174, 39);
             this.alterProductsList.TabIndex = 48;
@@ -1021,7 +1040,7 @@ namespace POS
             this.helpPanel.Controls.Add(this.label3);
             this.helpPanel.Controls.Add(this.mainProductTxt);
             this.helpPanel.Controls.Add(this.subProductTxt);
-            this.helpPanel.Location = new System.Drawing.Point(615, 787);
+            this.helpPanel.Location = new System.Drawing.Point(486, 539);
             this.helpPanel.Name = "helpPanel";
             this.helpPanel.Size = new System.Drawing.Size(342, 100);
             this.helpPanel.TabIndex = 56;
@@ -1034,7 +1053,7 @@ namespace POS
             this.bunifuImageButton1.BackColor = System.Drawing.Color.Transparent;
             this.bunifuImageButton1.Image = ((System.Drawing.Image)(resources.GetObject("bunifuImageButton1.Image")));
             this.bunifuImageButton1.ImageActive = null;
-            this.bunifuImageButton1.Location = new System.Drawing.Point(325, -1);
+            this.bunifuImageButton1.Location = new System.Drawing.Point(5, 10);
             this.bunifuImageButton1.Name = "bunifuImageButton1";
             this.bunifuImageButton1.Size = new System.Drawing.Size(15, 15);
             this.bunifuImageButton1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -1065,7 +1084,7 @@ namespace POS
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(111)))), ((int)(((byte)(173)))));
-            this.label6.Location = new System.Drawing.Point(14, 9);
+            this.label6.Location = new System.Drawing.Point(23, 9);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(133, 19);
@@ -1141,55 +1160,84 @@ namespace POS
             this.bunifuDragControl2.TargetControl = this.helpPanel;
             this.bunifuDragControl2.Vertical = true;
             // 
+            // timer1
+            // 
+            this.timer1.Interval = 500;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // panel12
+            // 
+            this.panel12.Controls.Add(this.AcceptButton);
+            this.panel12.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel12.Location = new System.Drawing.Point(2, 724);
+            this.panel12.Name = "panel12";
+            this.panel12.Size = new System.Drawing.Size(856, 62);
+            this.panel12.TabIndex = 56;
+            // 
+            // panel13
+            // 
+            this.panel13.AutoScroll = true;
+            this.panel13.Controls.Add(this.helpPanel);
+            this.panel13.Controls.Add(this.panel1);
+            this.panel13.Controls.Add(this.label9);
+            this.panel13.Controls.Add(this.panel5);
+            this.panel13.Controls.Add(this.label11);
+            this.panel13.Controls.Add(this.removeImageBtn);
+            this.panel13.Controls.Add(this.label13);
+            this.panel13.Controls.Add(this.alterProductsList);
+            this.panel13.Controls.Add(this.label14);
+            this.panel13.Controls.Add(this.wholesaleCostsBtn);
+            this.panel13.Controls.Add(this.label15);
+            this.panel13.Controls.Add(this.label16);
+            this.panel13.Controls.Add(this.textBox2);
+            this.panel13.Controls.Add(this.LoadImageBtn);
+            this.panel13.Controls.Add(this.textBox1);
+            this.panel13.Controls.Add(this.pictureBox1);
+            this.panel13.Controls.Add(this.hideInTicketCheckBox);
+            this.panel13.Controls.Add(this.panel2);
+            this.panel13.Controls.Add(this.displayAsKilogramCheckBox);
+            this.panel13.Controls.Add(this.panel3);
+            this.panel13.Controls.Add(this.checkBox1);
+            this.panel13.Controls.Add(this.panel4);
+            this.panel13.Controls.Add(this.groupBox1);
+            this.panel13.Controls.Add(this.panel6);
+            this.panel13.Controls.Add(this.panel11);
+            this.panel13.Controls.Add(this.panel7);
+            this.panel13.Controls.Add(this.panel10);
+            this.panel13.Controls.Add(this.panel8);
+            this.panel13.Controls.Add(this.panel9);
+            this.panel13.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel13.Location = new System.Drawing.Point(2, 40);
+            this.panel13.Name = "panel13";
+            this.panel13.Size = new System.Drawing.Size(856, 684);
+            this.panel13.TabIndex = 57;
+            // 
             // Form_Agregar
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(886, 900);
-            this.Controls.Add(this.helpPanel);
-            this.Controls.Add(this.panel5);
-            this.Controls.Add(this.removeImageBtn);
-            this.Controls.Add(this.alterProductsList);
-            this.Controls.Add(this.wholesaleCostsBtn);
-            this.Controls.Add(this.CloseBtn);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.hideInTicketCheckBox);
-            this.Controls.Add(this.displayAsKilogramCheckBox);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.panel11);
-            this.Controls.Add(this.panel10);
-            this.Controls.Add(this.panel9);
-            this.Controls.Add(this.panel8);
-            this.Controls.Add(this.panel7);
-            this.Controls.Add(this.panel6);
-            this.Controls.Add(this.panel4);
-            this.Controls.Add(this.panel3);
-            this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel1);
-            this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.AcceptButton);
-            this.Controls.Add(this.LoadImageBtn);
-            this.Controls.Add(this.label16);
-            this.Controls.Add(this.label15);
-            this.Controls.Add(this.label14);
-            this.Controls.Add(this.label13);
-            this.Controls.Add(this.label11);
-            this.Controls.Add(this.label9);
+            this.ClientSize = new System.Drawing.Size(860, 788);
+            this.Controls.Add(this.panel13);
+            this.Controls.Add(this.panel14);
+            this.Controls.Add(this.panel12);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximumSize = new System.Drawing.Size(860, 922);
             this.Name = "Form_Agregar";
+            this.Padding = new System.Windows.Forms.Padding(2);
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Producto | Point of Sale";
             this.Deactivate += new System.EventHandler(this.Form_Agregar_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Agregar_FormClosing);
             this.Load += new System.EventHandler(this.Form_Agregar_Load);
+            this.Shown += new System.EventHandler(this.Form_Agregar_Shown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form_Agregar_Paint);
+            this.Resize += new System.EventHandler(this.Form_Agregar_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -1217,13 +1265,16 @@ namespace POS
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CloseBtn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel14.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.removeImageBtn)).EndInit();
             this.panel5.ResumeLayout(false);
             this.helpPanel.ResumeLayout(false);
             this.helpPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).EndInit();
+            this.panel12.ResumeLayout(false);
+            this.panel13.ResumeLayout(false);
+            this.panel13.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -1298,5 +1349,9 @@ namespace POS
         private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton1;
         private Button button1;
         private Bunifu.Framework.UI.BunifuDragControl bunifuDragControl2;
+        private Timer timer1;
+        private Panel panel13;
+        private Panel panel14;
+        private Panel panel12;
     }
 }

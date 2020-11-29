@@ -47,11 +47,14 @@ namespace POS
             this.panel4 = new System.Windows.Forms.Panel();
             this.ProductPanel = new System.Windows.Forms.Panel();
             this.ProductListPanel = new Bunifu.Framework.UI.BunifuGradientPanel();
+            this.moreOptionsBtn = new Bunifu.Framework.UI.BunifuImageButton();
             this.helpPanel = new System.Windows.Forms.Panel();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.barcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.description = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pieces = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.bunifuImageButton1 = new Bunifu.Framework.UI.BunifuImageButton();
             this.panel2 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
@@ -79,8 +82,11 @@ namespace POS
             this.panel4.SuspendLayout();
             this.ProductPanel.SuspendLayout();
             this.ProductListPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.moreOptionsBtn)).BeginInit();
             this.helpPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).BeginInit();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.bunifuGradientPanel1.SuspendLayout();
@@ -169,6 +175,7 @@ namespace POS
             this.ProductListPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("ProductListPanel.BackgroundImage")));
             this.ProductListPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ProductListPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ProductListPanel.Controls.Add(this.moreOptionsBtn);
             this.ProductListPanel.Controls.Add(this.helpPanel);
             this.ProductListPanel.Controls.Add(this.dataGridView1);
             this.ProductListPanel.Controls.Add(this.bunifuGradientPanel1);
@@ -184,9 +191,28 @@ namespace POS
             this.ProductListPanel.Size = new System.Drawing.Size(1557, 794);
             this.ProductListPanel.TabIndex = 7;
             // 
+            // moreOptionsBtn
+            // 
+            this.moreOptionsBtn.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.moreOptionsBtn.Image = ((System.Drawing.Image)(resources.GetObject("moreOptionsBtn.Image")));
+            this.moreOptionsBtn.ImageActive = null;
+            this.moreOptionsBtn.Location = new System.Drawing.Point(1187, 161);
+            this.moreOptionsBtn.Name = "moreOptionsBtn";
+            this.moreOptionsBtn.Size = new System.Drawing.Size(17, 16);
+            this.moreOptionsBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.moreOptionsBtn.TabIndex = 15;
+            this.moreOptionsBtn.TabStop = false;
+            this.toolTip1.SetToolTip(this.moreOptionsBtn, "Más opciones");
+            this.moreOptionsBtn.Visible = false;
+            this.moreOptionsBtn.Zoom = 10;
+            this.moreOptionsBtn.Click += new System.EventHandler(this.bunifuImageButton3_Click);
+            // 
             // helpPanel
             // 
+            this.helpPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.helpPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.helpPanel.Controls.Add(this.dataGridView2);
+            this.helpPanel.Controls.Add(this.panel3);
             this.helpPanel.Controls.Add(this.panel2);
             this.helpPanel.Location = new System.Drawing.Point(892, 183);
             this.helpPanel.Name = "helpPanel";
@@ -202,7 +228,8 @@ namespace POS
             this.dataGridView2.AllowUserToResizeColumns = false;
             this.dataGridView2.AllowUserToResizeRows = false;
             this.dataGridView2.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
-            this.dataGridView2.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView2.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.dataGridView2.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridView2.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.dataGridView2.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
@@ -229,7 +256,7 @@ namespace POS
             this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView2.EnableHeadersVisualStyles = false;
             this.dataGridView2.GridColor = System.Drawing.Color.White;
-            this.dataGridView2.Location = new System.Drawing.Point(0, 0);
+            this.dataGridView2.Location = new System.Drawing.Point(0, 26);
             this.dataGridView2.Name = "dataGridView2";
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
@@ -245,9 +272,8 @@ namespace POS
             dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.dataGridView2.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(338, 214);
+            this.dataGridView2.Size = new System.Drawing.Size(336, 186);
             this.dataGridView2.TabIndex = 18;
-            this.dataGridView2.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dataGridView2_CellBeginEdit);
             this.dataGridView2.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellEndEdit);
             this.dataGridView2.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView2_CellFormatting);
             this.dataGridView2.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellMouseEnter);
@@ -280,13 +306,37 @@ namespace POS
             this.pieces.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.pieces.Width = 71;
             // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.bunifuImageButton1);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(336, 26);
+            this.panel3.TabIndex = 20;
+            // 
+            // bunifuImageButton1
+            // 
+            this.bunifuImageButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bunifuImageButton1.BackColor = System.Drawing.Color.Transparent;
+            this.bunifuImageButton1.Image = global::POS.Properties.Resources.close;
+            this.bunifuImageButton1.ImageActive = null;
+            this.bunifuImageButton1.Location = new System.Drawing.Point(313, 3);
+            this.bunifuImageButton1.Name = "bunifuImageButton1";
+            this.bunifuImageButton1.Size = new System.Drawing.Size(20, 20);
+            this.bunifuImageButton1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.bunifuImageButton1.TabIndex = 6;
+            this.bunifuImageButton1.TabStop = false;
+            this.bunifuImageButton1.Zoom = 10;
+            this.bunifuImageButton1.Click += new System.EventHandler(this.bunifuImageButton1_Click_1);
+            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.button1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 214);
+            this.panel2.Location = new System.Drawing.Point(0, 212);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(338, 44);
+            this.panel2.Size = new System.Drawing.Size(336, 44);
             this.panel2.TabIndex = 19;
             // 
             // button1
@@ -341,7 +391,9 @@ namespace POS
             this.dataGridView1.Size = new System.Drawing.Size(1479, 727);
             this.dataGridView1.TabIndex = 13;
             this.dataGridView1.DataSourceChanged += new System.EventHandler(this.dataGridView1_DataSourceChanged_1);
+            this.dataGridView1.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dataGridView1_CellBeginEdit);
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
+            this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
             this.dataGridView1.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseClick_1);
             this.dataGridView1.ColumnHeaderMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_ColumnHeaderMouseDoubleClick);
             this.dataGridView1.CurrentCellChanged += new System.EventHandler(this.dataGridView1_CurrentCellChanged);
@@ -637,16 +689,21 @@ namespace POS
             this.Name = "Panel_Productos";
             this.ShowInTaskbar = false;
             this.Text = "Inventario | Point of Sale";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Panel_Productos_FormClosing);
             this.Load += new System.EventHandler(this.Panel_Productos_Load);
             this.Shown += new System.EventHandler(this.Panel_Productos_Shown);
+            this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.Panel_Productos_MouseWheel);
             ((System.ComponentModel.ISupportInitialize)(this.MimimizeBtn)).EndInit();
             this.bunifuGradientPanel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.closeBtn)).EndInit();
             this.panel4.ResumeLayout(false);
             this.ProductPanel.ResumeLayout(false);
             this.ProductListPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.moreOptionsBtn)).EndInit();
             this.helpPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.panel3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.bunifuImageButton1)).EndInit();
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.bunifuGradientPanel1.ResumeLayout(false);
@@ -700,5 +757,8 @@ namespace POS
         private DataGridViewTextBoxColumn pieces;
         private Panel panel2;
         private Button button1;
+        private Panel panel3;
+        private Bunifu.Framework.UI.BunifuImageButton bunifuImageButton1;
+        private Bunifu.Framework.UI.BunifuImageButton moreOptionsBtn;
     }
 }

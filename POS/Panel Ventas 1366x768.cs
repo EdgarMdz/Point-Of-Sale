@@ -16,13 +16,13 @@ using System.Linq;
 
 namespace POS
 {
-    public partial class Panel_Ventas : Form
+    public partial class Panel_Ventas_1366x768 : Form
     {
         private delegate void hideButtonDelegate(int employeeID);
-        private int customerGroupBoxMaxHeight = 280;
-        private int customerGroupBoxMinHeight = 134;
-        private Size pictureBoxMinSize = new Size(242, 213);
-        private Size pictureBoxMaxSize = new Size(388, 359);
+        private Size customerGroupBoxMaxSize = new Size(327, 186);
+        private Size customerGroupBoxMinSize = new Size(327, 89);
+        private Size pictureBoxMinSize = new Size(200, 174);
+        private Size pictureBoxMaxSize = new Size(253, 219);
         private const int maximumDaysForRefound = 10000;
         private const int maximumDaysForRetourningPackages = 10000;
         private bool isNewSale;
@@ -35,7 +35,7 @@ namespace POS
         private bool isDiscountbyPercentage;
         private bool editingRow;
         private static int windowCount = 0;
-        double normalScale= 1075.0;
+
         CashDrawer cashDrawer = null;
         PosPrinter printer = null;
         ToolTip[] ShortcutTips = null;
@@ -380,7 +380,7 @@ namespace POS
                 mixedCaseDiscount = getDiscountForMixedCase(rowIndex, product);
             }
 
-            double totalDiscount = 0;
+            double totalDiscount = 0;// = customerDiscount + caseDiscount + mixedCaseDiscount + genDiscount;
 
             if (wholesaleDiscount > 0)
             {
@@ -811,15 +811,11 @@ namespace POS
         private void ClearCustomer()
         {
             this.customer = new Cliente(0);
-            this.customerGroupBox.Height = this.customerGroupBoxMinHeight;
+            this.customerGroupBox.Size = this.customerGroupBoxMinSize;
             panel10.Size = new Size(panel10.Width, customerGroupBox.Location.Y + customerGroupBox.Height + 10);
             this.reassignCosts();
             this.CustomerBtn.ButtonText = this.customer.Name;
             this.ClearCustomerBtn.Hide();
-            label1.Hide();
-            debtLbl.Hide();
-            CustomerPaymentBtn.Hide();
-
         }
 
         private void ClearCustomerBtn_Click(object sender, EventArgs e)
@@ -1026,7 +1022,7 @@ namespace POS
                 FormCambio formCambio = new FormCambio(Convert.ToDouble(formPagar.Cash) - Convert.ToDouble(formPagar.Pay));
                 formCambio.ShowDialog();
                 this.ClearSale();
-                formCambio.Dispose();
+                formCambio.Focus();
             }
             //darkForm.Close();
         }
@@ -1341,12 +1337,12 @@ namespace POS
             printdocument.PrintController = new StandardPrintController();
 
             printdocument.PrintPage += (s, e) =>
-              {
-                  printTicket(e.Graphics, infoList, e.PageSettings.PaperSize.Height);
+            {
+                printTicket(e.Graphics, infoList, e.PageSettings.PaperSize.Height);
 
-                  if (infoList.Count > 0)
-                      e.HasMorePages = true;
-              };
+                if (infoList.Count > 0)
+                    e.HasMorePages = true;
+            };
             printdocument.EndPrint += (s, e) => { image.Dispose(); mainFont.Dispose(); };
 
 
@@ -1655,13 +1651,9 @@ namespace POS
             this.ClearCustomerBtn.Visible = customer.ID != 0;
             this.debtLbl.Text = "$" + this.customer.Debt.ToString("n2");
             this.setCustomerDebtColor();
-            this.customerGroupBox.Height = this.customerGroupBoxMaxHeight;
+            this.customerGroupBox.Size = this.customerGroupBoxMaxSize;
             panel10.Size = new Size(panel10.Width, customerGroupBox.Location.Y + customerGroupBox.Height + 10);
             this.reassignCosts();
-
-            label1.Show();
-            debtLbl.Show();
-            CustomerPaymentBtn.Show();
             this.CustomerPaymentBtn.Enabled = this.customer.Debt > 0.0;
         }
 
@@ -1775,6 +1767,19 @@ namespace POS
                     MessageBox.Show("El Cliente no genera ningun adeudo");
             }
             //darkForm.Close();
+        }
+
+        private void customerPaymentDocument_PrintPage(object sender, PrintPageEventArgs e)
+        {
+        }
+        
+        private void saleCancelledDocument_PrintPage(object sender, PrintPageEventArgs e)
+        {
+        }
+
+        private void packageReturnedDocument_PrintPage_1(object sender, PrintPageEventArgs e)
+        {
+
         }
 
         private void dataGridView2_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -2125,32 +2130,23 @@ namespace POS
 
         private void groupBox1_SizeChanged(object sender, EventArgs e)
         {
-            //panel6.Height = CobrarBtn.Location.Y - (customerGroupBox.Location.Y + customerGroupBox.Height);
-            panel10.Height = customerGroupBox.Location.Y + customerGroupBox.Height + 20;
-            if (this.customerGroupBox.Size.Height == this.customerGroupBoxMinHeight)
+            panel6.Height = CobrarBtn.Location.Y - (customerGroupBox.Location.Y + customerGroupBox.Height);
+            if (this.customerGroupBox.Size == this.customerGroupBoxMinSize)
             {
                 this.CustomerPaymentBtn.Visible = false;
                 this.label1.Visible = false;
                 this.debtLbl.Visible = false;
-                
-                this.pictureBox1.Width = (int)(pictureBox1.Parent.Width * 0.85);
-                this.pictureBox1.Height = pictureBox1.Parent.Height - pictureBox1.Location.Y-10;
-
+                this.pictureBox1.Size = this.pictureBoxMaxSize;
                 this.pictureBox1.Location = new Point((pictureBox1.Parent.Width - pictureBox1.Width) / 2, pictureBox1.Location.Y);
             }
-            else if (this.customerGroupBox.Height == this.customerGroupBoxMaxHeight)
+            else if (this.customerGroupBox.Size == this.customerGroupBoxMaxSize)
             {
                 this.CustomerPaymentBtn.Visible = true;
                 this.label1.Visible = true;
                 this.debtLbl.Visible = true;
-
-                this.pictureBox1.Width = (int)(pictureBox1.Parent.Width * 0.5);
-              //  this.pictureBox1.Height = pictureBox1.Parent.Height - pictureBox1.Location.Y;
+                this.pictureBox1.Size = this.pictureBoxMinSize;
                 this.pictureBox1.Location = new Point((pictureBox1.Parent.Width - pictureBox1.Width) / 2, pictureBox1.Location.Y);
             }
-
-            CustomerPaymentBtn.Location = new Point((customerGroupBox.Width - CustomerPaymentBtn.Width) / 2,
-                customerGroupBox.Height - CustomerPaymentBtn.Height - 3);
             this.CustomerPaymentBtn.Enabled = this.customer.Debt > 0.0;
             this.panel6.Location = new Point(this.panel6.Location.X, this.customerGroupBox.Location.Y + this.customerGroupBox.Height);
         }
@@ -2300,8 +2296,6 @@ namespace POS
                             this.addProductToDataGrid(new Producto(chooseProductForm.selectedItem[0]), quantity);
                             this.ProductTxt.Text = "";
                         }
-
-                        chooseProductForm.Dispose();
                         darkForm.Close();
                     }
                 }
@@ -2337,7 +2331,7 @@ namespace POS
             countProducts();
         }
 
-        public Panel_Ventas(int employeeID, FormWindowState windowState = FormWindowState.Normal, DataRow SellInfo = null)
+        public Panel_Ventas_1366x768 (int employeeID, FormWindowState windowState = FormWindowState.Normal, DataRow SellInfo = null)
         {
             this.InitializeComponent();
             this.WindowState = windowState;
@@ -2346,17 +2340,16 @@ namespace POS
             this.defaultTxt = "";// "Producto * Cantidad";
 
             this.customer = SellInfo != null ? new Cliente(Convert.ToInt32(SellInfo["id_cliente"])) : new Cliente(0);
-            setCustomer();
+            ClearCustomer();
+            //setCustomer();
 
             this.isNewSale = true;
             this.ticket = new PrinterTicket();
             this.CanceledLbl.Parent = (Control)this.dataGridView2;
             this.CanceledLbl.BackColor = Color.Transparent;
 
-
             this.dataGridView2.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             this.dataGridView2.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
-            this.MouseWheel += new MouseEventHandler(dataGridView2_MouseWheel);
 
             var comboColumn = dataGridView2.Columns["depot"] as DataGridViewComboBoxColumn;
             var depotSource = Bodega.GetDepots();
@@ -2394,40 +2387,6 @@ namespace POS
                 }
             }
 
-            this.Focus();
-
-            setDatagridviewFontSize();
-        }
-
-        private void dataGridView2_MouseWheel(object sender, MouseEventArgs e)
-        {
-            if (System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.LeftCtrl))
-            {
-                var prop = Properties.Settings.Default;
-
-                float value = prop.PanelVentas_DGVFont + e.Delta / 50;
-
-                setNewFont(value);
-            }
-        }
-
-        private void setNewFont(float fontSize)
-        {
-            if (fontSize > 8.5 && fontSize < 30)
-            {
-                Properties.Settings.Default.PanelVentas_DGVFont = fontSize;
-                Properties.Settings.Default.Save();
-
-                setDatagridviewFontSize();
-            }
-        }
-
-        private void setDatagridviewFontSize()
-        {
-            var prop = Properties.Settings.Default;
-            dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", prop.PanelVentas_DGVFont, FontStyle.Bold);
-            dataGridView2.DefaultCellStyle.Font = new Font("century gothic", prop.PanelVentas_DGVFont - 2, FontStyle.Regular);
-            dataGridView2.Columns["depot"].DefaultCellStyle.Font = new Font("century gothic", prop.PanelVentas_DGVFont - 6, FontStyle.Regular);
         }
 
         public void setEmployee(int employeeID)
@@ -2452,10 +2411,10 @@ namespace POS
         {
             this.ProductTxt.Text = this.defaultTxt;
             this.dataGridView2.CurrentCell = (DataGridViewCell)null;
-            this.customerGroupBox.Height = this.customerGroupBoxMinHeight;
+            this.customerGroupBox.Size = this.customerGroupBoxMinSize;
             this.SuspendLayout();
-            float num1 = (float)this.Width / (float)this.CanceledLbl.Parent.Width;
-            float num2 = (float)this.Height / (float)this.CanceledLbl.Parent.Height;
+            float num1 = (float)this.Width / (float)this.CanceledLbl.Width;
+            float num2 = (float)this.Height / (float)this.CanceledLbl.Height;
             this.CanceledLbl.Font = new Font(this.CanceledLbl.Font.FontFamily, this.CanceledLbl.Font.Size * ((double)num1 > (double)num2 ? num2 : num1), this.CanceledLbl.Font.Style);
             this.ResumeLayout();
             this.CanceledLbl.Location = new Point(-50, (this.CanceledLbl.Parent.Height - this.CanceledLbl.Height) / 2);
@@ -2945,9 +2904,6 @@ namespace POS
                     }
             }
         }
-        private void customerPaymentDocument_PrintPage(object sender, PrintPageEventArgs e)
-        {
-        }
 
         private double getTotalFromRowWithoutDiscount(int rowIndex)
         {
@@ -3056,15 +3012,6 @@ namespace POS
             if (keyData.ToString() == "Menu, Alt")
             {
                 timer1.Start();
-            }
-
-            if (keyData == (Keys.Control | Keys.Add) || keyData == (Keys.Control | Keys.Oemplus))
-            {
-                setNewFont(Properties.Settings.Default.PanelVentas_DGVFont + 1);
-            }
-            if (keyData == (Keys.Control | Keys.OemMinus) || keyData == (Keys.Control | Keys.Subtract))
-            {
-                setNewFont(Properties.Settings.Default.PanelVentas_DGVFont - 1);
             }
 
             if (dataGridView2.RowCount > 1)
@@ -3226,7 +3173,7 @@ namespace POS
 
         private void openNewWindow()
         {
-            Panel_Ventas panel = new Panel_Ventas(this.EmployeeID, FormWindowState.Maximized);
+            Panel_Ventas_1366x768 panel = new Panel_Ventas_1366x768(this.EmployeeID, FormWindowState.Maximized);
             Thread thread = new Thread(() => panel.ShowDialog());
             thread.SetApartmentState(ApartmentState.STA);
             thread.IsBackground = true;
@@ -3345,7 +3292,6 @@ namespace POS
                     dispose.disposeArray(controlsShortcuts);
                 });
             }
-
             catch (Exception) { }
 
 
@@ -3547,10 +3493,6 @@ namespace POS
         }
 
 
-        private void saleCancelledDocument_PrintPage(object sender, PrintPageEventArgs e)
-        {
-        }
-
 
         private void previousTicketBtn_MouseHover(object sender, EventArgs e)
         {
@@ -3593,34 +3535,6 @@ namespace POS
         }
 
         private void timer1_Tick(object sender, EventArgs e)
-        {
-            if (!System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.LeftAlt))
-            {
-                for (int i = 0; i < ShortcutTips.Length; i++)
-                {
-                    ShortcutTips[i].Hide(controlsShortcuts[i]);
-                }
-                timer1.Interval = 1500;
-                timer1.Stop();
-            }
-
-            else
-            {
-                for (int i = 0; i < ShortcutTips.Length; i++)
-                {
-                    var tip = ShortcutTips[i];
-                    if (controlsShortcuts[i].Visible && controlsShortcuts[i].Enabled && string.IsNullOrEmpty(tip.GetToolTip(controlsShortcuts[i])))
-                    {
-                        var text = toolTip1.GetToolTip(controlsShortcuts[i]);
-                        tip.Show(text.Substring(text.IndexOf("\r\n") + 2), controlsShortcuts[i]);
-                    }
-                }
-
-                timer1.Interval = 500;
-            }
-        }
-
-        private void packageReturnedDocument_PrintPage_1(object sender, PrintPageEventArgs e)
         {
 
         }
@@ -3681,7 +3595,6 @@ namespace POS
         private void OkBtn_Click(object sender, EventArgs e)
         {
             double value = -1;
-
             bool valid = double.TryParse(alterCostTxt.Text, out value);
 
             if (valid && value > 0)
@@ -3753,88 +3666,79 @@ namespace POS
 
         private void dataGridView2_CurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
+            //dataGridView2.CommitEdit(DataGridViewDataErrorContexts.Commit);
         }
 
         private void Panel_Ventas_Resize(object sender, EventArgs e)
-        {
-            CanceledLbl.Location = new Point((panel1.Width - CanceledLbl.Width) / 2, (panel1.Height - CanceledLbl.Height) / 2);
-
-            panel2.MaximumSize = new Size(0, 0);
-            panel2.Width = (int)(this.Width * .25);
-            panel2.Height = this.Height;
-
-            double vScale = panel2.Height / normalScale;
-            normalScale = panel2.Height;
-            //productGroupBox
-
-            foreach (Control control in productGroupBox.Controls)
+        {/*
+            var resolution = Screen.PrimaryScreen.Bounds;
+            if (resolution == new Rectangle(0, 0, 1366, 768))
             {
-                control.Font = new Font(control.Font.FontFamily, 
-                    control.Font.Size * (float)vScale, control.Font.Style);
-
-                control.Size = new Size((int)(control.Size.Height * vScale),
-                    (int)(control.Size.Height * vScale));
-            }
-            productGroupBox.Height = (int)(productGroupBox.Height * vScale);
-
-
-            lessBtn.Location = new Point((productGroupBox.Width / 2 - lessBtn.Width) / 2,
-                (productGroupBox.Height - lessBtn.Height)/2+10);
-            moreBtn.Location = new Point(productGroupBox.Width-lessBtn.Location.X-moreBtn.Width ,
-                  (productGroupBox.Height - moreBtn.Height) / 2 + 10);
+                //left side
+                dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 15, FontStyle.Bold);
+                dataGridView2.DefaultCellStyle.Font = new Font("Century Gothic", 17, FontStyle.Regular);
+                dataGridView2.Columns["depot"].DefaultCellStyle.Font= new Font("Century Gothic", 17, FontStyle.Regular);
+                
+                ProductTxt.Font = new Font("Century Gothic", 13, FontStyle.Regular);
+                ProductTxt.Height -= 5;
 
 
-            //printGroupBox
-            ticketGrupbox.Location = new Point(ticketGrupbox.Location.X, productGroupBox.Location.Y + productGroupBox.Height + 10);
-
-            //customerGroupBox
-            customerGroupBox.Location = new Point(customerGroupBox.Location.X, ticketGrupbox.Location.Y + ticketGrupbox.Height + 10);
-            customerGroupBox.Height= (int)(customerGroupBox.Height * vScale);
-            CustomerBtn.Font = new Font(CustomerBtn.Font.FontFamily,
-               CustomerBtn.Font.Size * (float)vScale, CustomerBtn.Font.Style);
-
-            CustomerBtn.Width = (int)(panel2.Width * .9);
-            CustomerBtn.Height = (int)(CustomerBtn.Height * vScale);
-            CustomerBtn.Location = new  Point((customerGroupBox.Width - CustomerBtn.Width) / 2, CustomerBtn.Location.Y);
-
-            label1.Font = new Font(label1.Font.FontFamily, label1.Font.Size * (float)vScale, label1.Font.Style);
-            debtLbl.Font = new Font(debtLbl.Font.FontFamily, debtLbl.Font.Size * (float)vScale, debtLbl.Font.Style);
-
-            CustomerPaymentBtn.Font = new Font(CustomerPaymentBtn.Font.FontFamily, CustomerPaymentBtn.Font.Size * (float)vScale, CustomerPaymentBtn.Font.Style);
-            CustomerPaymentBtn.Width = (int)(customerGroupBox.Width * .9);
-            CustomerPaymentBtn.Height = (int)(CustomerPaymentBtn.Height * vScale)+5;
+                float num1 = (float)this.Width / (float)this.CanceledLbl.Width;
+                float num2 = (float)this.Height / (float)this.CanceledLbl.Height;
+                this.CanceledLbl.Font = new Font(this.CanceledLbl.Font.FontFamily, this.CanceledLbl.Font.Size * ((double)num1 > (double)num2 ? num2 : num1), this.CanceledLbl.Font.Style);
 
 
-            customerGroupBoxMaxHeight = (int)(customerGroupBoxMaxHeight * vScale);
-            customerGroupBox.Height = customerGroupBoxMinHeight =
-                CustomerBtn.Location.Y + CustomerBtn.Height + 5;
-            
+                AmountProdctsLbl.Font = new Font("Century Gothic", 15, FontStyle.Bold);
+                AmountProdctsLbl.Height -= 9;
 
-            //panel6
-            foreach (Control control in panel6.Controls)
-            {
-                if(control.GetType() == typeof(Button)|| control.GetType() == typeof(Label))
-                {
-                    control.Font = new Font(control.Font.FontFamily, control.Font.Size * (float)vScale,
-                        control.Font.Style);
-                }
-                control.Width = (int)(control.Parent.Width * .80);
-                control.Height = (int)(control.Height * vScale);
-                control.Location = new Point((control.Parent.Width - control.Width) / 2, (int)(control.Location.Y * vScale));
-            }
+                cancelBtn.Font = new Font("Century Gothic", 15, FontStyle.Bold);
+                cancelBtn.Size = new Size(200, 42);
 
-            //panel9
-            panel9.Height = (int)(panel9.Height * vScale);
+                totalLbl.Font = new Font("Century Gothic", 39, FontStyle.Bold);
+                totalLbl.Height -= 9;
 
-            CobrarBtn.Width = (int)(CobrarBtn.Width * .9);
-            CobrarBtn.Height = (int)(CobrarBtn.Height * vScale);
-            CobrarBtn.Location = new Point((panel9.Width - CobrarBtn.Width) / 2, (panel9.Height - CobrarBtn.Height) / 2);
+                panel5.Height -= 9;
 
-            CancelSaleBtn.Width= (int)(CancelSaleBtn.Width * .9);
-            CancelSaleBtn.Height = (int)(CancelSaleBtn.Height * vScale);
-            CancelSaleBtn.Location = new Point((panel9.Width - CancelSaleBtn.Width) / 2, (panel9.Height - CancelSaleBtn.Height) / 2);
+                centerToParentBoth(cancelBtn);
+
+                //right side
+                lessBtn.Font = new Font("Century Gothic", 27,  FontStyle.Bold);
+                lessBtn.Size = new Size(55, 55);
+
+                moreBtn.Font = new Font("Century Gothic", 27, FontStyle.Bold);
+                moreBtn.Size = new Size(55, 55);
+
+                productGroupBox.Height -= 30;
+                productGroupBox.Font = new Font("Century Gothic", 11, FontStyle.Bold);
+
+                moreBtn.Location = new Point(moreBtn.Location.X, moreBtn.Location.Y + 20);
+                lessBtn.Location = new Point(lessBtn.Location.X, lessBtn.Location.Y + 20);
+
+                ticketGrupbox.Height -= 30;
+                printCheckBox.Font = new Font("Century Gothic", 13);
+                centerToParent(printCheckBox);
+                printCheckBox.Location = new Point(printCheckBox.Location.X, printCheckBox.Location.Y-10);
+                ticketGrupbox.Font = new Font("Century Gothic", 11, FontStyle.Bold);
+                ticketGrupbox.Location = new Point(ticketGrupbox.Location.X, productGroupBox.Location.Y + productGroupBox.Height + 10);
+
+                customerGroupBox.Location = new Point(customerGroupBox.Location.X, ticketGrupbox.Location.Y + ticketGrupbox.Height + 10);
+                customerGroupBox.Font= new Font("Century Gothic", 11, FontStyle.Bold);
+
+                CustomerBtn.Font = new Font("Century Gothic", 15, FontStyle.Bold);
+                CustomerBtn.Height -= 30;
+
+                label1.Font = debtLbl.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                label1.Location = new Point(label1.Location.X, label1.Location.Y - 50);
+                debtLbl.Location = new Point(debtLbl.Location.X, debtLbl.Location.Y - 50);
+
+                CustomerPaymentBtn.Font = new Font("Century Gothic", 12, FontStyle.Regular);
+                CustomerPaymentBtn.Location = new Point(CustomerPaymentBtn.Location.X, CustomerPaymentBtn.Location.Y - 55);
+
+                customerGroupBoxMaxSize = new Size(customerGroupBoxMaxSize.Width, CustomerPaymentBtn.Location.Y + CustomerBtn.Height);
+
+            }*/
+
         }
-    
 
         private void centerToParentBoth(Control control)
         {
@@ -3843,81 +3747,6 @@ namespace POS
                 var parent = control.Parent;
                 control.Location = new Point((parent.Width - control.Width) / 2, (parent.Height - control.Height) / 2);
             }
-        }
-
-        private void panel6_SizeChanged(object sender, EventArgs e)
-        {
-            pictureBox1.Height = panel6.Height - pictureBox1.Location.Y - 5;
-        }
-    }
-
-    public static class printingClass
-    {
-        public static int printLine(string text, Font font, int width, StringAlignment alignment, Graphics g, int yOffset)
-        {
-            try
-            {
-                Size stringSize;
-                try
-                {
-                    stringSize = g.MeasureString(text, font, width - 10).ToSize();
-                }
-                catch (ArgumentException)
-                {
-                    font = new Font(font.Name, (float)font.Size, font.Style);
-                    stringSize = g.MeasureString(text, font, width - 10).ToSize();
-                }
-                g.DrawString(text, font, Brushes.Black, new RectangleF(0, yOffset, width, stringSize.Height),
-                    new StringFormat { Alignment = alignment });
-
-                return (int)stringSize.Height;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return 0;
-            }
-        }
-        public static int printLine(string text, Font font, Color color, int width, StringAlignment alignment, Graphics g, int yOffset)
-        {
-            try
-            {
-                Size stringSize;
-                try
-                {
-                    stringSize = g.MeasureString(text, font, width - 10).ToSize();
-                }
-                catch (ArgumentException)
-                {
-                    font = new Font(font.Name, (float)font.Size, font.Style);
-                    stringSize = g.MeasureString(text, font, width - 10).ToSize();
-                }
-
-                using (SolidBrush brush = new SolidBrush(color))
-                {
-                    g.DrawString(text, font, brush, new RectangleF(0, yOffset, width, stringSize.Height),
-                        new StringFormat { Alignment = alignment });
-                }
-                return (int)stringSize.Height;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return 0;
-            }
-        }
-
-        public static int drawLine(int x, int width, Graphics graphics, int yOffset)
-        {
-            graphics.DrawLine(Pens.Black, x, yOffset, width, yOffset);
-            return 2;
-        }
-
-        public static int printImage(Image image, int width, int Height, Graphics g, int yOffset)
-        {
-            var newWidth = (int)(width * 0.9);
-            g.DrawImage(image, (width - newWidth) / 2, yOffset, newWidth, Height);
-            return Height + 1;
         }
     }
 }

@@ -75,7 +75,7 @@ namespace POS
         }
 
         public void getVisitingReminder()
-        {
+        {/*
             DataTable visitingReminder = this.negocio.getVisitingReminder(this.ID_Supplier);
             this.ID = int.Parse(visitingReminder.Rows[0]["ID_Recordatorio"].ToString());
             this.Message = visitingReminder.Rows[0]["Mensaje"].ToString();
@@ -91,7 +91,7 @@ namespace POS
             else if (timeSpan.Minutes > 0 && timeSpan.Minutes < 60)
                 ++this.Duration;
             for (int index = 0; index < 7; ++index)
-                this.RepeatingDays[index] = visitingReminder.Rows[0]["Repetir en Dias"].ToString()[index] == '1';
+                this.RepeatingDays[index] = visitingReminder.Rows[0]["Repetir en Dias"].ToString()[index] == '1';*/
         }
 
         public void addReminder()

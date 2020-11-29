@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace POS
 {
@@ -44,6 +37,8 @@ namespace POS
 
         private void ChooseProductForm_Load(object sender, EventArgs e)
         {
+            this.Width = (int)(Screen.PrimaryScreen.Bounds.Width * 0.70);
+            CenterToScreen();
             setColumnsInTable();
             addProductsToTable();
 
@@ -60,7 +55,9 @@ namespace POS
             {
                 dataGridView1.CurrentCell = dataGridView1[1, 0];
                 tip.GetToolTip(this);
-                tip.Show(dataGridView1.Rows[0].Cells["Código de Barras"].Value.ToString(), this, new Point(this.Width, -tip.Height / 2));
+                int reference = (Screen.PrimaryScreen.Bounds.Height - this.Height)/2;
+
+                tip.Show(dataGridView1.Rows[0].Cells["Código de Barras"].Value.ToString(), this, new Point(this.Width, reference-tip.Height / 2 < 0 ? 0 : -tip.Height / 2));
             }
         }
     
@@ -115,15 +112,16 @@ namespace POS
 
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            foreach (DataGridViewRow row in (IEnumerable)this.dataGridView1.Rows)
+            int i = 0;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                if (row.Visible)
-                {
-                    if (row.Index % 2 == 0)
-                        row.DefaultCellStyle.BackColor = Color.FromArgb(242, 242, 242);
-                    else
-                        row.DefaultCellStyle.BackColor = Color.White;
-                }
+                if (i % 2 == 0)
+                    row.DefaultCellStyle.BackColor = Color.FromArgb(217, 226, 243);
+
+                else
+                    row.DefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
+
+                i++;
             }
         }
 
@@ -137,7 +135,12 @@ namespace POS
             this.dataGridView1.Columns["Descripción"].Frozen = true;
             this.dataGridView1.Columns["Marca"].Frozen = true;
 
-            this.resizeGridView();
+            
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dataGridView1.Columns["Descripción"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+            resizeGridView();
+
 
             if (dataGridView1.RowCount > 0)
             {
@@ -147,18 +150,14 @@ namespace POS
 
         private void resizeGridView()
         {
-            int num = 0;
-            foreach (DataGridViewColumn column in (BaseCollection)this.dataGridView1.Columns)
+            if (dataGridView1.Columns.Count > 0)
             {
-                if (column.Visible)
-                {
-                    column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                    num += column.Width;
-                }
+                dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                dataGridView1.Columns["Descripción"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+                if(dataGridView1.Columns["descripción"].Width<=200)
+                    dataGridView1.Columns["Descripción"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             }
-            if (num >= this.dataGridView1.Width)
-                return;
-            this.dataGridView1.Columns["Descripción"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
         private void dataGridView1_SizeChanged(object sender, EventArgs e)
@@ -198,7 +197,8 @@ namespace POS
             if (dataGridView1.RowCount > 0 && barcode!=null)
             {
                 tip.GetToolTip(this);
-                tip.Show(barcode.ToString(), this, new Point(this.Width, -tip.Height / 2));
+                int reference = (Screen.PrimaryScreen.Bounds.Height - this.Height) / 2;
+                tip.Show(barcode.ToString(), this, new Point(this.Width,reference -tip.Height / 2 < 0 ? 0 : -tip.Height / 2));
             }
         }
 
@@ -214,13 +214,54 @@ namespace POS
             tip.Dispose();
             dataGridView1.Dispose();
         }
+
+        private void panel2_Resize(object sender, EventArgs e)
+        {
+            var resolution = Screen.PrimaryScreen.Bounds;
+
+            if (resolution == new Rectangle(0, 0, 1366, 768))
+            {
+                this.Size = new Size(1024, 384);
+                label1.Font = new Font("Century Gothic", 26);
+                centerToParent(label1);
+                bunifuImageButton1.Location = new Point(panel2.Width - 10 - bunifuImageButton1.Width, 10);
+                dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 10, FontStyle.Bold);
+                dataGridView1.DefaultCellStyle.Font = new Font("Century Gothic", 10, FontStyle.Bold);
+                button1.Font = new Font("Century Gothic", 10, FontStyle.Bold);
+                button1.Size = new Size(169, 41);
+                panel3.Width = this.Width;
+                centerToParent(button1);
+            }
+
+            tip.Width = (int)(Screen.PrimaryScreen.Bounds.Width * 0.15) - 10;
+        }
+
+        private void centerToParent(Control control)
+        {
+            var parent = control.Parent;
+            if(parent!=null)
+            {
+                control.Location = new Point((parent.Width - control.Width) / 2, (parent.Height - control.Height) / 2);
+            }
+        }
+
+        private void dataGridView1_RowHeightChanged(object sender, DataGridViewRowEventArgs e)
+        {
+            int height = 0;
+            foreach (DataGridViewRow item in dataGridView1.Rows)
+            {
+                if (height < item.Height)
+                    height = item.Height;
+            }
+            dataGridView1.RowTemplate.MinimumHeight = height;
+        }
     }
 
     class CustomTooltip : ToolTip
     {
-        const int side = 200;
-        public int Height { get { return side; } }
-        public int Width { get { return side; } }
+        int side = 200;
+        public int Height { get { return side; } set { side = value; } }
+        public int Width { get { return side; } set { side = value; } }
 
         public CustomTooltip()
         {
@@ -235,7 +276,10 @@ namespace POS
             Graphics g = e.Graphics;
             Image image = new Producto(e.ToolTipText).image;
 
-            SolidBrush brush = new SolidBrush(Color.FromArgb(0, 0, 0, 0));
+            using (SolidBrush brush = new SolidBrush(Color.FromArgb(255,255,255)))
+            {
+                g.FillRectangle(brush, 0, 0, side, side);
+            }
 
             //g.FillRectangle(brush, e.Bounds);
             if (image != null)
@@ -245,7 +289,7 @@ namespace POS
                     int imHeight = side;
                     int imWidth = image.Width * side / image.Height;
 
-                    g.DrawImage(image, new Rectangle(0, 0, imWidth, imHeight));
+                    g.DrawImage(image, new Rectangle((side-imWidth)/2, 0, imWidth, imHeight));
                 }
                 else
                 {
@@ -255,7 +299,7 @@ namespace POS
                     g.DrawImage(image, new Rectangle(0, (side - imHeight) / 2, imWidth, imHeight));
                 }
             }
-            brush.Dispose();
+
         }
 
         private void onPupup(object sender, PopupEventArgs e)

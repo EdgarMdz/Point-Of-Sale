@@ -46,7 +46,6 @@ namespace POS
             this.NotificationHeaderPanel = new System.Windows.Forms.Panel();
             this.bunifuSeparator1 = new Bunifu.Framework.UI.BunifuSeparator();
             this.label2 = new System.Windows.Forms.Label();
-            this.agendaBackgrountPictureBox = new System.Windows.Forms.PictureBox();
             this.startShiftBtn = new System.Windows.Forms.Button();
             this.printDocument1 = new System.Drawing.Printing.PrintDocument();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -59,17 +58,18 @@ namespace POS
             this.button1 = new System.Windows.Forms.Button();
             this.bunifuElipse1 = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
+            this.shiftPanel = new System.Windows.Forms.Panel();
             this.WindowSizeControlPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.NotificationContainerPanel.SuspendLayout();
             this.NotificationPanel.SuspendLayout();
             this.NotificationHeaderPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.agendaBackgrountPictureBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.shiftPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // WindowSizeControlPanel
@@ -81,14 +81,14 @@ namespace POS
             this.WindowSizeControlPanel.Location = new System.Drawing.Point(0, 0);
             this.WindowSizeControlPanel.Margin = new System.Windows.Forms.Padding(2);
             this.WindowSizeControlPanel.Name = "WindowSizeControlPanel";
-            this.WindowSizeControlPanel.Size = new System.Drawing.Size(1557, 25);
+            this.WindowSizeControlPanel.Size = new System.Drawing.Size(1164, 25);
             this.WindowSizeControlPanel.TabIndex = 7;
             // 
             // pictureBox2
             // 
             this.pictureBox2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.pictureBox2.Image = global::POS.Properties.Resources.minimize;
-            this.pictureBox2.Location = new System.Drawing.Point(1506, 2);
+            this.pictureBox2.Location = new System.Drawing.Point(1113, 2);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(19, 20);
@@ -101,7 +101,7 @@ namespace POS
             // 
             this.pictureBox3.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.pictureBox3.Image = global::POS.Properties.Resources.close;
-            this.pictureBox3.Location = new System.Drawing.Point(1534, 2);
+            this.pictureBox3.Location = new System.Drawing.Point(1141, 2);
             this.pictureBox3.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(19, 20);
@@ -117,22 +117,21 @@ namespace POS
             | System.Windows.Forms.AnchorStyles.Right)));
             this.NotificationContainerPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.NotificationContainerPanel.Controls.Add(this.NotificationPanel);
-            this.NotificationContainerPanel.Location = new System.Drawing.Point(17, 141);
+            this.NotificationContainerPanel.Location = new System.Drawing.Point(4, 141);
             this.NotificationContainerPanel.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.NotificationContainerPanel.Name = "NotificationContainerPanel";
-            this.NotificationContainerPanel.Size = new System.Drawing.Size(712, 581);
+            this.NotificationContainerPanel.Size = new System.Drawing.Size(572, 611);
             this.NotificationContainerPanel.TabIndex = 2;
             // 
             // NotificationPanel
             // 
             this.NotificationPanel.Controls.Add(this.flowLayoutPanel1);
             this.NotificationPanel.Controls.Add(this.NotificationHeaderPanel);
-            this.NotificationPanel.Controls.Add(this.agendaBackgrountPictureBox);
             this.NotificationPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.NotificationPanel.Location = new System.Drawing.Point(0, 0);
             this.NotificationPanel.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.NotificationPanel.Name = "NotificationPanel";
-            this.NotificationPanel.Size = new System.Drawing.Size(712, 581);
+            this.NotificationPanel.Size = new System.Drawing.Size(572, 611);
             this.NotificationPanel.TabIndex = 2;
             // 
             // flowLayoutPanel1
@@ -141,9 +140,9 @@ namespace POS
             this.flowLayoutPanel1.BackColor = System.Drawing.Color.Transparent;
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 84);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 86);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(712, 497);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(572, 525);
             this.flowLayoutPanel1.TabIndex = 0;
             this.flowLayoutPanel1.WrapContents = false;
             // 
@@ -156,7 +155,7 @@ namespace POS
             this.NotificationHeaderPanel.Location = new System.Drawing.Point(0, 0);
             this.NotificationHeaderPanel.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.NotificationHeaderPanel.Name = "NotificationHeaderPanel";
-            this.NotificationHeaderPanel.Size = new System.Drawing.Size(712, 84);
+            this.NotificationHeaderPanel.Size = new System.Drawing.Size(572, 86);
             this.NotificationHeaderPanel.TabIndex = 9;
             // 
             // bunifuSeparator1
@@ -164,11 +163,11 @@ namespace POS
             this.bunifuSeparator1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.bunifuSeparator1.BackColor = System.Drawing.Color.Transparent;
             this.bunifuSeparator1.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.bunifuSeparator1.LineThickness = 65535;
-            this.bunifuSeparator1.Location = new System.Drawing.Point(71, 64);
+            this.bunifuSeparator1.LineThickness = 302;
+            this.bunifuSeparator1.Location = new System.Drawing.Point(71, 65);
             this.bunifuSeparator1.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.bunifuSeparator1.Name = "bunifuSeparator1";
-            this.bunifuSeparator1.Size = new System.Drawing.Size(570, 2);
+            this.bunifuSeparator1.Size = new System.Drawing.Size(430, 2);
             this.bunifuSeparator1.TabIndex = 4;
             this.bunifuSeparator1.Transparency = 255;
             this.bunifuSeparator1.Vertical = false;
@@ -180,34 +179,24 @@ namespace POS
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Century Gothic", 30F, System.Drawing.FontStyle.Bold);
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(147, 18);
+            this.label2.Location = new System.Drawing.Point(77, 18);
             this.label2.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(419, 47);
             this.label2.TabIndex = 3;
             this.label2.Text = "Productos a Corregir";
             // 
-            // agendaBackgrountPictureBox
-            // 
-            this.agendaBackgrountPictureBox.BackColor = System.Drawing.Color.Transparent;
-            this.agendaBackgrountPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.agendaBackgrountPictureBox.Location = new System.Drawing.Point(0, 0);
-            this.agendaBackgrountPictureBox.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
-            this.agendaBackgrountPictureBox.Name = "agendaBackgrountPictureBox";
-            this.agendaBackgrountPictureBox.Size = new System.Drawing.Size(712, 581);
-            this.agendaBackgrountPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.agendaBackgrountPictureBox.TabIndex = 8;
-            this.agendaBackgrountPictureBox.TabStop = false;
-            // 
             // startShiftBtn
             // 
-            this.startShiftBtn.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.startShiftBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.startShiftBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.startShiftBtn.FlatAppearance.BorderSize = 0;
             this.startShiftBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.startShiftBtn.Font = new System.Drawing.Font("Century Gothic", 40F, System.Drawing.FontStyle.Bold);
             this.startShiftBtn.ForeColor = System.Drawing.Color.White;
-            this.startShiftBtn.Location = new System.Drawing.Point(1072, 353);
+            this.startShiftBtn.Location = new System.Drawing.Point(118, 221);
             this.startShiftBtn.Name = "startShiftBtn";
             this.startShiftBtn.Size = new System.Drawing.Size(339, 169);
             this.startShiftBtn.TabIndex = 6;
@@ -217,18 +206,16 @@ namespace POS
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.groupBox1.Controls.Add(this.button3);
             this.groupBox1.Controls.Add(this.dataGridView1);
             this.groupBox1.Controls.Add(this.panel1);
             this.groupBox1.Controls.Add(this.panel2);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.ForeColor = System.Drawing.Color.White;
-            this.groupBox1.Location = new System.Drawing.Point(955, 141);
+            this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(574, 581);
+            this.groupBox1.Size = new System.Drawing.Size(574, 611);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Inicio de Turno 07-01-2020 13:00";
@@ -241,7 +228,7 @@ namespace POS
             this.button3.FlatAppearance.BorderSize = 0;
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(432, 3);
+            this.button3.Location = new System.Drawing.Point(432, 1);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(134, 27);
             this.button3.TabIndex = 8;
@@ -268,7 +255,7 @@ namespace POS
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(100)))), ((int)(((byte)(140)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 12.25F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
@@ -282,7 +269,7 @@ namespace POS
             this.dataGridView1.ReadOnly = true;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(150)))), ((int)(((byte)(190)))));
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle3.ForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
@@ -290,7 +277,7 @@ namespace POS
             this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(568, 381);
+            this.dataGridView1.Size = new System.Drawing.Size(568, 411);
             this.dataGridView1.TabIndex = 5;
             this.dataGridView1.DataSourceChanged += new System.EventHandler(this.dataGridView1_DataSourceChanged);
             // 
@@ -307,7 +294,7 @@ namespace POS
             // 
             // endShiftBtn
             // 
-            this.endShiftBtn.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.endShiftBtn.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.endShiftBtn.BackColor = System.Drawing.Color.Red;
             this.endShiftBtn.FlatAppearance.BorderSize = 0;
             this.endShiftBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -323,7 +310,7 @@ namespace POS
             // 
             // button2
             // 
-            this.button2.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.button2.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.button2.FlatAppearance.BorderSize = 0;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -342,14 +329,14 @@ namespace POS
             // 
             this.panel2.Controls.Add(this.button1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(3, 504);
+            this.panel2.Location = new System.Drawing.Point(3, 534);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(568, 74);
             this.panel2.TabIndex = 7;
             // 
             // button1
             // 
-            this.button1.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.button1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.button1.FlatAppearance.BorderSize = 0;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -368,19 +355,32 @@ namespace POS
             this.bunifuElipse1.ElipseRadius = 45;
             this.bunifuElipse1.TargetControl = this.button1;
             // 
+            // shiftPanel
+            // 
+            this.shiftPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.shiftPanel.BackColor = System.Drawing.Color.Transparent;
+            this.shiftPanel.Controls.Add(this.startShiftBtn);
+            this.shiftPanel.Controls.Add(this.groupBox1);
+            this.shiftPanel.Location = new System.Drawing.Point(586, 141);
+            this.shiftPanel.Name = "shiftPanel";
+            this.shiftPanel.Size = new System.Drawing.Size(574, 611);
+            this.shiftPanel.TabIndex = 8;
+            // 
             // Panel_Inicio
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 28F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImage = global::POS.Properties.Resources.HomePanelBackground;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(1557, 738);
-            this.Controls.Add(this.startShiftBtn);
+            this.ClientSize = new System.Drawing.Size(1164, 768);
+            this.Controls.Add(this.shiftPanel);
             this.Controls.Add(this.NotificationContainerPanel);
             this.Controls.Add(this.WindowSizeControlPanel);
-            this.Controls.Add(this.groupBox1);
             this.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -391,7 +391,9 @@ namespace POS
             this.Text = "Inicio | Point of Sale";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Panel_Inicio_FormClosing);
             this.Load += new System.EventHandler(this.Panel_Inicio_Load);
+            this.MouseWheel += new MouseEventHandler(this.Panel_Inicio_MouseWheel);
             this.SizeChanged += new System.EventHandler(this.Panel_Inicio_SizeChanged);
+            this.Resize += new System.EventHandler(this.Panel_Inicio_Resize);
             this.WindowSizeControlPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
@@ -399,11 +401,11 @@ namespace POS
             this.NotificationPanel.ResumeLayout(false);
             this.NotificationHeaderPanel.ResumeLayout(false);
             this.NotificationHeaderPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.agendaBackgrountPictureBox)).EndInit();
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
+            this.shiftPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -428,8 +430,8 @@ namespace POS
         private Panel NotificationHeaderPanel;
         private Label label2;
         private Bunifu.Framework.UI.BunifuSeparator bunifuSeparator1;
-        private PictureBox agendaBackgrountPictureBox;
         private Button button1;
         private Button button3;
+        private Panel shiftPanel;
     }
 }

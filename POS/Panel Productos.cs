@@ -41,6 +41,29 @@ namespace POS
             dataGridView2.Columns["pieces"].DefaultCellStyle.ForeColor = Color.FromArgb(0, 130, 170);
             dataGridView2.Columns["pieces"].DefaultCellStyle.BackColor = Color.White;
 
+
+            setDatagridviewFontSize();
+        }
+
+        private void setDatagridviewFontSize()
+        {
+            var prop = Properties.Settings.Default.PanelProductos_Font;
+            dataGridView1.DefaultCellStyle.Font = new Font("century gothic", prop - 2, FontStyle.Bold);// new Font("century gothic", prop.PanelProductos_DFVFont - 2, FontStyle.Bold);
+            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", prop, FontStyle.Bold);
+        }
+
+        void Panel_Productos_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.LeftCtrl))
+            {
+                Console.WriteLine("cambiando font");
+                var prop = Properties.Settings.Default.PanelProductos_Font;
+
+                float value = prop + e.Delta / 50;
+
+                setNewFontValue(value);
+            }
+
         }
 
         private void showDatagridViewMenu(object sender, DataGridViewCellMouseEventArgs e)
@@ -159,16 +182,15 @@ namespace POS
 
             this.CurrentdepotID = depotID;
             cell = new Tuple<int, int>(dataGridView1.CurrentCell.RowIndex, dataGridView1.CurrentCell.ColumnIndex);
+            var cellloc=dataGridView1.GetCellDisplayRectangle(cell.Item2, cell.Item1, true);
+            moreOptionsBtn.Location = new Point(dataGridView1.Location.X + cellloc.X + cellloc.Width - moreOptionsBtn.Width,
+                dataGridView1.Location.Y + cellloc.Y - moreOptionsBtn.Height);
 
+            moreOptionsBtn.Show();
             foreach (DataRow item in childTable.Rows)
             {
                 addRowtoHelpGridView(item["Código de Barras"].ToString(), item["Descripción"].ToString(), 0);
             }
-
-            dataGridView2.CurrentCell = dataGridView2.Rows[0].Cells["pieces"];
-            dataGridView2.BeginEdit(true);
-
-            helpPanel.Show();
         }
 
         private int addRowtoHelpGridView(string barcode, string description, double amount)
@@ -654,6 +676,7 @@ namespace POS
         {
             optionPanelAnimation(false);
             SearchTxt.SelectAll();
+            moreOptionsBtn.Hide();
 
         }
 
@@ -670,7 +693,25 @@ namespace POS
                 UpdateProduct();
             }
 
+            if(keyData==(Keys.Control| Keys.Add) || keyData==(Keys.Control| Keys.Oemplus))
+            {
+                setNewFontValue(Properties.Settings.Default.PanelProductos_Font + 1);
+            }
+            if (keyData == (Keys.Control | Keys.OemMinus) || keyData == (Keys.Control | Keys.Subtract))
+            {
+                setNewFontValue(Properties.Settings.Default.PanelProductos_Font - 1);
+            }
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void setNewFontValue(float fontsize)
+        {
+            if (fontsize > 8.5 && fontsize < 30)
+            {
+                Properties.Settings.Default.PanelProductos_Font = fontsize;
+                Properties.Settings.Default.Save();
+                setDatagridviewFontSize();
+            }
         }
 
         private void ActionBtn_MouseHover(object sender, EventArgs e)
@@ -803,11 +844,11 @@ namespace POS
 
                 else
                 {
-                    row.DefaultCellStyle.BackColor = Color.White;
+                    row.DefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
                     row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(217, 226, 243);
                 }
 
-                row.Cells["pieces"].Style.BackColor = Color.White;
+                row.Cells["pieces"].Style.BackColor = Color.FromArgb(240, 240, 240);
                 row.Cells["pieces"].Style.ForeColor = Color.FromArgb(0, 130, 170);
                 row.Cells["pieces"].Style.SelectionBackColor = Color.White;
                 i++;
@@ -841,20 +882,19 @@ namespace POS
            
         }
 
-        private void dataGridView2_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
-        {/*
-            dataGridView2[e.ColumnIndex, e.ColumnIndex].Style.BackColor = Color.FromArgb(176, 224, 230);
-            dataGridView2[e.ColumnIndex, e.ColumnIndex].Style.ForeColor = Color.Black;*/
-        }
-
         private void dataGridView2_Leave(object sender, EventArgs e)
         {
-            dataGridView2.EndEdit();
-            dataGridView1[cell.Item2, cell.Item1].Value = new Bodega(CurrentdepotID).getProductQuantity(dataGridView1.Rows[cell.Item1].Cells["Código de Barras"].Value.ToString());
-            dataGridView1.CurrentCell = dataGridView1[cell.Item2, cell.Item1];
-            dataGridView1.Focus();
-            dataGridView1.Select();
-            dataGridView1.BeginEdit(true);
+            if (ActiveControl != null && ActiveControl.Name != button1.Name)
+            {
+                dataGridView2.EndEdit();
+                dataGridView1[cell.Item2, cell.Item1].Value = new Bodega(CurrentdepotID).getProductQuantity(dataGridView1.Rows[cell.Item1].Cells["Código de Barras"].Value.ToString());
+                dataGridView1.CurrentCell = dataGridView1[cell.Item2, cell.Item1];
+                dataGridView1.Focus();
+                dataGridView1.Select();
+                dataGridView1.ReadOnly = false;
+                dataGridView1.BeginEdit(true);
+                helpPanel.Hide();
+            }
         }
 
         
@@ -892,6 +932,8 @@ namespace POS
             
             dataGridView1.CurrentCell.Value = count.ToString("n3") + " piezas";
             helpPanel.Hide();
+            moreOptionsBtn.Hide();
+
         }
 
         private void dataGridView1_CurrentCellChanged(object sender, EventArgs e)
@@ -907,6 +949,55 @@ namespace POS
             var celllocationX = dataGridView1.Location.X + dataGridView1.GetCellDisplayRectangle(cell.Item2, cell.Item1, true).Left - helpPanel.Width - 20;
             var celllocationy = dataGridView1.Location.Y + dataGridView1.GetCellDisplayRectangle(cell.Item2, cell.Item1, true).Top;
             helpPanel.Location = new Point(celllocationX, celllocationy);
+        }
+
+        private void bunifuImageButton1_Click_1(object sender, EventArgs e)
+        {
+            dataGridView1.CurrentCell = dataGridView1[cell.Item2, cell.Item1];
+            dataGridView1.Focus();
+            dataGridView1.Select();
+            if (!dataGridView1.IsCurrentCellInEditMode)
+            {
+                dataGridView1.ReadOnly = false;
+                dataGridView1.CancelEdit();
+                dataGridView1.BeginEdit(true);
+
+            }
+            else
+            {
+                dataGridView1.EditingControl.Focus();
+                dataGridView1.EditingControl.Select();
+                dataGridView1.CurrentCell.Selected = true;
+            }
+            helpPanel.Hide();
+        }
+
+        private void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {if(new Producto(dataGridView1.Rows[e.RowIndex].Cells["Código de Barras"].Value.ToString()).
+                getDerivedProductsList().Rows.Count>0)
+            moreOptionsBtn.Show();
+        }
+
+        private void bunifuImageButton3_Click(object sender, EventArgs e)
+        {
+            dataGridView2.Leave -= dataGridView2_Leave;
+            dataGridView2.Focus();
+            dataGridView2.Select();
+            dataGridView2.CurrentCell = dataGridView2.Rows[0].Cells["pieces"];
+            dataGridView2.BeginEdit(true);
+            moreOptionsBtn.Hide();
+            helpPanel.Show();
+            dataGridView2.Leave += dataGridView2_Leave;
+        }
+
+        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            moreOptionsBtn.Hide();
+        }
+
+        private void Panel_Productos_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.Dispose();
         }
     }
 

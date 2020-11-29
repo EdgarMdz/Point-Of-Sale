@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace POS
@@ -22,7 +15,7 @@ namespace POS
         }
 
         private void t_Tick(object sender, EventArgs e)
-        {
+        {            
             Form_Login formLogin = new Form_Login("Iniciar Sesión");
             SecondStartingWindow secondStartingWindow = new SecondStartingWindow();
             (sender as Timer).Stop();
@@ -32,8 +25,6 @@ namespace POS
                 if (formLogin.ShowDialog() == DialogResult.OK)
                 {
                     this.Hide();
-                    //if (secondStartingWindow.ShowDialog() != DialogResult.OK)
-                      //  return;
                     new Form1(formLogin.ID).Show();
                 }
                 else
@@ -47,15 +38,24 @@ namespace POS
                 darkForm.Show();
                 if (empleadosNuevoEmpleado.ShowDialog() == DialogResult.OK)
                 {
+
+                    resetDefaultFonts();
                     if (secondStartingWindow.ShowDialog() == DialogResult.OK)
                         new Form1(empleadosNuevoEmpleado.newEmployeeID).Show();
                 }
                 else
-                    this.Close();
+                    this.Close(); 
                 darkForm.Close();
             }
         }
 
-
+        private void resetDefaultFonts()
+        {
+            Properties.Settings.Default.PanelInicio_DGVFont = 12;
+            Properties.Settings.Default.PanelVentas_DGVFont = 12;
+            Properties.Settings.Default.PanelProductos_Font = 12;
+            Properties.Settings.Default.PanelProveedores_DGV1Font = 12;
+            Properties.Settings.Default.Save();
+        }
     }
 }

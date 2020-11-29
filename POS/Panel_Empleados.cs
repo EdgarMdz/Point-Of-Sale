@@ -63,6 +63,9 @@ namespace POS
                 }
                 darkForm.Close();
             }
+
+            employeeList.Dispose();
+            empleadosSelectEmployee.Dispose();
         }
 
         private void setEmployeeInfo()
@@ -89,6 +92,7 @@ namespace POS
             this.EmployeePanel.Visible = true;
             this.changingEmployee = false;
             deleteEmployeeBtn.Visible = employee.ID != 1;
+            topPanel.Paint += topPanel_Paint;
         }
 
         private void dayLabel_click(object sender, EventArgs e)
@@ -206,8 +210,8 @@ namespace POS
 
         private void panel1_SizeChanged(object sender, EventArgs e)
         {
-            this.newEmployeeBtn.Location = new Point(this.panel1.Width - this.newEmployeeBtn.Width - 50, this.newEmployeeBtn.Location.Y);
-            this.employeeListBtn.Location = new Point(this.newEmployeeBtn.Location.X - this.employeeListBtn.Width - 25, this.employeeListBtn.Location.Y);
+            /* this.newEmployeeBtn.Location = new Point(this.topPanel.Width - this.newEmployeeBtn.Width - 50, this.newEmployeeBtn.Location.Y);
+             this.employeeListBtn.Location = new Point(this.newEmployeeBtn.Location.X - this.employeeListBtn.Width - 25, this.employeeListBtn.Location.Y);*/
         }
 
         private void nameTxt_KeyDown(object sender, KeyEventArgs e)
@@ -375,7 +379,7 @@ namespace POS
                     openDrawer();
                     this.employee.paySalary();
                     formCambio.ShowDialog();
-                   // goto label_7;
+                    // goto label_7;
                 }
             }
             if (formLogin.DialogResult == DialogResult.OK && !empleado.isAdmin)
@@ -595,7 +599,7 @@ namespace POS
         {
             FormPrestamo formPrestamo = new FormPrestamo();
             //DarkForm darkForm = new DarkForm();
-           // darkForm.Show();
+            // darkForm.Show();
             if (formPrestamo.ShowDialog() == DialogResult.OK && formPrestamo.loan > 0.0)
             {
                 double loan = formPrestamo.loan;
@@ -605,12 +609,12 @@ namespace POS
                 double num1 = loan;
                 await Task.Run(() => venta.newSale(this.User_employeeID, cliente.ID, loan, Payment, null, num1));
                 FormCambio formCambio = new FormCambio(num1);
-               
+
                 openDrawer();
                 formCambio.ShowDialog();
                 this.debtLbl.Text = "$" + (cliente.Debt + loan).ToString("n2");
             }
-           // darkForm.Close();
+            // darkForm.Close();
         }
 
         private void changePassBtn_Click(object sender, EventArgs e)
@@ -618,7 +622,7 @@ namespace POS
             Form_Change_Password formChangePassword = new Form_Change_Password(this.employee.ID, true);
             DarkForm darkForm = new DarkForm();
             darkForm.Show();
-            int num = (int)formChangePassword.ShowDialog();
+            formChangePassword.ShowDialog();
             darkForm.Hide();
         }
 
@@ -782,6 +786,7 @@ namespace POS
                 }
             }
             //<<<step1>>>--End
+            dispose.DisposeControls(this);
         }
 
         private void deleteEmployeeBtn_Click(object sender, EventArgs e)
@@ -796,6 +801,56 @@ namespace POS
                     employee.delete();
                     EmployeePanel.Hide();
                 }
+            }
+        }
+
+        private void Panel_Empleados_Resize(object sender, EventArgs e)
+        {
+        }
+
+        private void accionsPanel_Resize(object sender, EventArgs e)
+        {
+
+            bunifuCards1.MaximumSize = bunifuCards2.MaximumSize = new Size((int)(accionsPanel.Width * .40), (int)(accionsPanel.Height * .5));
+            bunifuCards1.Top = bunifuCards2.Top = (changePassBtn.Location.Y - bunifuCards1.Height) / 2;
+            bunifuCards1.Location = new Point(accionsPanel.Width - 33 - bunifuCards1.Width, bunifuCards1.Location.Y);
+        }
+
+        private void accionsPanel_Paint(object sender, PaintEventArgs e)
+        {
+            using (Pen p = new Pen(Color.DimGray) { Width = 5, Alignment = System.Drawing.Drawing2D.PenAlignment.Inset })
+            {
+                e.Graphics.DrawLine(p, 0, 0, accionsPanel.Width, 0);
+            }
+        }
+
+        private void topPanel_Paint(object sender, PaintEventArgs e)
+        {
+            using (Pen p = new Pen(Color.FromArgb(0, 130, 170)) { Width = 10, Alignment = System.Drawing.Drawing2D.PenAlignment.Outset })
+            {
+                e.Graphics.DrawLine(p, 0, topPanel.Height, accionsPanel.Width, topPanel.Height);
+            }
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+            using (Pen p = new Pen(Color.FromArgb(0, 130, 170)) { Width = 5, Alignment = System.Drawing.Drawing2D.PenAlignment.Left })
+            {
+                e.Graphics.DrawLine(p, 0, 0, 0, panel2.Height);
+            }
+        }
+
+        private void panel4_Resize(object sender, EventArgs e)
+        {
+            searchBtn.Location = new Point(searchEmployeeTxt.Location.X + searchEmployeeTxt.Width + 10, searchBtn.Location.Y);
+        }
+
+
+        private void basicInfoPanel_SizeChanged(object sender, EventArgs e)
+        {
+            if(panel6.Width>= panel6.MaximumSize.Width)
+            {
+                panel2.Width = basicInfoPanel.Width - panel6.MaximumSize.Width;
             }
         }
     }

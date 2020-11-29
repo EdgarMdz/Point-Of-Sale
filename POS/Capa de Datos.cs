@@ -8,7 +8,7 @@ namespace POS
     class Capa_de_Datos
     {
         private SqlConnection con;
-        private const string connectionString = @"Data Source=localhost\SQLEXPRESS;Initial Catalog=C:\USERS\TIENDA\SOURCE\REPOS\POS\POS\DATA\FINALDB.MDF;Integrated Security=True";
+        private  string connectionString = @"Data Source=localhost\SQLEXPRESS;Initial Catalog=C:\USERS\TIENDA\SOURCE\REPOS\POS\POS\DATA\FINALDB.MDF;Integrated Security=True";
 
         public void AddProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, 
             double PreciodeCompra, double Stock, double minStock, byte[] Foto, string CodigoBarras, int depotID, string mainProductBarcode,
@@ -1299,7 +1299,7 @@ namespace POS
         {
             this.con = new SqlConnection()
             {
-                ConnectionString = @"Data Source=localhost\SQLEXPRESS;Initial Catalog=C:\USERS\TIENDA\SOURCE\REPOS\POS\POS\DATA\FINALDB.MDF;Integrated Security=True"
+                ConnectionString = connectionString
             };
            
             

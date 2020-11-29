@@ -63,7 +63,7 @@ namespace POS
             this.bunifuCustomLabel1.AutoSize = true;
             this.bunifuCustomLabel1.Font = new System.Drawing.Font("Century Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bunifuCustomLabel1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
-            this.bunifuCustomLabel1.Location = new System.Drawing.Point(133, 30);
+            this.bunifuCustomLabel1.Location = new System.Drawing.Point(145, 30);
             this.bunifuCustomLabel1.Name = "bunifuCustomLabel1";
             this.bunifuCustomLabel1.Size = new System.Drawing.Size(291, 38);
             this.bunifuCustomLabel1.TabIndex = 0;

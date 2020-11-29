@@ -189,5 +189,15 @@ namespace POS
                           5000);
             dataGridView1.ShowCellToolTips = true;
         }
+
+        private void PanelVentas_RetornarEnvasesForm_Resize(object sender, EventArgs e)
+        {
+            CenterToScreen();
+        }
+
+        private void PanelVentas_RetornarEnvasesForm_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.FillRectangle(Brushes.Black, e.ClipRectangle);
+        }
     }
 }

@@ -27,7 +27,7 @@ namespace POS
         CashDrawer m_Drawer;
         supplierProductsToolTip tip = new supplierProductsToolTip();
         private int currentSupplierButon = 0;
-
+        bool resizeDone = false;
 
         private enum Direction
         {
@@ -55,7 +55,6 @@ namespace POS
             this.proveedor = new Proveedor();
             this.showActionPannelForDataGridView = true;
             this.OriginalColumnHeaderIndexes = new List<string>();
-
             this.timer = new Timer();
 
             var employee = new Empleado(EmployeeID);
@@ -92,7 +91,7 @@ namespace POS
             if (comboColumn.Items.Count <= 1)
                 comboColumn.Visible = false;
 
-            dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 15.75f, FontStyle.Bold);
+            dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 13.75f, FontStyle.Bold);
         }
 
         private void Panel_proveedores_Form_Load(object sender, EventArgs e)
@@ -183,8 +182,18 @@ namespace POS
                 }
             });
 
+            int gap = 0;
+
+            if (flow1.Controls.Count > 0)
+            {
+                    gap = this.Parent.Width % flow1.Controls[0].Width;
+                    gap /= this.Parent.Width / flow1.Controls[0].Width;
+            }
+
+
             foreach (Control control in this.flow1.Controls)
             {
+                control.Margin = new Padding(gap, gap/2, gap, gap/2);
                 new BunifuElipse()
                 {
                     ElipseRadius = 20,
@@ -212,6 +221,7 @@ namespace POS
                 bunifuImageButton.Click += new EventHandler(this.SupplierbuttonClick);
                 bunifuImageButton.Size = new Size(500, 300);
                 bunifuImageButton.Zoom = 0;
+                bunifuImageButton.Margin = new Padding(100, 0, 0100, 0);
 
                 bunifuImageButton.GotFocus += (s, e) =>
                 {
@@ -565,7 +575,7 @@ namespace POS
 
         public void Panel_Paint(object sender, PaintEventArgs e)
         {
-            BunifuGradientPanel bunifuGradientPanel = sender as BunifuGradientPanel;
+             var bunifuGradientPanel = sender as Control;
             e.Graphics.DrawLine(new Pen(Color.FromArgb(0, 130, 170))
             {
                 Width = 3f
@@ -966,6 +976,8 @@ namespace POS
 
         private void SupplierbuttonClick(object sender, EventArgs e)
         {
+            setDatagridviewFontSize();
+
             BunifuImageButton bunifuImageButton = sender as BunifuImageButton;
             this.SuppliersPanel.Hide();
             this.SupplierImagePicBox.Image = bunifuImageButton.Image;
@@ -1013,14 +1025,12 @@ namespace POS
 
             setPurchaseStatistics();
 
-            this.setPanelWidth(this.BasicSupplierInformationPanel, this.BasicInformationCard, 0.26);
-            this.setPanelWidth(this.VisitingDaysPanel, this.BasicInformationCard, 0.25);
-            this.setPanelWidth(this.DebtPannel, this.BasicInformationCard, 0.24);
-            this.setPanelWidth(this.SupplierImagePanel, this.BasicInformationCard, 0.25);
+            //this.setPanelWidth(this.SupplierImagePanel, this.BasicInformationCard, 0.25);
+            SupplierImagePanel.Width = BasicInformationCard.Width - (DebtPannel.Location.X + DebtPannel.Width);
             this.VisitingDaysPanel.Location = new Point(this.BasicSupplierInformationPanel.Location.X + this.BasicSupplierInformationPanel.Width, this.BasicSupplierInformationPanel.Location.Y);
             this.DebtPannel.Location = new Point(this.VisitingDaysPanel.Location.X + this.VisitingDaysPanel.Width, this.VisitingDaysPanel.Location.Y);
             this.SupplierImagePanel.Location = new Point(this.DebtPannel.Location.X + this.DebtPannel.Width, this.DebtPannel.Location.Y);
-            this.CompanyNameCard.Location = new Point(this.SupplierImagePanel.Width / 2 - this.CompanyNameCard.Width / 2, this.SupplierImagePanel.Height / 2 - this.CompanyNameCard.Height / 2);
+            
             List<Control> controlList = new List<Control>();
             List<Control> controls1 = this.getControls((Control)this.BasicSupplierInformationPanel);
             this.centerControls(controls1, Direction.Vertical);
@@ -1068,8 +1078,9 @@ namespace POS
 
         private void ProductTableBtn_Click(object sender, EventArgs e)
         {
-            this.ProggressActiveSeparator.Location = new Point(0, this.ProggressActiveSeparator.Location.Y);
-            this.ProggressActiveSeparator.Width = this.GetMiddlePointXLocation((Control)this.ProductTableBtn, (Control)this.NextPurchaseTableBtn);
+            this.ProggressActiveSeparator.Width = (ProductTableBtn.Location.X - ProgressUnactiveSeparator.Location.X) * 2 + ProductTableBtn.Width;
+           this.ProggressActiveSeparator.Location = new Point(ProgressUnactiveSeparator.Location.X, this.ProggressActiveSeparator.Location.Y);
+           
             this.ProductTableBtn.Enabled = false;
             this.NextPurchaseTableBtn.Enabled = true;
             this.AlarmsBtn.Enabled = true;
@@ -1206,8 +1217,8 @@ namespace POS
                     {
                         row.Selected = true;
                         dataGridView1.FirstDisplayedScrollingRowIndex = row.Index;
-                        row.Cells["Piezas por caja"].Value = poveedoresNuevoProducto.piecesPerCase.ToString("n2");
-                        row.Cells["Precio de Proveedor"].Value = poveedoresNuevoProducto.price.ToString("n2");
+                        row.Cells["Piezas por caja"].Value = poveedoresNuevoProducto.piecesPerCase.ToString("n2").Replace(",", "");
+                        row.Cells["Precio de Proveedor"].Value = poveedoresNuevoProducto.price.ToString("n2").Replace(",", "");
                         break;
                     }
                 }
@@ -1313,6 +1324,8 @@ namespace POS
             {
                 double total = 0;
                 dataGridView2.Rows.Clear();
+                dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("Century gothic", 14f, FontStyle.Bold);
+                dataGridView2.DefaultCellStyle.Font = new Font("Century gothic", 14f, FontStyle.Bold);
 
                 foreach (DataRow row in proveedor.SupplierGetQuantitiesAndDates().Rows)
                 {
@@ -1517,8 +1530,8 @@ namespace POS
                     double UnitaryCost = Convert.ToDouble(productSupplierInfo.Rows[0]["Precio de Compra"]);
                     double PiecesPerCase = Convert.ToDouble(productSupplierInfo.Rows[0]["Piezas por Caja"]);
 
-                   // product.PurchaseCost = UnitaryCost / PiecesPerCase * product.PiecesPerCase;
-                   // product.UpdateProduct(product.Barcode);
+                    // product.PurchaseCost = UnitaryCost / PiecesPerCase * product.PiecesPerCase;
+                    // product.UpdateProduct(product.Barcode);
 
                     this.proveedor.addProductToPO(poID, product, Convert.ToDouble(row1.Cells["amount"].Value.ToString()),
                         PiecesPerCase, UnitaryCost, Convert.ToDouble(row1.Cells["Total"].Value), Convert.ToInt32(row1.Cells["depot"].Value));
@@ -1843,8 +1856,10 @@ namespace POS
 
         private void AlarmsBtn_Click(object sender, EventArgs e)
         {
-            this.ProggressActiveSeparator.Location = new Point(this.GetMiddlePointXLocation((Control)this.NextPurchaseTableBtn, (Control)this.AlarmsBtn), this.ProggressActiveSeparator.Location.Y);
-            this.ProggressActiveSeparator.Width = this.ProgressUnactiveSeparator.Width - this.ProggressActiveSeparator.Location.X;
+            ProggressActiveSeparator.Width = ((ProgressUnactiveSeparator.Location.X + ProgressUnactiveSeparator.Width) - (AlarmsBtn.Location.X + AlarmsBtn.Width)) * 2 + AlarmsBtn.Width;
+
+            this.ProggressActiveSeparator.Location = new Point(ProgressUnactiveSeparator.Location.X + ProgressUnactiveSeparator.Width - ProggressActiveSeparator.Width, this.ProggressActiveSeparator.Location.Y);
+
             this.ProductTableBtn.Enabled = new Empleado(this.EmployeeID).isAdmin;
             this.NextPurchaseTableBtn.Enabled = true;
             this.AlarmsBtn.Enabled = false;
@@ -1875,6 +1890,26 @@ namespace POS
             ProductTxt.Text = "";
             chart2.Series.Clear();
             label11.Text = "";
+            resetRowHeight(datagridviewEnum.Both);
+        }
+
+        private void resetRowHeight(datagridviewEnum gv)
+        {
+            switch (gv)
+            {   
+                case datagridviewEnum.productsGridView:
+                    dataGridView1.RowTemplate.Height = dataGridView1.RowTemplate.MinimumHeight = 10;
+                    break;
+                case datagridviewEnum.NextPruchaseGridView:
+                    dataGridView2.RowTemplate.Height = dataGridView2.RowTemplate.MinimumHeight = 10;
+                    break;
+                case datagridviewEnum.Both:
+                    dataGridView1.RowTemplate.Height = dataGridView1.RowTemplate.MinimumHeight = 10;
+                    dataGridView2.RowTemplate.Height = dataGridView2.RowTemplate.MinimumHeight = 10;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void phoneNumberTxt_KeyPress(object sender, KeyPressEventArgs e)
@@ -2448,12 +2483,28 @@ namespace POS
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if (keyData == (Keys.Control | Keys.Add) || keyData == (Keys.Control | Keys.Oemplus))
+            {
+                if (dataGridView1.Visible)
+                    setNewFont(Properties.Settings.Default.PanelProveedores_DGV1Font + 1);
+                else if (dataGridView2.Visible)
+                    setNewFont(Properties.Settings.Default.PanelProveedores_DGV2Font + 1);
+
+            }
+            if (keyData == (Keys.Control | Keys.OemMinus) || keyData == (Keys.Control | Keys.Subtract))
+            {
+                if (dataGridView1.Visible)
+                    setNewFont(Properties.Settings.Default.PanelProveedores_DGV1Font - 1);
+                else if (dataGridView2.Visible)
+                    setNewFont(Properties.Settings.Default.PanelProveedores_DGV2Font - 1);
+            }
+
             if (keyData == (Keys.Alt | Keys.Left) && SupplierInfromationPanel.Visible)
                 bunifuImageButton1_Click(this, null);
 
             if (dataGridView2.Visible && dataGridView2.RowCount > 0 && dataGridView2.CurrentRow != null)
             {
-                if (keyData == (Keys.F3) && dataGridView2.Columns["depot"].Visible  )
+                if (keyData == (Keys.F3) && dataGridView2.Columns["depot"].Visible)
                 {
                     dataGridView2.CurrentCell = dataGridView2.CurrentRow.Cells["depot"];
                     dataGridView2.BeginEdit(true);
@@ -2528,12 +2579,73 @@ namespace POS
             tip.Hide(this);
         }
 
+        enum datagridviewEnum
+        {
+            productsGridView,
+            NextPruchaseGridView,
+            Both
+        }
 
         private void dataGridView1_DataSourceChanged(object sender, EventArgs e)
         {
-
+            resetRowHeight(datagridviewEnum.productsGridView);
+            dataGridView1.DefaultCellStyle.Font = new Font("century gothic", 12f, FontStyle.Bold);
+            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", 14f, FontStyle.Bold);
+            dataGridView1.RowsDefaultCellStyle.Font = new Font("century gothic", 12f, FontStyle.Bold);
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            dataGridView1.Columns["Código de Barras"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView1.Columns["Descripción"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+        }
+
+        private void setDatagridviewFontSize()
+        {
+            
+            var prop = Properties.Settings.Default;
+
+            dataGridView1.BeginInvoke((Action)(()=>{
+                dataGridView1.DefaultCellStyle.Font = new Font("century gothic", prop.PanelProveedores_DGV1Font - 2, FontStyle.Bold);
+                dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", prop.PanelProveedores_DGV1Font, FontStyle.Bold);
+            }));
+
+            dataGridView2.BeginInvoke((Action)(() =>
+            {
+                dataGridView2.DefaultCellStyle.Font = new Font("century gothic", prop.PanelProveedores_DGV2Font - 2, FontStyle.Bold);
+                dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", prop.PanelProveedores_DGV2Font, FontStyle.Bold);
+            }));
+        }
+
+        private void Panel_proveedores_Form_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.LeftCtrl))
+            {
+                var prop = Properties.Settings.Default;
+                if (dataGridView1.Visible)
+                {
+                    float value = prop.PanelProveedores_DGV1Font + e.Delta / 50;
+
+                    setNewFont(value);
+                }
+                else if (dataGridView2.Visible)
+                {
+                    float value = prop.PanelProveedores_DGV2Font + e.Delta / 50;
+
+                    setNewFont(value);
+                }
+            }
+        }
+
+        private void setNewFont(float fontSize)
+        {
+            if (fontSize > 8.5 && fontSize < 30)
+            {
+                if (dataGridView1.Visible)
+                    Properties.Settings.Default.PanelProveedores_DGV1Font = fontSize;
+                else if(dataGridView2.Visible)
+                    Properties.Settings.Default.PanelProveedores_DGV2Font = fontSize;
+               
+                Properties.Settings.Default.Save();
+
+                setDatagridviewFontSize();
+            }
         }
 
         private void dataGridView1_RowHeightChanged(object sender, DataGridViewRowEventArgs e)
@@ -2658,7 +2770,9 @@ namespace POS
                 if (height < item.Height)
                     height = item.Height;
             }
-            dataGridView1.RowTemplate.MinimumHeight = height;
+            dataGridView2.RowTemplate.MinimumHeight = height == 0 ? 5 : height;
+            if (height == 0)
+                dataGridView2.RowTemplate.Height = 5;
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
@@ -2700,7 +2814,7 @@ namespace POS
                     break;
             }
 
-            DataTable dt = await Task.Run(()=> proveedor.getPurchaseStatistics(dateTimePicker1.Value, period));
+            DataTable dt = await Task.Run(() => proveedor.getPurchaseStatistics(dateTimePicker1.Value, period));
 
             SeriesChartType type;
             if (dt.Rows.Count > 3)
@@ -2775,7 +2889,7 @@ namespace POS
                     break;
             }
 
-            dataGridView3.DataSource = await Task.Run(()=> proveedor.getBestSellers(dateTimePicker1.Value, period));
+            dataGridView3.DataSource = await Task.Run(() => proveedor.getBestSellers(dateTimePicker1.Value, period));
             pictureBox1.Hide();
         }
 
@@ -2813,7 +2927,7 @@ namespace POS
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode== Keys.Enter)
+            if (e.KeyCode == Keys.Enter)
             {
                 loadBuyChart();
             }
@@ -2932,6 +3046,194 @@ namespace POS
         private void dataGridView2_CurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
             dataGridView2.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        }
+
+        private void SupplierInfromationPanel_Resize(object sender, EventArgs e)
+        {
+            foreach (Control item in BasicInformationCard.Controls)
+            {
+                item.Width = item.Parent.Width / 4;
+            }
+
+
+            var parent = SupplierImagePicBox.Parent;
+
+            SupplierImagePicBox.Height = SupplierImagePicBox.Width * 150 / 250;
+            SupplierImagePicBox.Location = new Point((parent.Width - SupplierImagePicBox.Width) / 2,
+                (parent.Height - SupplierImagePicBox.Height) / 2);
+
+
+            panel1.MaximumSize = panel3.MaximumSize = 
+                new Size((RemindersPanel.Width - 10) / 2, panel3.Height);
+
+         
+
+            
+        /*
+        var res = Screen.PrimaryScreen.Bounds;
+        if (res != new Rectangle(0, 0, 1920, 1080) && !resizeDone)
+        {
+            panel.Width = (int)(panel.Parent.Width * 0.9);
+            panel.Height += 50;
+            panel.Location = new Point((panel.Parent.Width - panel.Width) / 2, panel.Location.Y - 30);
+            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+            dataGridView1.DefaultCellStyle.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+            dataGridView1.RowsDefaultCellStyle.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+
+            var space = (DataGridCardControlPanel.Height - (AddRowBtn.Width) * 3) / 3;//total heigth divided by the number of visible controls
+
+            AddRowBtn.Location = new Point(AddRowBtn.Location.X, space);
+            EditRowBtn.Location = new Point(EditRowBtn.Location.X, AddRowBtn.Location.Y + AddRowBtn.Height + space);
+            DeleteRowBtn.Location = new Point(DeleteRowBtn.Location.X, EditRowBtn.Location.Y + EditRowBtn.Height + space);
+            FilteringTextbox.Width = (int)(bunifuGradientPanel1.Width * 0.5);
+
+            label3.Location = new Point((bunifuGradientPanel1.Width - (label3.Width + FilteringTextbox.Width)) / 2, label3.Location.Y);
+            FilteringTextbox.Location = new Point(label3.Location.X + label3.Width + 10, FilteringTextbox.Location.Y);
+            ControlsContainerPanel.Location = new Point((SupplierInfromationPanel.Width - ControlsContainerPanel.Width) / 2, ControlsContainerPanel.Location.Y);
+
+            dataGridView2.ColumnHeadersDefaultCellStyle.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+            dataGridView2.DefaultCellStyle.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+            dataGridView2.RowsDefaultCellStyle.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+
+            casescountLbl.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+            casescountLbl.Height -= 10;
+
+            panel2.Width = panel4.Width = (int)(RemindersPanel.Width * .90);
+            panel2.Location = new Point((RemindersPanel.Width - panel2.Width) / 2, panel2.Location.Y);
+            panel4.Location = new Point((RemindersPanel.Width - panel4.Width) / 2, panel4.Location.Y);
+
+            panel1.Width = panel3.Width = (int)(RemindersPanel.Width * .3);
+            panel1.Location = new Point(panel2.Location.X, panel1.Location.Y); //new Point((RemindersPanel.Width / 2 - panel1.Width) / 2, panel1.Location.Y);
+            panel3.Location = new Point(panel2.Location.X + panel2.Width - panel3.Width, panel3.Location.Y); //new Point(RemindersPanel.Width / 2 + (RemindersPanel.Width / 2 - panel3.Width) / 2, panel3.Location.Y);
+
+            textBox1.Width = (int)(panel5.Width * 0.3);
+            label10.Location = new Point((panel5.Width - (label10.Width + textBox1.Width)) / 2, label10.Location.Y);
+            textBox1.Location = new Point(label10.Location.X + label10.Width + 10, textBox1.Location.Y);
+
+            double ratio = BasicSupplierInformationPanel.Width / 1370.0;
+
+            foreach (Control control2 in BasicInformationCard.Controls)
+            {
+                if (control2.GetType().ToString() == "Bunifu.Framework.UI.BunifuGradientPanel")
+                    control2.Width = (int)(BasicInformationCard.Width /5);
+            }
+
+            foreach (Control control1 in BasicSupplierInformationPanel.Controls)
+            {
+                control1.Width = (int)(control1.Width * ratio);
+            }
+
+
+            label2.Location = new Point((label2.Parent.Width - label2.Width) / 2, label2.Location.Y);
+
+            companyNameTxt.Location = new Point(companyNameTxt.Location.X, 10);
+            companyNameTxt.Width = companyAddressTxt.Width = phoneNumberTxt.Width = (int)(phoneNumberTxt.Parent.Width * .85);
+            companyAddressTxt.Location = new Point(companyAddressTxt.Location.X, companyNameTxt.Location.Y + companyNameTxt.Height + 5);
+            phoneNumberTxt.Location = new Point(phoneNumberTxt.Location.X, companyAddressTxt.Location.Y + companyAddressTxt.Height + 5);
+
+            //CenterControlsAsGroup(new List<Control>(BasicSupplierInformationPanel.Controls.Cast<Control>()), Direction.Vertical);
+
+            if (TextRenderer.MeasureText(this.AdeudoLbl.Text, this.AdeudoLbl.Font).Width > this.AdeudoLbl.Parent.Width - 10)
+                AdeudoLbl.Font = PrinterTicket.getFont(AdeudoLbl.Text, AdeudoLbl.Parent.Width - 50,
+                FontStyle.Regular, AdeudoLbl.Font.FontFamily.ToString());
+
+            foreach (Control control in DebtPannel.Controls)
+            {
+                var parent = control.Parent;
+                control.Location = new Point((parent.Width - control.Width) / 2, control.Location.Y);
+            }
+
+            CompanyNameCard.Size = new Size((int)(CompanyNameCard.Parent.Width * 0.90), 
+                (int)(CompanyNameCard.Parent.Height * 0.65 ));
+
+            CompanyNameCard.Location = new Point((CompanyNameCard.Parent.Width - CompanyNameCard.Width) / 2, (CompanyNameCard.Parent.Height - CompanyNameCard.Height) / 2);
+
+            resizeDone = true;
+        }*/
+    }
+
+
+        private void CenterControlsAsGroup(List<Control> controls, Direction direction)
+        {
+            if (controls.Count > 1)
+            {
+                int xSum = 0;
+                int ySum = 0;
+                Point center;
+                foreach (Control ctl in controls)
+                {
+                    center = new Point(ctl.Location.X + ctl.Width / 2, ctl.Location.Y + ctl.Height / 2);
+                    xSum = xSum + center.X;
+                    ySum = ySum + center.Y;
+                }
+                Point average = new Point(xSum / controls.Count, ySum / controls.Count);
+
+                center = new Point(controls[0].Parent.Width / 2, controls[0].Parent.Height / 2);
+                int xOffset = center.X - average.X;
+                int yOffset = center.Y - average.Y;
+
+                foreach (Control ctl in controls)
+                {
+                    switch (direction)
+                    {
+                        case Direction.Vertical:
+                            ctl.Location = new Point(ctl.Location.X + xOffset, ctl.Location.Y);
+                            break;
+
+                        case Direction.Horizontal:
+                            ctl.Location = new Point(ctl.Location.X, ctl.Location.Y + yOffset);
+                            break;
+
+                        case Direction.Both:
+                            ctl.Location = new Point(ctl.Location.X + xOffset, ctl.Location.Y + yOffset);
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void GetAllControl(Control c, List<Control> list)
+        {
+            //gets all controls and saves them to a list
+            foreach (Control control in c.Controls)
+            {
+                list.Add(control);
+            }
+        }
+
+        private void DebtPannel_Paint(object sender, PaintEventArgs e)
+        {
+            var control = (sender as Control);
+            using (Pen p = new Pen(Color.FromArgb(0, 151, 203)) { Width = 15, Alignment = System.Drawing.Drawing2D.PenAlignment.Inset })
+            {
+                e.Graphics.DrawLine(p, 0, 0, control.Width, 0);
+                
+                p.Color = Color.DimGray;
+                p.Width = 2;
+                p.Alignment = System.Drawing.Drawing2D.PenAlignment.Outset;
+                e.Graphics.DrawLine(p, 0, control.Height, control.Width, control.Height);
+            }
+        }
+
+        private void SupplierImagePicBox_Resize(object sender, EventArgs e)
+        {
+        }
+
+        private void RemindersPanel_SizeChanged(object sender, EventArgs e)
+        {
+
+            panel1.Location = new Point((RemindersPanel.Width / 2 - panel1.Width) / 2, panel1.Location.Y);
+
+            panel3.Location = new Point(RemindersPanel.Width / 2 + (RemindersPanel.Width / 2 - panel3.Width) / 2,
+                panel3.Location.Y);
+        }
+
+        private void dataGridView2_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            if(dataGridView2.RowCount==0)
+            {
+                resetRowHeight(datagridviewEnum.NextPruchaseGridView);
+            }
         }
     }
 
