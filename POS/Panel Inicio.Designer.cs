@@ -163,7 +163,7 @@ namespace POS
             this.bunifuSeparator1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.bunifuSeparator1.BackColor = System.Drawing.Color.Transparent;
             this.bunifuSeparator1.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.bunifuSeparator1.LineThickness = 302;
+            this.bunifuSeparator1.LineThickness = 650;
             this.bunifuSeparator1.Location = new System.Drawing.Point(71, 65);
             this.bunifuSeparator1.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.bunifuSeparator1.Name = "bunifuSeparator1";
@@ -203,6 +203,9 @@ namespace POS
             this.startShiftBtn.Text = "Iniciar Turno";
             this.startShiftBtn.UseVisualStyleBackColor = false;
             this.startShiftBtn.Click += new System.EventHandler(this.startShiftBtn_Click);
+            // 
+            // printDocument1
+            // 
             // 
             // groupBox1
             // 
@@ -255,7 +258,7 @@ namespace POS
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(100)))), ((int)(((byte)(140)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 12.25F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
@@ -269,7 +272,7 @@ namespace POS
             this.dataGridView1.ReadOnly = true;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(150)))), ((int)(((byte)(190)))));
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle3.ForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
@@ -391,8 +394,8 @@ namespace POS
             this.Text = "Inicio | Point of Sale";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Panel_Inicio_FormClosing);
             this.Load += new System.EventHandler(this.Panel_Inicio_Load);
-            this.MouseWheel += new MouseEventHandler(this.Panel_Inicio_MouseWheel);
             this.SizeChanged += new System.EventHandler(this.Panel_Inicio_SizeChanged);
+            this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.Panel_Inicio_MouseWheel);
             this.Resize += new System.EventHandler(this.Panel_Inicio_Resize);
             this.WindowSizeControlPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();

@@ -69,7 +69,7 @@ namespace POS
             this.PhoneTxt.MaxLength = 10;
             this.PhoneTxt.Name = "PhoneTxt";
             this.PhoneTxt.Size = new System.Drawing.Size(318, 33);
-            this.PhoneTxt.TabIndex = 4;
+            this.PhoneTxt.TabIndex = 1;
             this.PhoneTxt.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.OkBtn_PreviewKeyDown);
             // 
             // DebtTxt
@@ -79,7 +79,7 @@ namespace POS
             this.DebtTxt.Location = new System.Drawing.Point(179, 347);
             this.DebtTxt.Name = "DebtTxt";
             this.DebtTxt.Size = new System.Drawing.Size(318, 33);
-            this.DebtTxt.TabIndex = 36;
+            this.DebtTxt.TabIndex = 3;
             this.DebtTxt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.DebtTxt_KeyPress);
             this.DebtTxt.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.OkBtn_PreviewKeyDown);
             // 
@@ -90,7 +90,7 @@ namespace POS
             this.AddressTxt.Location = new System.Drawing.Point(179, 275);
             this.AddressTxt.Name = "AddressTxt";
             this.AddressTxt.Size = new System.Drawing.Size(318, 33);
-            this.AddressTxt.TabIndex = 5;
+            this.AddressTxt.TabIndex = 2;
             this.AddressTxt.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.OkBtn_PreviewKeyDown);
             // 
             // label1
@@ -166,11 +166,10 @@ namespace POS
             this.OkBtn.Margin = new System.Windows.Forms.Padding(2);
             this.OkBtn.Name = "OkBtn";
             this.OkBtn.Size = new System.Drawing.Size(150, 65);
-            this.OkBtn.TabIndex = 34;
+            this.OkBtn.TabIndex = 4;
             this.OkBtn.Text = "Aceptar";
             this.OkBtn.UseVisualStyleBackColor = false;
             this.OkBtn.Click += new System.EventHandler(this.OkBtn_Click);
-            this.OkBtn.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.OkBtn_PreviewKeyDown);
             // 
             // bunifuElipse1
             // 

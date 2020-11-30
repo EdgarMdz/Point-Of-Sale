@@ -41,7 +41,6 @@ namespace POS
         private void OkBtn_Click(object sender, EventArgs e)
         {
             Cliente cliente = new Cliente();
-            DataTable dataTable1 = new DataTable();
             if (this.PhoneTxt.Text.Length == 10)
             {
                 this.PhoneTxt.Text = this.PhoneTxt.Text.Insert(3, "-");
@@ -88,9 +87,8 @@ namespace POS
         {
             if (e.KeyCode == Keys.Escape)
                 this.Close();
-            if (e.KeyCode != Keys.Return || !(this.NameTxt.Text != ""))
-                return;
-            this.OkBtn_Click((object)this, (EventArgs)null);
+            if (e.KeyCode == Keys.Enter && this.NameTxt.Text != "")
+                this.OkBtn_Click(this, new EventArgs());
         }
 
         private void DebtTxt_KeyPress(object sender, KeyPressEventArgs e)

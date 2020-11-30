@@ -1360,7 +1360,7 @@ namespace POS
             {
                 MessageBox.Show("No se encontró la impresora");
             }
-            catch (Exception) { }
+            catch (Exception e) { MessageBox.Show(e.Message);  }
         }
 
         private void printTicket(Graphics graphics, List<Tuple<string, List<object>, bool>> infoList, int maxHeight)
@@ -1372,7 +1372,23 @@ namespace POS
             {
                 var item = infoList[0];
 
-                System.Reflection.MethodInfo theMethod = thisType.GetMethod(item.Item1);
+                System.Reflection.MethodInfo theMethod;
+
+                switch (item.Item1)
+                {
+                    case "printLine":
+                        theMethod = thisType.GetMethod(item.Item1, new Type[] { typeof(string), typeof(Font), typeof(int), typeof(StringAlignment), typeof(Graphics), typeof(int) });
+                        break;
+                    case "drawLine":
+                        theMethod = thisType.GetMethod(item.Item1, new Type[] { typeof(int), typeof(int), typeof(Graphics), typeof(int) });
+                        break;
+                    case "printImage":
+                        theMethod = thisType.GetMethod(item.Item1, new Type[] { typeof(Image), typeof(int), typeof(int), typeof(Graphics), typeof(int) });
+                        break;
+                    default:
+                        throw new Exception("Ambiguedad de metodos");
+                        break;
+                }
 
                 var parameters = new object[item.Item2.Count + 2];
 
@@ -1386,11 +1402,14 @@ namespace POS
                 parameters[i] = location;
 
                 if (item.Item3)
+                {
+                    
                     location += (int)theMethod.Invoke(this, parameters);
-
+                }
                 else
+                {
                     theMethod.Invoke(this, parameters);
-
+                }
                 infoList.RemoveAt(0);
             }
         }
@@ -3757,13 +3776,17 @@ namespace POS
 
         private void Panel_Ventas_Resize(object sender, EventArgs e)
         {
-            CanceledLbl.Location = new Point((panel1.Width - CanceledLbl.Width) / 2, (panel1.Height - CanceledLbl.Height) / 2);
+                        CanceledLbl.Location = new Point((panel1.Width - CanceledLbl.Width) / 2, (panel1.Height - CanceledLbl.Height) / 2);
 
             panel2.MaximumSize = new Size(0, 0);
             panel2.Width = (int)(this.Width * .25);
             panel2.Height = this.Height;
 
             double vScale = panel2.Height / normalScale;
+            
+            if (vScale == 0 || vScale == 1)
+                return;
+
             normalScale = panel2.Height;
             //productGroupBox
 

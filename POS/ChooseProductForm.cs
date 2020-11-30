@@ -70,10 +70,8 @@ namespace POS
         }
 
         private void addProductsToTable()
-        {
-            int i = 0;
-
-            while(i<20 && dataGridView1.RowCount+1<=products.Rows.Count)
+        { 
+            while(dataGridView1.RowCount+1<=products.Rows.Count)
             {
                 var index = dataGridView1.Rows.Add();
 
@@ -81,7 +79,6 @@ namespace POS
                 {
                     dataGridView1[column.Index, index].Value = products.Rows[index][column.Index];
                 }
-                i++;
             }
         }
 

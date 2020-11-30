@@ -334,10 +334,19 @@ namespace POS
 
             if (purchase.Rows.Count == 0)
             {
+                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
                 InfoLbl.Visible = true;
-                while (InfoLbl.Width < DetalleCompraDataGridView1.Width)
-                    InfoLbl.Font = new Font("Century Gothic", InfoLbl.Font.Size + 1f);
-                InfoLbl.Location = new Point(InfoLbl.Location.X, DetalleCompraDataGridView1.ColumnHeadersHeight + (DetalleCompraDataGridView1.Location.Y + DetalleCompraDataGridView1.Height) / 2);
+                float value = 6;
+                do
+                {
+                    InfoLbl.Font = new Font("Century Gothic", value + 1f);
+                    value += 1f;
+                } while (InfoLbl.Width < this.Width - DetalleCompraDataGridView1.Location.X-50 && stopwatch.ElapsedMilliseconds < 500);
+                stopwatch.Stop();
+
+                InfoLbl.Location = new Point(DetalleCompraDataGridView1.Location.X+(DetalleCompraDataGridView1.Width-InfoLbl.Width)/2,
+                    DetalleCompraDataGridView1.Location.Y+(DetalleCompraDataGridView1.Height-InfoLbl.Height)/2);
             }
             else
                 InfoLbl.Visible = false;
@@ -614,10 +623,10 @@ namespace POS
             PanelClienteNewCustomerForm clienteNewCustomerForm = new PanelClienteNewCustomerForm();
             clienteNewCustomerForm.EmployeeID = this.EmployeeID;
             darkForm.Show();
-            int num1 = (int)clienteNewCustomerForm.ShowDialog();
-            if (clienteNewCustomerForm.DialogResult == DialogResult.OK)
+            
+            if (clienteNewCustomerForm.ShowDialog() == DialogResult.OK)
             {
-                int num2 = (int)MessageBox.Show("Se ha creado un nuevo cliente");
+                MessageBox.Show("Se ha creado un nuevo cliente");
                 this.collection.Add(clienteNewCustomerForm.Name);
             }
             darkForm.Close();
@@ -1257,7 +1266,23 @@ namespace POS
             {
                 var item = infoList[0];
 
-                System.Reflection.MethodInfo theMethod = thisType.GetMethod(item.Item1);
+                System.Reflection.MethodInfo theMethod;
+                
+                switch (item.Item1)
+                {
+                    case "printLine":
+                        theMethod = thisType.GetMethod(item.Item1, new Type[] { typeof(string), typeof(Font), typeof(int), typeof(StringAlignment), typeof(Graphics), typeof(int) });
+                        break;
+                    case "drawLine":
+                        theMethod = thisType.GetMethod(item.Item1, new Type[] { typeof(int), typeof(int), typeof(Graphics), typeof(int) });
+                        break;
+                    case "printImage":
+                        theMethod = thisType.GetMethod(item.Item1, new Type[] { typeof(Image), typeof(int), typeof(int), typeof(Graphics), typeof(int) });
+                        break;
+                    default:
+                        throw new Exception("Ambiguedad de metodos");
+                        break;
+                }
 
                 var parameters = new object[item.Item2.Count + 2];
 
