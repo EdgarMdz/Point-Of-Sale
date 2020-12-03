@@ -62,7 +62,7 @@ namespace POS
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
 
-            this.endShiftBtn.Visible = Turno.shiftActive;
+            this.endShiftBtn.Visible = Turno.shiftActive && new Empleado(empID).isAdmin;
             this.startShiftBtn.Visible = !Turno.shiftActive;
             this.employeeID = empID;
             this.dataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
@@ -311,8 +311,7 @@ namespace POS
                 Turno.start(DateTime.Now, formNewShift.Cash, this.employeeID);
                 this.startShiftBtn.Hide();
                 this.button2.Hide();
-                this.endShiftBtn.Show();
-                endShiftBtn.Enabled = true;
+                endShiftBtn.Enabled = this.endShiftBtn.Visible = new Empleado(employeeID).isAdmin;
                 this.setGroupBoxInfo();
             }
             darkForm.Close();

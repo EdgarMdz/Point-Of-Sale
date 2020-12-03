@@ -955,7 +955,7 @@ namespace POS
             this.removeImageBtn.BackColor = System.Drawing.Color.Transparent;
             this.removeImageBtn.Image = ((System.Drawing.Image)(resources.GetObject("removeImageBtn.Image")));
             this.removeImageBtn.ImageActive = null;
-            this.removeImageBtn.Location = new System.Drawing.Point(503, 17);
+            this.removeImageBtn.Location = new System.Drawing.Point(503, 74);
             this.removeImageBtn.Name = "removeImageBtn";
             this.removeImageBtn.Size = new System.Drawing.Size(19, 20);
             this.removeImageBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -1234,6 +1234,7 @@ namespace POS
             this.Text = "Producto | Point of Sale";
             this.Deactivate += new System.EventHandler(this.Form_Agregar_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Agregar_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form_Agregar_FormClosed);
             this.Load += new System.EventHandler(this.Form_Agregar_Load);
             this.Shown += new System.EventHandler(this.Form_Agregar_Shown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form_Agregar_Paint);

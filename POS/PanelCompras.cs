@@ -120,7 +120,7 @@ namespace POS
             bool myFlag = ToggleFlag;
 
             flowLayoutPanel1.Controls.Clear();
-            
+
             bool previousDays = false;
             bool currentDay = false;
 
@@ -955,7 +955,7 @@ namespace POS
 
         private void PanelCompras_FormClosing(object sender, FormClosingEventArgs e)
         {
-            flowLayoutPanel1.Dispose();//<<<step1>>>--Start
+            //<<<step1>>>--Start
             if (m_Drawer != null)
             {
                 try
@@ -972,6 +972,7 @@ namespace POS
                 {
                 }
             }
+            this.Dispose();
             //<<<step1>>>--End
         }
 
@@ -1023,6 +1024,11 @@ namespace POS
         private void headerPanel_Resize(object sender, EventArgs e)
         {
             leftPanel.Width = middlePanel.Width = rightPanel.Width = headerPanel.Width / 3;
+        }
+
+        private void flowLayoutPanel1_ControlRemoved(object sender, ControlEventArgs e)
+        {
+            e.Control.Dispose();
         }
     }
 }

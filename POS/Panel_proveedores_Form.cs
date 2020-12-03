@@ -1138,6 +1138,7 @@ namespace POS
 
             }
             darkForm.Close();
+            this.Activate();
         }
 
         private async void AddRowBtn_Click(object sender, EventArgs e)
@@ -1890,6 +1891,7 @@ namespace POS
             ProductTxt.Text = "";
             chart2.Series.Clear();
             label11.Text = "";
+            dataGridView1.DataSource = null;
             resetRowHeight(datagridviewEnum.Both);
         }
 
@@ -2028,6 +2030,8 @@ namespace POS
                 {
                 }
             }
+
+            this.Dispose();
             //<<<step1>>>--End
         }
 
@@ -2588,12 +2592,16 @@ namespace POS
 
         private void dataGridView1_DataSourceChanged(object sender, EventArgs e)
         {
-            resetRowHeight(datagridviewEnum.productsGridView);
-            dataGridView1.DefaultCellStyle.Font = new Font("century gothic", 12f, FontStyle.Bold);
-            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", 14f, FontStyle.Bold);
-            dataGridView1.RowsDefaultCellStyle.Font = new Font("century gothic", 12f, FontStyle.Bold);
-            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            dataGridView1.Columns["Descripción"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            if (dataGridView1.DataSource != null)
+            {
+                resetRowHeight(datagridviewEnum.productsGridView);
+                dataGridView1.DefaultCellStyle.Font = new Font("century gothic", 12f, FontStyle.Bold);
+                dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", 14f, FontStyle.Bold);
+                dataGridView1.RowsDefaultCellStyle.Font = new Font("century gothic", 12f, FontStyle.Bold);
+                dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                dataGridView1.Columns["Descripción"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                setDatagridviewFontSize();
+            }
         }
 
         private void setDatagridviewFontSize()
@@ -2602,7 +2610,7 @@ namespace POS
             var prop = Properties.Settings.Default;
 
             dataGridView1.BeginInvoke((Action)(()=>{
-                dataGridView1.DefaultCellStyle.Font = new Font("century gothic", prop.PanelProveedores_DGV1Font - 2, FontStyle.Bold);
+                dataGridView1.RowsDefaultCellStyle.Font = dataGridView1.DefaultCellStyle.Font = new Font("century gothic", prop.PanelProveedores_DGV1Font - 2, FontStyle.Bold);
                 dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("century gothic", prop.PanelProveedores_DGV1Font, FontStyle.Bold);
             }));
 
@@ -2711,14 +2719,8 @@ namespace POS
                 else
                     dataGridView1.DataSource = proveedor.GetSupplierProductList();
             }
-            //dk.Close();
         }
-
-        private void SearchSupplierTxt_Leave(object sender, EventArgs e)
-        {
-            //SearchSupplierTxt.Select();
-        }
-
+        
         private void SearchSupplierTxt_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter && SearchSupplierTxt.Text.Trim() != "")
@@ -3234,6 +3236,11 @@ namespace POS
             {
                 resetRowHeight(datagridviewEnum.NextPruchaseGridView);
             }
+        }
+
+        private void flow1_ControlRemoved(object sender, ControlEventArgs e)
+        {
+            e.Control.Dispose();
         }
     }
 

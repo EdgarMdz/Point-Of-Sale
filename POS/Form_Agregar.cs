@@ -1134,5 +1134,10 @@ namespace POS
                 this.CenterToScreen();
             }
         }
+
+        private void Form_Agregar_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Dispose();
+        }
     }
 }

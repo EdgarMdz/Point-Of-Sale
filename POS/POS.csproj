@@ -828,16 +828,11 @@
     <None Include="Resources\Hamburger_icon.svg.png" />
     <None Include="Resources\checkmarkNoBg.png" />
     <None Include="Resources\checkmark_nobg.png" />
-    <Content Include="Data\POSDB.ldf">
-      <DependentUpon>POSDB.mdf</DependentUpon>
+    <Content Include="Data\FinalDB.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Data\POSDB.mdf">
+    <Content Include="Data\FinalDB_log.ldf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Content Include="Data\POSDB_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>POSDB.mdf</DependentUpon>
     </Content>
     <Content Include="z29 %281%29.ico" />
     <None Include="Resources\new Window.png" />

@@ -453,6 +453,7 @@ namespace POS
             this.flow1.Name = "flow1";
             this.flow1.Size = new System.Drawing.Size(628, 300);
             this.flow1.TabIndex = 1;
+            this.flow1.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.flow1_ControlRemoved);
             // 
             // LoadingSupplierListBar
             // 
@@ -621,7 +622,6 @@ namespace POS
             this.SearchSupplierTxt.TabIndex = 0;
             this.SearchSupplierTxt.TextChanged += new System.EventHandler(this.SearchProvider_TextChanged);
             this.SearchSupplierTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchSupplierTxt_KeyDown);
-            this.SearchSupplierTxt.Leave += new System.EventHandler(this.SearchSupplierTxt_Leave);
             // 
             // ProggressActiveSeparator
             // 

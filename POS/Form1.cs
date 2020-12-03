@@ -472,7 +472,7 @@ namespace POS
 
         private void homeBtn_Click(object sender, EventArgs e)
         {
-            if (!( homeBtn.BackColor ==  homeBtn.Parent.BackColor))
+            if (homeBtn.BackColor != homeBtn.Parent.BackColor) 
                 return;
             if (con != null)
             {
@@ -511,7 +511,9 @@ namespace POS
             {
                  employee = new Empleado(formLogin.ID);
                  displayHideTabs();
-                 homeBtn_Click((object)this, (EventArgs)null);
+
+                homeBtn.BackColor = homeBtn.Parent.BackColor;//changing color to load home panel
+                homeBtn_Click((object)this, (EventArgs)null);
 
                 try { (ContainerPanel.Controls[0] as Panel_Inicio).EmployeeID = employee.ID; }
                 catch (Exception) { }
@@ -524,10 +526,7 @@ namespace POS
 
                     if (item.GetType() == typeof(Panel_Ventas))
                     {
-                        /*if (Screen.PrimaryScreen.Bounds == new Rectangle(0, 0, 1366, 768))
-                            (item as Panel_Ventas_1366x768).setEmployee(employee.ID);
-                        else*/
-                            (item as Panel_Ventas).setEmployee(employee.ID);
+                        (item as Panel_Ventas).setEmployee(employee.ID);
                     }
                     if (item.GetType() == typeof(Panel_Productos))
                     {
