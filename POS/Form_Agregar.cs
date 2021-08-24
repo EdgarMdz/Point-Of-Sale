@@ -291,7 +291,7 @@ namespace POS
                 producto.PiecesPerCase = Convert.ToDouble(this.piecesByCaseTxt.Text);
 
             if (this.costbyCaseTxt.Text != "")
-                producto.CostPerCase = LinkProductCheckBox.Checked || producto.PiecesPerCase == 1 ?
+                producto.CostPerCase = /*LinkProductCheckBox.Checked || */producto.PiecesPerCase == 1 ?
                     producto.RetailCost :
                     Convert.ToDouble(this.costbyCaseTxt.Text);
 
@@ -611,7 +611,7 @@ namespace POS
 
         private void piecesByCaseTxt_OnValueChanged(object sender, EventArgs e)
         {
-            if (checkBox1.Checked)
+            if (LinkProductCheckBox.Checked)
             {
                 var product = new Producto(linkedProductBarcodeTxt.Text);
                 if (product.Barcode != "")
@@ -730,10 +730,10 @@ namespace POS
                 bunifuMaterialTextbox1.Enabled = false;
                 this.stockTxt.Enabled = false;
                 stockTxt.Text = "0.00";
-                piecesByCaseTxt.Enabled = false;
+                /*piecesByCaseTxt.Enabled = false;
                 piecesByCaseTxt.Text = "1.00";
                 costbyCaseTxt.Enabled = false;
-                costbyCaseTxt.Text = retailCostTxt.Text;
+                costbyCaseTxt.Text = retailCostTxt.Text;*/
             }
             else
             {
@@ -747,12 +747,12 @@ namespace POS
 
                 var product = new Producto(barcodeTxt.Text);
 
-                piecesByCaseTxt.Enabled = true;
-                piecesByCaseTxt.Text = editingMode ?product.PiecesPerCase.ToString("n2") : "1.00";
 
-                costbyCaseTxt.Enabled = true;
-                costbyCaseTxt.Text = editingMode ? product.CostPerCase.ToString("n2") : ((Convert.ToDouble(piecesByCaseTxt.Text)
-                    * Convert.ToDouble(retailCostTxt.Text))).ToString("n2"); 
+                /* piecesByCaseTxt.Enabled = true;
+                  piecesByCaseTxt.Text = editingMode ?product.PiecesPerCase.ToString("n2") : "1.00";
+    costbyCaseTxt.Enabled = true;
+                  costbyCaseTxt.Text = editingMode ? product.CostPerCase.ToString("n2") : ((Convert.ToDouble(piecesByCaseTxt.Text)
+                      * Convert.ToDouble(retailCostTxt.Text))).ToString("n2"); */
             }
         }
 

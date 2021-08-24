@@ -828,10 +828,11 @@
     <None Include="Resources\Hamburger_icon.svg.png" />
     <None Include="Resources\checkmarkNoBg.png" />
     <None Include="Resources\checkmark_nobg.png" />
-    <Content Include="Data\FinalDB.mdf">
+    <Content Include="Data\Database.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\FinalDB_log.ldf">
+    <Content Include="Data\Database_log.ldf">
+      <DependentUpon>Database.mdf</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="z29 %281%29.ico" />

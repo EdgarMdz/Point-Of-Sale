@@ -411,7 +411,7 @@ namespace POS
                 else
                 {
                     //in case the given amount fits for case discount return that value
-                    if (amount >= PiecesPerCase && PiecesPerCase >= Convert.ToDouble(dt.Rows[discountRowIndex]["cantidad"])) 
+                    if (amount >= PiecesPerCase && PiecesPerCase > 1 && PiecesPerCase >= Convert.ToDouble(dt.Rows[discountRowIndex]["cantidad"])) 
                         return (RetailCost - CostPerCase / PiecesPerCase) * amount;
 
                     //if not return the corresponding discount

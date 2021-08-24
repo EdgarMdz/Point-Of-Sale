@@ -955,7 +955,7 @@ namespace POS
             this.removeImageBtn.BackColor = System.Drawing.Color.Transparent;
             this.removeImageBtn.Image = ((System.Drawing.Image)(resources.GetObject("removeImageBtn.Image")));
             this.removeImageBtn.ImageActive = null;
-            this.removeImageBtn.Location = new System.Drawing.Point(503, 74);
+            this.removeImageBtn.Location = new System.Drawing.Point(503, 131);
             this.removeImageBtn.Name = "removeImageBtn";
             this.removeImageBtn.Size = new System.Drawing.Size(19, 20);
             this.removeImageBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -1040,7 +1040,7 @@ namespace POS
             this.helpPanel.Controls.Add(this.label3);
             this.helpPanel.Controls.Add(this.mainProductTxt);
             this.helpPanel.Controls.Add(this.subProductTxt);
-            this.helpPanel.Location = new System.Drawing.Point(486, 539);
+            this.helpPanel.Location = new System.Drawing.Point(486, 555);
             this.helpPanel.Name = "helpPanel";
             this.helpPanel.Size = new System.Drawing.Size(342, 100);
             this.helpPanel.TabIndex = 56;

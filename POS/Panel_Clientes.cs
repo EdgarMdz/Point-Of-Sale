@@ -442,44 +442,44 @@ namespace POS
                         stringSize = ticket.printPhone(graphics, y1);
                         y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
 
-                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 5;
+                        y1 += PrintingClass.drawLine(10, width - 10, graphics, y1) + 5;
 
                         string str = "Pago de Cliente";
                         Font font = new Font("times new roman", 17f, FontStyle.Bold);//this.getFont(str1, width, FontStyle.Regular);
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1) + 1;
 
                         font = width > 200 ? new Font("Times new Roman", 9.9f) : new Font("Times new Roman", 7f);
 
                         str = "Cliente: " + this.cliente.Name;
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
 
 
                         str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.Date.ToShortTimeString());
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
 
 
-                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+                        y1 += PrintingClass.drawLine(10, width - 10, graphics, y1) + 3;
 
                         num1 = Convert.ToDouble(form.Pay);
                         str = string.Format("Adeudo Previo: ${0}", (cliente.Debt + num1).ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
 
                         str = string.Format("Monto a pagar: ${0}", num1.ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
 
                         str = string.Format("Adeudo Actualizado: ${0}", cliente.Debt.ToString("n2"));
-                        y1 += printingClass.printLine(str, new Font("times new roman", 10f, FontStyle.Bold), width, StringAlignment.Near, graphics, y1);
+                        y1 += PrintingClass.printLine(str, new Font("times new roman", 10f, FontStyle.Bold), width, StringAlignment.Near, graphics, y1);
 
-                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+                        y1 += PrintingClass.drawLine(10, width - 10, graphics, y1) + 3;
 
                         str = string.Format("Efectivo: ${0}", cash.ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
 
                         str = string.Format("Cambio: ${0}", change.ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
 
                         if (ticket.footerDisplay)
-                            printingClass.printLine(ticket.footer, ticket.footerFont, width, StringAlignment.Center, graphics, y1);
+                            PrintingClass.printLine(ticket.footer, ticket.footerFont, width, StringAlignment.Center, graphics, y1);
                     });
                     try
                     {
@@ -1259,7 +1259,7 @@ namespace POS
 
         private void printTicket(Graphics graphics, List<Tuple<string, List<object>, bool>> infoList, int maxHeight)
         {
-            Type thisType = typeof(printingClass);
+            Type thisType = typeof(PrintingClass);
             int location = 0;
 
             while (location < maxHeight - 10 && infoList.Count > 0)

@@ -8,11 +8,11 @@ namespace POS
     class Capa_de_Datos
     {
         private SqlConnection con;
-        private readonly string connectionString;
+        private static readonly string connectionString;
 
-        public Capa_de_Datos()
+        static Capa_de_Datos()
         {
-            connectionString = @"Data Source=localhost\SQLEXPRESS;Initial Catalog=C:\USERS\TIENDA\SOURCE\REPOS\POS\POS\DATA\FINALDB.MDF;Integrated Security=True";
+            connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|Base|Data\Database.mdf;Integrated Security=True;Connect Timeout=30".Replace("|Base|", AppDomain.CurrentDomain.BaseDirectory);
         }
 
         public void AddProduct(string Marca, string Descripcion, double PrecioMinoreo, double PrecioPorCaja, double PiezasPorCaja, 

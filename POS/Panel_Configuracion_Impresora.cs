@@ -457,40 +457,40 @@ namespace POS
 
             if (this.logoPictureBox.Image != null && this.LogoCheckbox.Checked)
             {
-                num += printingClass.printImage(logoPictureBox.Image, width, (int)logoHeight.Value, g, num) + 1;
+                num += PrintingClass.printImage(logoPictureBox.Image, width, (int)logoHeight.Value, g, num) + 1;
             }
 
             if (headerCheckBox.Checked)
             {
-                num += printingClass.printLine(headderTxt.Text, headerFont, width, StringAlignment.Center, g, num) + 1;
+                num += PrintingClass.printLine(headderTxt.Text, headerFont, width, StringAlignment.Center, g, num) + 1;
             }
 
-            num += printingClass.printLine(addressTxt.Text, addressFont, width, StringAlignment.Center, g, num) + 1;
+            num += PrintingClass.printLine(addressTxt.Text, addressFont, width, StringAlignment.Center, g, num) + 1;
 
             if(phoneCheckBox.Checked)
             {
-                num += printingClass.printLine(phoneTxt.Text, phoneFont, width, StringAlignment.Center, g, num) + 3;
+                num += PrintingClass.printLine(phoneTxt.Text, phoneFont, width, StringAlignment.Center, g, num) + 3;
             }
             font =  width > 200 ? new Font("Times new Roman", 9.9f) : new Font("Times new Roman", 7f);
-            num += printingClass.drawLine(10, width-10, g, num) + 1;
-            printingClass.printLine("Cantidad",font,width, StringAlignment.Near,g,num);
-            printingClass.printLine("Precio", font, width, StringAlignment.Center, g, num);
-            num += printingClass.printLine("Importe", font, width, StringAlignment.Far, g, num) + 1;
-            num += printingClass.drawLine(10, width - 10, g, num) + 3;
+            num += PrintingClass.drawLine(10, width-10, g, num) + 1;
+            PrintingClass.printLine("Cantidad",font,width, StringAlignment.Near,g,num);
+            PrintingClass.printLine("Precio", font, width, StringAlignment.Center, g, num);
+            num += PrintingClass.printLine("Importe", font, width, StringAlignment.Far, g, num) + 1;
+            num += PrintingClass.drawLine(10, width - 10, g, num) + 3;
 
-            num += printingClass.printLine("Refresco sabor fresa 500 ml", font, width, StringAlignment.Near, g, num)+1;
-            printingClass.printLine("12.00", font, width, StringAlignment.Near, g, num);
-            printingClass.printLine("$10.00", font, width, StringAlignment.Center, g, num);
-            num += printingClass.printLine("$120.00", font, width, StringAlignment.Far, g, num) + 1;
-            num += printingClass.drawLine(10, width - 10, g, num) + 3;
+            num += PrintingClass.printLine("Refresco sabor fresa 500 ml", font, width, StringAlignment.Near, g, num)+1;
+            PrintingClass.printLine("12.00", font, width, StringAlignment.Near, g, num);
+            PrintingClass.printLine("$10.00", font, width, StringAlignment.Center, g, num);
+            num += PrintingClass.printLine("$120.00", font, width, StringAlignment.Far, g, num) + 1;
+            num += PrintingClass.drawLine(10, width - 10, g, num) + 3;
 
-            num += printingClass.printLine("Total: $120.00", font, width, StringAlignment.Far, g, num) + 1;
-            num += printingClass.printLine("Efectivo: $120.00", font, width, StringAlignment.Far, g, num) + 1;
-            num += printingClass.printLine("Cambio: $0.00", font, width, StringAlignment.Far, g, num) + 10;
+            num += PrintingClass.printLine("Total: $120.00", font, width, StringAlignment.Far, g, num) + 1;
+            num += PrintingClass.printLine("Efectivo: $120.00", font, width, StringAlignment.Far, g, num) + 1;
+            num += PrintingClass.printLine("Cambio: $0.00", font, width, StringAlignment.Far, g, num) + 10;
 
             if(footerCheckBox.Checked)
             {
-                num += printingClass.printLine(footerTxt.Text, footerFont, width, StringAlignment.Center, g, num) + 5;
+                num += PrintingClass.printLine(footerTxt.Text, footerFont, width, StringAlignment.Center, g, num) + 5;
             }
 
             if (isPreview)
@@ -506,7 +506,7 @@ namespace POS
                     g.DrawLine(p, 0, num, width, num);
                     num += 4;
 
-                    printingClass.printLine("Fin del Ticket", endFont, width, StringAlignment.Center, g, num);
+                    PrintingClass.printLine("Fin del Ticket", endFont, width, StringAlignment.Center, g, num);
                 }
             }
             else

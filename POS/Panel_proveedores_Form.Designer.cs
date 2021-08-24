@@ -968,7 +968,6 @@ namespace POS
             this.saveBtn.ActiveForecolor = System.Drawing.Color.White;
             this.saveBtn.ActiveLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.saveBtn.BackColor = System.Drawing.Color.White;
-            this.saveBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("saveBtn.BackgroundImage")));
             this.saveBtn.ButtonText = "Guardar Compra";
             this.saveBtn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.saveBtn.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -994,7 +993,6 @@ namespace POS
             this.proceedPurchaseBtn.ActiveForecolor = System.Drawing.Color.White;
             this.proceedPurchaseBtn.ActiveLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(170)))));
             this.proceedPurchaseBtn.BackColor = System.Drawing.Color.White;
-            this.proceedPurchaseBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("proceedPurchaseBtn.BackgroundImage")));
             this.proceedPurchaseBtn.ButtonText = "Realizar Compra";
             this.proceedPurchaseBtn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.proceedPurchaseBtn.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

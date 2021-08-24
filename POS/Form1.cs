@@ -44,18 +44,6 @@ namespace POS
             ProductsButton.ContextMenu = menu;
 
             threadID = Thread.CurrentThread.ManagedThreadId;
-
-            //ProductsButton.ContextMenu.MenuItems[0].Click += new EventHandler(contextMenuClicked);
-
-
-            //checking for unfinished sells
-            /*  DataTable unfinishedSells = Venta.getUnfinishedSalesIDs();
-              foreach (DataRow row in unfinishedSells.Rows)
-              {
-                  Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized, row);
-                  panel.Show();
-              }*/
-
         }
 
         private void contextMenuClicked(object sender, EventArgs e)
@@ -100,26 +88,15 @@ namespace POS
             catch (Exception) { }
         }
 
-        private void openNewSaleWindow(DataRow saleInfo = null)
+        private void openNewSaleWindow(string saleInfo = null)
         {
             try
             {
-               /* if (Screen.PrimaryScreen.Bounds == new Rectangle(0, 0, 1366, 768))
-                {
-                    Panel_Ventas_1366x768 panel = new Panel_Ventas_1366x768(employee.ID, FormWindowState.Maximized, saleInfo);
-                    Thread thread = new Thread(() => panel.ShowDialog());
-                    thread.SetApartmentState(ApartmentState.STA);
-                    thread.IsBackground = true;
-                    thread.Start();
-                }
-                else
-                {*/
-                    Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized, saleInfo);
-                    Thread thread = new Thread(() => panel.ShowDialog());
-                    thread.SetApartmentState(ApartmentState.STA);
-                    thread.IsBackground = true;
-                    thread.Start();
-                /*}*/
+                Panel_Ventas panel = new Panel_Ventas(employee.ID, FormWindowState.Maximized, saleInfo);
+                Thread thread = new Thread(() => panel.ShowDialog());
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.IsBackground = true;
+                thread.Start();
             }
             catch (Exception) { }
         }

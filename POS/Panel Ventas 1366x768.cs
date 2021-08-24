@@ -1361,7 +1361,7 @@ namespace POS
 
         private void printTicket(Graphics graphics, List<Tuple<string, List<object>, bool>> infoList, int maxHeight)
         {
-            Type thisType = typeof(printingClass);
+            Type thisType = typeof(PrintingClass);
             int location = 0;
 
             while (location < maxHeight - 5 && infoList.Count > 0)
@@ -1706,46 +1706,46 @@ namespace POS
                         stringSize = this.ticket.printPhone(graphics, y1);
                         y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
 
-                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 5;
+                        y1 += PrintingClass.drawLine(10, width - 10, graphics, y1) + 5;
 
                         string str = "Pago de Cliente";
                         Font font = new Font("times new roman", 20f, FontStyle.Bold);//this.getFont(str1, width, FontStyle.Regular);
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1) + 1;
 
                         font = new Font("Times new Roman", 10f, FontStyle.Regular);
 
                         if (this.customer.ID != 0)
                         {
                             str = "Cliente: " + this.customer.Name;
-                            y1 += printingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
+                            y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
                         }
 
                         str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.ToShortTimeString());
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
 
 
-                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+                        y1 += PrintingClass.drawLine(10, width - 10, graphics, y1) + 3;
 
                         customerPayment = Convert.ToDouble(form.Pay);
                         str = string.Format("Adeudo Previo: ${0}", (this.customer.Debt + customerPayment).ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
 
                         str = string.Format("Monto a pagar: ${0}", customerPayment.ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
 
                         str = string.Format("Adeudo Actualizado: ${0}", customer.Debt.ToString("n2"));
-                        y1 += printingClass.printLine(str, new Font("times new roman", 10f, FontStyle.Bold), width, StringAlignment.Near, graphics, y1);
+                        y1 += PrintingClass.printLine(str, new Font("times new roman", 10f, FontStyle.Bold), width, StringAlignment.Near, graphics, y1);
 
-                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+                        y1 += PrintingClass.drawLine(10, width - 10, graphics, y1) + 3;
 
                         str = string.Format("Efectivo: ${0}", cash.ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
 
                         str = string.Format("Cambio: ${0}", change.ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
 
                         if (ticket.footerDisplay)
-                            printingClass.printLine(ticket.footer, ticket.footerFont, width, StringAlignment.Center, graphics, y1);
+                            PrintingClass.printLine(ticket.footer, ticket.footerFont, width, StringAlignment.Center, graphics, y1);
                     });
 
                     try

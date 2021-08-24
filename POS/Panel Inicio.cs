@@ -351,39 +351,39 @@ namespace POS
                 }
                 if (printerTicket.headderDisplay)
                 {
-                    y += printingClass.printLine(printerTicket.header, printerTicket.headerFont,
+                    y += PrintingClass.printLine(printerTicket.header, printerTicket.headerFont,
                         width, StringAlignment.Center, graphics, y) + 1;
                 }
                 string str = "Corte de Caja";
                 Font font = new Font("times new roman", 18f, FontStyle.Bold);
-                y += printingClass.printLine(str, font, width, StringAlignment.Center, graphics, y) + 1;
+                y += PrintingClass.printLine(str, font, width, StringAlignment.Center, graphics, y) + 1;
 
                 var startingTime = Turno.startingDate;
                 str = string.Format("Periodo del Turno: {0} {1} - {2} {3}", startingTime.Date.ToShortDateString(), startingTime.ToShortTimeString(),
                     DateTime.Now.Date.ToShortDateString(), DateTime.Now.ToShortTimeString());
 
                 font = width > 200 ? new Font("Times new Roman", 9.9f, FontStyle.Bold) : new Font("Times new Roman", 7f, FontStyle.Bold);
-                y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 3;
+                y += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 3;
 
                 str = "Comenzó el turno: " + new Empleado(Convert.ToInt32(row["Empleado que Inició"])).name;
-                y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 1;
+                y += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 1;
 
                 str = "Realizó corte de caja: " + new Empleado(this.employeeID).name;
-                y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 15;
+                y += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 15;
 
 
                 for (int index = 0; index < 9; ++index)
                 {
                     font = width > 200 ? new Font("Times new Roman", 9.9f) : new Font("Times new Roman", 7f);
                     str = dt.Columns[index].ColumnName;
-                    y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 1;
+                    y += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 1;
 
                     font = width > 200 ? new Font("Times new Roman", 9.9f, FontStyle.Bold) : new Font("Times new Roman", 7f, FontStyle.Bold);
                     str = row[index].ToString();
                     str = index > 0 ? str.Substring(1) : str;
                     str = Convert.ToDouble(str) > 0.0 ? string.Format("{0}", row[index]) :
                     string.Format("{0}", row[index]);
-                    y += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 5;
+                    y += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y) + 5;
 
                 }
             };

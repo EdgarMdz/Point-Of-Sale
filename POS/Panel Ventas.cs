@@ -81,6 +81,7 @@ namespace POS
 
         private void addProductToDataGrid(Producto p, double quantity, int depotIndex = 1, int rowIndex = -1)
         {
+            dataGridView2.EndEdit();
             //lookin for an item in the datagridview to add the given product to it
             if (autoGrouping.Checked || quantity < 0 && rowIndex < 0)
                 foreach (DataGridViewRow row in dataGridView2.Rows)
@@ -526,7 +527,9 @@ namespace POS
                     double disc = p.RetailCost * piecesWithDiscount -
                      piecesWithDiscount * p.CostPerCase / p.PiecesPerCase;
 
-                    addDiscountToRow(item.Key, disc);
+                    var casesNpieces = Producto.getCasesAndSingleProducts(p, getAmountOfSinglePieces(dataGridView2.Rows[item.Key].Cells["amount"].Value.ToString(), p));
+                    var casedisc = (casesNpieces.Item1 * p.PiecesPerCase * p.RetailCost) - (casesNpieces.Item1 * p.CostPerCase);
+                    addDiscountToRow(item.Key, disc + casedisc * casesNpieces.Item1);
                 }
             }
             else
@@ -1033,6 +1036,7 @@ namespace POS
 
         private void printTicket(long saleID, string products, double discount)
         {
+            Venta lastSale = new Venta(saleID);
             if (printer != null)
             {
                 try
@@ -1043,7 +1047,6 @@ namespace POS
                     printer.RecLetterQuality = true;
 
 
-                    Venta lastSale = new Venta(saleID);
 
                     string text = "";
                     if (ticket.logoDisplay)
@@ -1135,21 +1138,21 @@ namespace POS
 
                     if (MessageBox.Show("Ocurrió un error al imprimir el Ticket.\n ¿Desea intentar imprimirlo nuevamente?", "Error de Impresión", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
                     {
-                        prepareData(saleID);
+                        prepareData(lastSale);
                     }
                 }
             }
             else
             {
-                prepareData(saleID);
+                prepareData(lastSale);
                 // printDefaultPrinter(printDocument1);
             }
 
         }
 
-        private async void prepareData(long saleID)
+        private async void prepareData(Venta sale)
         {
-            Venta lastSale = await Task.Run(() => new Venta(saleID));
+            Venta lastSale = sale;
             int width = (int)this.printDialog1.PrinterSettings.DefaultPageSettings.PrintableArea.Width;
             string data;
             Font mainFont;
@@ -1365,7 +1368,7 @@ namespace POS
 
         private void printTicket(Graphics graphics, List<Tuple<string, List<object>, bool>> infoList, int maxHeight)
         {
-            Type thisType = typeof(printingClass);
+            Type thisType = typeof(PrintingClass);
             int location = 0;
 
             while (location < maxHeight - 5 && infoList.Count > 0)
@@ -1387,7 +1390,6 @@ namespace POS
                         break;
                     default:
                         throw new Exception("Ambiguedad de metodos");
-                        break;
                 }
 
                 var parameters = new object[item.Item2.Count + 2];
@@ -1403,7 +1405,7 @@ namespace POS
 
                 if (item.Item3)
                 {
-                    
+
                     location += (int)theMethod.Invoke(this, parameters);
                 }
                 else
@@ -1589,13 +1591,13 @@ namespace POS
 
                     if (MessageBox.Show("Ocurrió un error al imprimir el Ticket.\n ¿Desea intentar imprimirlo nuevamente?", "Error de Impresión",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
-                        prepareData(saleID);
+                        prepareData(lastSale);
                 }
-                catch (Exception) { prepareData(saleID); }
+                catch (Exception) { prepareData(lastSale); }
             }
             else
             {
-                prepareData(sale.ID);
+                prepareData(lastSale);
             }
 
         }
@@ -1733,46 +1735,46 @@ namespace POS
                         stringSize = this.ticket.printPhone(graphics, y1);
                         y1 = stringSize.Height == 0 ? y1 : y1 + stringSize.Height + 10;
 
-                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 5;
+                        y1 += PrintingClass.drawLine(10, width - 10, graphics, y1) + 5;
 
                         string str = "Pago de Cliente";
                         Font font = new Font("times new roman", 20f, FontStyle.Bold);//this.getFont(str1, width, FontStyle.Regular);
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Center, ee.Graphics, y1) + 1;
 
                         font = new Font("Times new Roman", 10f, FontStyle.Regular);
 
                         if (this.customer.ID != 0)
                         {
                             str = "Cliente: " + this.customer.Name;
-                            y1 += printingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
+                            y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, ee.Graphics, y1) + 1;
                         }
 
                         str = string.Format("Fecha: {0} {1}", DateTime.Now.Date.ToShortDateString(), DateTime.Now.ToShortTimeString());
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1);
 
 
-                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+                        y1 += PrintingClass.drawLine(10, width - 10, graphics, y1) + 3;
 
                         customerPayment = Convert.ToDouble(form.Pay);
                         str = string.Format("Adeudo Previo: ${0}", (this.customer.Debt + customerPayment).ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
 
                         str = string.Format("Monto a pagar: ${0}", customerPayment.ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Near, graphics, y1) + 1;
 
                         str = string.Format("Adeudo Actualizado: ${0}", customer.Debt.ToString("n2"));
-                        y1 += printingClass.printLine(str, new Font("times new roman", 10f, FontStyle.Bold), width, StringAlignment.Near, graphics, y1);
+                        y1 += PrintingClass.printLine(str, new Font("times new roman", 10f, FontStyle.Bold), width, StringAlignment.Near, graphics, y1);
 
-                        y1 += printingClass.drawLine(10, width - 10, graphics, y1) + 3;
+                        y1 += PrintingClass.drawLine(10, width - 10, graphics, y1) + 3;
 
                         str = string.Format("Efectivo: ${0}", cash.ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
 
                         str = string.Format("Cambio: ${0}", change.ToString("n2"));
-                        y1 += printingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
+                        y1 += PrintingClass.printLine(str, font, width, StringAlignment.Far, graphics, y1) + 1;
 
                         if (ticket.footerDisplay)
-                            printingClass.printLine(ticket.footer, ticket.footerFont, width, StringAlignment.Center, graphics, y1);
+                            PrintingClass.printLine(ticket.footer, ticket.footerFont, width, StringAlignment.Center, graphics, y1);
                     });
 
                     try
@@ -2356,7 +2358,9 @@ namespace POS
             countProducts();
         }
 
-        public Panel_Ventas(int employeeID, FormWindowState windowState = FormWindowState.Normal, DataRow SellInfo = null)
+        private delegate void doWork(string path);
+
+        public Panel_Ventas(int employeeID, FormWindowState windowState = FormWindowState.Normal, string SellInfo = "")
         {
             this.InitializeComponent();
             this.WindowState = windowState;
@@ -2364,8 +2368,9 @@ namespace POS
             setEmployee(employeeID);
             this.defaultTxt = "";// "Producto * Cantidad";
 
-            this.customer = SellInfo != null ? new Cliente(Convert.ToInt32(SellInfo["id_cliente"])) : new Cliente(0);
+            this.customer = new Cliente(0);
             setCustomer();
+
 
             this.isNewSale = true;
             this.ticket = new PrinterTicket();
@@ -2401,21 +2406,8 @@ namespace POS
             {
                 ShortcutTips[i] = new ToolTip();
             }
-
-
-            if (SellInfo != null)
-            {
-                DataTable saleDetail = Venta.getInfoUnfinishedSell(Convert.ToInt32(SellInfo["id_Ventana"]), windowCount);
-
-                foreach (DataRow row in saleDetail.Rows)
-                {
-                    addProductToDataGrid(new Producto(row["id_producto"].ToString()), Convert.ToDouble(row["cantidad"]), Convert.ToInt32(row["id_bodega"]));
-                }
-            }
-
+                       
             this.Focus();
-
-            setDatagridviewFontSize();
         }
 
         private void dataGridView2_MouseWheel(object sender, MouseEventArgs e)
@@ -2466,6 +2458,33 @@ namespace POS
             }
         }
 
+        public void setSaleFromFile(string path)
+        {
+            if(dataGridView2.InvokeRequired)
+            {
+                var d = new doWork(setSaleFromFile);
+                dataGridView2.Invoke(d, new object[] { path });
+            }
+            else
+            {
+                Control.CheckForIllegalCrossThreadCalls = false;
+                using(StreamReader read =new StreamReader(path))
+                {
+                    string[] text = read.ReadToEnd().Split(new string[] {Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (string product in text)
+                    {
+                        var p = product.Split('|');
+                        var barcode = p[0];
+                        if(double.TryParse(p[1],out double amount))
+                        {
+                            addProductToDataGrid(new Producto(barcode), amount);
+                        }
+                    }
+                }
+                Control.CheckForIllegalCrossThreadCalls = true;
+            }
+        }
 
         private void Panel_Ventas_Load(object sender, EventArgs e)
         {
@@ -3874,7 +3893,7 @@ namespace POS
         }
     }
 
-    public static class printingClass
+    public static class PrintingClass
     {
         public static int printLine(string text, Font font, int width, StringAlignment alignment, Graphics g, int yOffset)
         {
